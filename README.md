@@ -1,7 +1,10 @@
 ## homm3tools – Tools for Heroes of Might and Magic III
 
-Tools and libraries for Heroes of Might and Magic III. The code contained in this
-repository varies greatly in quality and should be seen as experimental.
+Tools and libraries for Heroes of Might and Magic III by [@potmdehex](https://twitter.com/potmdehex). 
+The code contained in this repository varies greatly in quality and should be seen as experimental.
+
+### Download binaries
+Pre-built binaries are available [here](https://github.com/potmdehex/homm3tools/releases).
 
 ### MSVC simple build instructions
  * Extract [gzip_utils.zip](https://github.com/potmdehex/homm3tools/releases/download/v1.0/gzip_utils.zip) into homm3tools directory
@@ -9,7 +12,6 @@ repository varies greatly in quality and should be seen as experimental.
  * Build
 
 ### Contributions
-
 Documentation and other information is currently lacking, but contributions
 are welcome.
 
