@@ -4,7 +4,7 @@ Tools and libraries for Heroes of Might and Magic III. The code contained in thi
 repository varies greatly in quality and should be seen as experimental.
 
 ### MSVC simple build instructions
- * Extract [gzip_utils.zip](filelink) into homm3tools directory
+ * Extract [gzip_utils.zip](https://github.com/potmdehex/homm3tools/releases/download/v1.0/gzip_utils.zip) into homm3tools directory
  * Open homm3tools\BUILD\VS\homm3tools.sln
  * Build
 
