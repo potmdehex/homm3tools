@@ -15,7 +15,7 @@ Pre-built binaries are available [here](https://github.com/potmdehex/homm3tools/
 Documentation and other information is currently lacking, but contributions
 are welcome.
 
-##### [List of homm3tools contributors](CONTRIBUTORS.MD)
+##### [List of homm3tools contributors](https://github.com/potmdehex/homm3tools/blob/master/CONTRIBUTORS.md)
 
 ### Disclaimer
 This software is not in any way official and is not endorsed by anyone.
