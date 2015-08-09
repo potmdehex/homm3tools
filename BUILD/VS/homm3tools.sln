@@ -111,6 +111,9 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "h3msnakepacker", "..\..\h3m
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "hde_launcher_mod", "..\..\hd_edition\hde_launcher_mod\BUILD\VS\hde_launcher_mod.vcxproj", "{B12702AD-ABFB-343A-A199-8E24837244A3}"
+	ProjectSection(ProjectDependencies) = postProject
+		{14AA3448-977F-4222-AEE7-DD928645DDFD} = {14AA3448-977F-4222-AEE7-DD928645DDFD}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "h3mdllembed", "..\..\h3m\h3mdllembed\BUILD\VS\h3mdllembed.vcxproj", "{F6996645-ED7B-40BE-95F6-663A3861E29F}"
 	ProjectSection(ProjectDependencies) = postProject
