@@ -1,0 +1,13 @@
+1.2
+	- arb/keys.c:keyfree(): fix memory leak: "kp->vals" was not being
+	  freed.
+
+1.1
+        - mphminm: created. Finds the minimum constant that can be specified
+          with mph's -m option. Useful for small keysets only.
+
+        - mphm.c: created. Used by mphminm.
+
+        - arb/keys.c:keynew(): bug fix - "kp->vals" was not being properly
+          initialized. Thanks to Felix von Leitner <leitner@math.fu-berlin.de>
+          for finding this bug.

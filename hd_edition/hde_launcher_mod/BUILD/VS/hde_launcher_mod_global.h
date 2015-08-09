@@ -1,0 +1,12 @@
+#ifndef HDE_LAUNCHER_MOD_GLOBAL_H
+#define HDE_LAUNCHER_MOD_GLOBAL_H
+
+#include <QtCore/qglobal.h>
+
+#ifdef HDE_LAUNCHER_MOD_LIB
+# define HDE_LAUNCHER_MOD_EXPORT Q_DECL_EXPORT
+#else
+# define HDE_LAUNCHER_MOD_EXPORT Q_DECL_IMPORT
+#endif
+
+#endif // HDE_LAUNCHER_MOD_GLOBAL_H

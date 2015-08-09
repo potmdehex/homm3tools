@@ -1,0 +1,91 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="mod">
+      <UniqueIdentifier>{fc328913-b100-4e84-869a-e9547b1cb369}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="hde">
+      <UniqueIdentifier>{48b9fb89-dc28-49bb-9524-828460f6f50a}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\dllmain.c" />
+    <ClCompile Include="..\..\mod\combat_replay.c">
+      <Filter>mod</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\mod\common.c">
+      <Filter>mod</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\mod\cursor_always.c">
+      <Filter>mod</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\mod\fps_increase.c">
+      <Filter>mod</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\mod\hero_trade.c">
+      <Filter>mod</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\mod\revisit.c">
+      <Filter>mod</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\mod\rmg.c">
+      <Filter>mod</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\mod\sound_nodelay.c">
+      <Filter>mod</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\mod\stack_split.c">
+      <Filter>mod</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\mod\xxl_maps.c">
+      <Filter>mod</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\hde\structures\hero.h">
+      <Filter>hde</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\hde\structures\hero_container.h">
+      <Filter>hde</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\hde\structures\mgr.h">
+      <Filter>hde</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\hde\structures\swapmgr.h">
+      <Filter>hde</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\mod\combat_replay.h">
+      <Filter>mod</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\mod\common.h">
+      <Filter>mod</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\mod\cursor_always.h">
+      <Filter>mod</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\mod\fps_increase.h">
+      <Filter>mod</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\mod\hero_trade.h">
+      <Filter>mod</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\mod\revisit.h">
+      <Filter>mod</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\mod\rmg.h">
+      <Filter>mod</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\mod\sound_nodelay.h">
+      <Filter>mod</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\mod\stack_split.h">
+      <Filter>mod</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\mod\unused.h">
+      <Filter>mod</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\mod\xxl_maps.h">
+      <Filter>mod</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

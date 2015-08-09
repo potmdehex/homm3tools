@@ -1,0 +1,81 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="river">
+      <UniqueIdentifier>{cb8f062c-4398-4c59-a63e-982e58b9dd2c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="road">
+      <UniqueIdentifier>{fd8949e8-6b3f-441f-ba44-08512603d40c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="terrain">
+      <UniqueIdentifier>{855df90e-e960-437e-ada0-82c2430a1b65}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="win">
+      <UniqueIdentifier>{91eba535-10b8-4087-9a48-d5eb674d0a6c}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\win\advapi_rand.h">
+      <Filter>win</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\analyze_road_or_river.h" />
+    <ClInclude Include="..\..\crossplatform.h" />
+    <ClInclude Include="..\..\gen_tile_sprites.h" />
+    <ClInclude Include="..\..\h3m_tile.h" />
+    <ClInclude Include="..\..\terrain\analyze_terrain.h">
+      <Filter>terrain</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\terrain\border_dirt.h">
+      <Filter>terrain</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\terrain\border_generic.h">
+      <Filter>terrain</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\terrain\border_rock.h">
+      <Filter>terrain</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\terrain\border_special_sand.h">
+      <Filter>terrain</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\terrain\border_special_sanddirt.h">
+      <Filter>terrain</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\terrain\border_water.h">
+      <Filter>terrain</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\terrain\borderless.h">
+      <Filter>terrain</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\terrain\dispatch_terrain.h">
+      <Filter>terrain</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\road\dispatch_road.h">
+      <Filter>road</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\river\dispatch_river.h">
+      <Filter>river</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\win\dllmain.c">
+      <Filter>win</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\win\advapi_rand.c">
+      <Filter>win</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\analyze_road_or_river.c" />
+    <ClCompile Include="..\..\gen_tile_sprites.c" />
+    <ClCompile Include="..\..\terrain\analyze_terrain.c">
+      <Filter>terrain</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\terrain\dispatch_terrain.c">
+      <Filter>terrain</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\road\dispatch_road.c">
+      <Filter>road</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\river\dispatch_river.c">
+      <Filter>river</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

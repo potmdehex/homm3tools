@@ -1,0 +1,20 @@
+This is version 1.2 of mph, an order preserving minimal perfect hash
+function generator for string keys. It uses the algorithm presented
+in the paper:
+
+        A Family of Perfect Hashing Methods
+        B. S. Majewski, N. C. Wormald, G. Havas and Z. J. Czech
+        Computer Journal (to appear).
+
+The algorithm is probabilistic and runs fast in practice.
+
+See LICENSE (and arena.c) for terms and conditions under which you
+may use this software.
+
+See mph.doc for documentation.
+
+See subdirectory "example" for some sample outputs.
+
+Please send all bug reports and suggestions to
+
+    taj@intergate.bc.ca (Taj Khattra)

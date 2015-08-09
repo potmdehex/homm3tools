@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.21005.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "h3mtilespritegen_static", "h3mtilespritegen_static.vcxproj", "{5C234373-4C18-49E5-A682-00FD356F3BF2}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "h3mtilespritegen_dll", "h3mtilespritegen_dll.vcxproj", "{95580C78-030D-43B3-B306-C0340A6A18FD}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{5C234373-4C18-49E5-A682-00FD356F3BF2}.Debug|Win32.ActiveCfg = Debug|Win32
+		{5C234373-4C18-49E5-A682-00FD356F3BF2}.Debug|Win32.Build.0 = Debug|Win32
+		{5C234373-4C18-49E5-A682-00FD356F3BF2}.Release|Win32.ActiveCfg = Release|Win32
+		{5C234373-4C18-49E5-A682-00FD356F3BF2}.Release|Win32.Build.0 = Release|Win32
+		{95580C78-030D-43B3-B306-C0340A6A18FD}.Debug|Win32.ActiveCfg = Debug|Win32
+		{95580C78-030D-43B3-B306-C0340A6A18FD}.Debug|Win32.Build.0 = Debug|Win32
+		{95580C78-030D-43B3-B306-C0340A6A18FD}.Release|Win32.ActiveCfg = Release|Win32
+		{95580C78-030D-43B3-B306-C0340A6A18FD}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

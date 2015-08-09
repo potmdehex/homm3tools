@@ -1,0 +1,72 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="conv">
+      <UniqueIdentifier>{7ccd3aaa-65fb-4dc9-8f22-b9ad48ba458e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="algorithms">
+      <UniqueIdentifier>{a233c697-27aa-4ee3-a9ca-65b65a2f59e4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="map_objects">
+      <UniqueIdentifier>{3dfec234-e0b4-4d28-aca6-dba782acc4d4}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\map_objects\enum_alignment.h">
+      <Filter>map_objects</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\map_objects\enum_disposition.h">
+      <Filter>map_objects</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\map_objects\enum_owner.h">
+      <Filter>map_objects</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\map_objects\map_artifact.h">
+      <Filter>map_objects</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\map_objects\map_generic.h">
+      <Filter>map_objects</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\map_objects\map_hero.h">
+      <Filter>map_objects</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\map_objects\map_monster.h">
+      <Filter>map_objects</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\map_objects\map_object.h">
+      <Filter>map_objects</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\map_objects\map_resource.h">
+      <Filter>map_objects</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\map_objects\map_town.h">
+      <Filter>map_objects</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\conv\h3m_to_hlm.h">
+      <Filter>conv</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\conv\hlm_to_h3m.h">
+      <Filter>conv</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\algorithms\hbwang_impl.h">
+      <Filter>algorithms</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\c_interface.h" />
+    <ClInclude Include="..\..\crossplatform.h" />
+    <ClInclude Include="..\..\enum_flags.h" />
+    <ClInclude Include="..\..\hlm.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\conv\h3m_to_hlm.cpp">
+      <Filter>conv</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\conv\hlm_to_h3m.cpp">
+      <Filter>conv</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\algorithms\hbwang_impl.c">
+      <Filter>algorithms</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\c_interface.cpp" />
+    <ClCompile Include="..\..\hlm.cpp" />
+  </ItemGroup>
+</Project>

@@ -1,0 +1,49 @@
+#!/bin/sh
+
+verbose=0
+
+while test $# -gt 0; do
+	case "$1" in
+		-v)	verbose=1;;
+		--)	break;;
+		-*)	echo "mphminm: ignoring unknown option $1" >&2;;
+		*)	break;;
+	esac
+	shift
+done
+
+if test $# -ne 1; then
+	echo usage: mphminm [-v] keyfile >&2
+	exit 1
+fi
+
+(mphm -m1 </dev/null) >/dev/null 2>&1
+if test $? -ne 0; then
+	echo mphminm: can\'t find mphm >&2
+	exit 1
+fi
+
+# When in doubt, use brute force. - Ken Thompson
+
+i=1
+while :; do
+	if test $verbose -eq 1; then
+		echo -n "trying $i ... " >&2
+	fi
+	if err=`mphm -m$i <$1 2>&1`; then
+		if test $verbose -eq 1; then
+			echo "eureka !" >&2
+		fi
+		echo $i
+		exit 0
+	else
+		if test $verbose -eq 1; then
+			echo $err | awk '{
+				sprintf ("sed -n %dp '$1'", $2) | getline w1
+				sprintf ("sed -n %dp '$1'", $3) | getline w2
+				printf "|%s| |%s| conflict\n", w1, w2
+			}' >&2
+		fi
+	fi
+	i=`expr $i + 1`
+done

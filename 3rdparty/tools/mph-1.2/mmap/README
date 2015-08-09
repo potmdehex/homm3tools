@@ -1,0 +1,28 @@
+This directory contains a Keys interface that uses the mmap(2) system call
+to map the contents of the key file into mph's address space, instead of
+reading the entire file into memory. This reduces the memory consumption of
+mph. It may also reduce the execution time of mph, but probably not by much.
+
+Another minor benefit of this Keys interface is that it doesn't impose an
+upper limit on the maximum length of a key.
+
+This modified version is (probably) only useful if you have an enormous
+key file and you don't want mph to be a memory hog. However, note that
+the memory requirements for the Graph object might still dominate any
+savings you gain from using the new Keys interface (see section "MEMORY
+REQUIREMENTS" in mph.doc for more information on the memory requirements
+of mph).
+
+The version of mph.c in this directory has been slightly modified from the
+original to handle the new Keys interface.
+
+This version of mph takes as an additional argument the name of the key file -
+you can't pipe it to mph anymore, since mmap(2) doesn't seem to work on pipes.
+
+To build this version of mph, copy the files Makefile, graph.c, graph.h,
+misc.c, misc.h, arena.c and arena.h from the previous directory into the
+current directory and then type
+
+	% CCFLAGS=... LDFLAGS=... make mph
+
+for appropriate CCFLAGS and LDFLAGS.

@@ -1,0 +1,402 @@
+
+MPH is used as an abbreviation for "minimal perfect hashing".
+
+--
+
+INTRO
+
+        This program was written for fun, and out of curiosity.
+        Whether it has any practical significance is up to you to decide.
+        In any case, I hope you enjoy playing with it.
+
+--
+
+INSTALL
+
+        Type
+                % CCFLAGS=... LDFLAGS=... make
+
+        for appropriate CCFLAGS and LDFLAGS.
+
+        This will create the programs "mph" and "emitc", which you can put
+        anywhere on your shell's path.
+
+--
+
+NOTATION
+
+        m       = number of keys in key file
+        d       = 2 or 3                                (see mph section below)
+        c       = constant >1.0                         (see mph section below)
+        n       = c * m
+        minklen = minimum key length
+        maxklen = maximum key length
+        maxlen  = maxklen or constant                   (see mph section below)
+        minchar = minimum character code in key set
+        maxchar = maximum character code in key set
+        alphasz = 256 or maxchar-minchar+1              (see emitc section below)
+
+        int g[n]
+        int T0[maxlen][alphasz]
+        int T1[maxlen][alphasz]
+        int T2[maxlen][alphasz]                         (if d==3)
+
+--
+
+mph [-a] [-l] [-m maxlen] [-d (2|3)] [-c x.y] [-s|-S seed]
+
+        The program mph tries to generate an order preserving MPH function
+        for the set of keys, one per line, on stdin. Each key can be at
+        most 4095 characters long (see keys.h to increase this limit), and
+        the keys must be unique. If mph terminates, it emits a language
+        independent binary or text representation of the MPH function on
+        stdout. To generate a usable hash function, this output should be
+        fed to a language dependent filter, like emitc.
+
+        e.g.
+                % mph <foo | emitc >hash.c
+
+        The algorithm used by mph is probabilistic - it iterates until it
+        finds a MPH function. For each failed iteration, it prints a
+        (cryptic) reason on stderr. There is no no guarantee that mph will
+        terminate. In practice this is unlikely, unless the constants
+        specified with options -c or -m are too small (see below).
+
+        Option -l ("loop") can be used to decrease the expected running time
+        of mph (by reducing the number of failed iterations) at the expense
+        of a slightly more complicated generated hash function. This option
+        is probably only useful if you are generating MPH functions "on the
+        fly" and you wish to minimize the running time of mph as much as
+        possible.
+
+        Option -d ("dimension") can be used to specify the "edge dimension".
+        The default dimension is d=3. The only other supported dimension
+        is d=2. Dimension d=3 generates a smaller g[] table for a large
+        key set, at the expense of an extra T[] table. This is because
+        we can use a smaller constant c (default 1.23) for d=3, while for
+        d=2 we usually require a constant c >= 2.0 (default 2.09). However,
+        for small key sets, dimension d=2 is useful since we can get away
+        with a much smaller constant c, and we also save space by having
+        only 2 T[] tables, instead of 3.
+
+        Option -c ("constant") can be used to specify a different constant
+        c, instead of the default constants c=1.23 for d=3, and c=2.09 for
+        d=2. The default values are those suggested in the cited journal
+        paper.
+
+        For d=3, the default constant c=1.23 is "almost optimal" for large
+        key sets - i.e. mph can usually find a MPH function in 1 iteration
+        (assuming you also use option -l). For small key sets it is
+        preferable to use dimension d=2, since we can usually get away with
+        a much smaller constant c.
+
+        Note that for pathological small key sets (m<5), the default constant
+        c=1.23 for d=3 may result in mph iterating forever. Use d=2, or
+        increase the constant c.
+
+        Informally, a larger value of c makes it easier (and faster) to find
+        a MPH hash function, but results in a larger lookup table g[]. A
+        smaller value of c makes it harder to find a MPH function, but
+        results in a smaller lookup table g[].
+
+        To better understand the effects that options -l, -d and -c have on
+        mph's ability (and speed) to find a MPH function, please see the
+        cited journal paper. It is difficult to give a better explanation
+        informally. There is a summary of the options below, in case you're
+        confused by the explanation above.
+
+        Option -m ("maxlen") can be used to specify a different maximum key
+        length "maxlen", instead of the default value which is equal to the
+        actual maximum key length "maxklen". This option is useful if you
+        are trying to generate a MPH function for a small key set, and
+        you also wish to minimize the data size of the generated MPH hash
+        function by reducing the size of the T[] tables. For convenience, the
+        program mphminm (see below) can be used to find the minimum constant
+        that can be used with option -m. For large key sets, the size of the
+        g[] table totally dominates the combined sizes of the T[] tables, so
+        option -m is not useful for large key sets.
+
+        mph uses random numbers in its computation (srandom() and random()).
+        Option -s seeds the random number generator with the current time
+        (using time(0)), while option -S seeds it with the given seed (this
+        may be useful for reproducibility).
+
+        e.g.
+                % mph -S 1729 <foo >foo.1729
+
+        By default, mph emits a binary representation of the MPH function
+        to stdout. Option -a ("ascii") can be used to emit a text
+        representation instead.
+
+--
+
+emitc [-n] [-s] [-l]
+
+        The program emitc emits a C language encoding of a MPH function,
+        given the output of program mph on stdin.
+
+        The emitted hash function has the prototype:
+
+        unsigned hash(const char *key)                 without -l
+        unsigned hash(const char *key, int len)        with -l
+
+        The generated hash() function makes use of three or four lookup
+        tables: g[], T0[], T1[], and, if d=3, T2[]. The storage requirements
+        (in bytes) for the tables are:
+
+        g[]                     : n * sizeof(int)
+        T0[], T1[], T2[]        : maxlen * alphasz * sizeof(int)
+
+        where
+
+        alphasz = maxchar-minchar+1     if option -n is not used
+                  256                   if option -n is used
+
+        For small key sets (small m), the storage requirements for the
+        T[] tables usually dominate, unless you use option -m of mph to
+        reduce maxlen.
+
+        For large key sets (large m), the storage requirements for table
+        g[] dominate.
+
+        emitc emits T[] tables of size (maxlen * alphasz). By default,
+        alphasz = maxchar-minchar+1, which is usually < 256. Option -n
+        ("no compression") sets alphasz = 256 instead. This may be useful
+        with the "safe hash function" option -s (see below).
+
+        Option -s ("safe") emits a "safe" hash function. This is required
+        if it cannot be be guaranteed that ALL the keys passed to hash()
+        will only be from the key set used to generate the MPH function.
+        (Failure to specify option -s in such cases could result in memory
+        violation errors by hash()).
+
+        With option -s, the generated hash() function will:
+
+        (1) return -1 if the length of the given key is <minklen
+
+        (2) return -1 if the length of the given key is >maxklen
+
+        (3) return -1 if any of the characters in the given key is
+            outside the range [minchar, maxchar], and option -n was NOT
+            used
+
+        Note that even with option -s, hash() may still return a (valid)
+        hash value >=0 && <n for a key that was not in the key set used
+        to generate the MPH function. It is up to the caller to determine
+        this (e.g. by doing a string comparison).
+
+        However, if it CAN be guaranteed that all the keys passed to the
+        generated hash() function are from the key set used to generate
+        the hash() function, then there is no need to use option -s or do
+        string comparisons.
+
+        Option -l ("length") emits a hash() function that takes as an
+        additional argument the length of the key that is being hashed.
+        This may be useful with option -s, since it might allow hash() to
+        detect keys not from the key set more quickly.
+
+--
+
+mphminm [-v] keyfile
+
+        By default, mph generates T[] tables of size (maxklen * alphasz).
+        Therefore, when computing the hash value for a key, we take into
+        account both the character position and character value of each
+        character of the key. Specifying a constant maxlen < maxklen,
+        reduces the size of each T[] table to (maxlen * alphasz), and
+        creates equivalence classes for the character positions
+        {1, maxlen, 2*maxlen, ...}, {1+1, maxlen+1, 2*maxlen+1, ...} etc.
+        This means that for each character position belonging to the same
+        equivalence class, we only take into account the character value at
+        that position.
+
+        e.g.
+                (1) maxlen=1 defines a single equivalence class, which means
+                    that we don't take character position into account at
+                    all when computing the hash value for a key
+
+                (2) maxlen=2 defines two equivalence classes for character
+                    positions {1, 3, 5, 7, ...} and {2, 4, 6, 8, ...}.
+
+        Option -m ("maxlen") of program mph can be used to specify a different
+        maximum key length "maxlen", instead of the default value which is
+        equal to the actual maximum key length "maxklen". However, when using
+        option -m by hand, there is a possibility that you may specify a value
+        of maxlen for a particular key set that will provably cause mph to
+        iterate forever.
+
+        e.g.
+                (1) Specifying maxlen=1 for a key set that contains
+                    anagrams will cause mph to iterate forever. This is
+                    because two keys that are anagrams will hash to the
+                    same value with maxlen=1 since we don't take character
+                    position into account when computing the hash value.
+
+                    To see this, try
+
+                        % (echo ab; echo ba) | mph -d2 >/dev/null
+
+                    and then try
+
+                        % (echo ab; echo ba) | mph -d2 -m1 >/dev/null
+
+                (2) Similarly, for maxlen=2 try
+
+                        % (echo abba; echo aabb) | mph -d2 >/dev/null
+
+                    and then try
+
+                        % (echo abba; echo aabb) | mph -d2 -m2 >/dev/null
+
+        Rather than figuring out the minimum constant that can be passed to
+        option -m of mph manually, the program mphminm can instead be used
+        to find it automatically. After finding the minimum constant, it
+        emits it to stdout.
+
+        e.g.
+                % mph -m `mphminm foobar` <foobar | emitc >foobar.c
+
+        Option -v ("verbose") prints a running commentary of failed attempts
+        on stderr.
+
+--
+
+SUMMARY OF OPTIONS
+
+        Since the explanations above may not be very clear, here is a summary
+        of options for both mph and emitc.
+
+        (1) For both large and small key sets:
+                
+                - If you wish to minimize the expected running time of mph
+
+                        - use option -l to reduce the expected number of
+                          iterations required by mph
+
+                        - do not use option -c to reduce constant c
+
+                        - do not use option -m to reduce maxlen
+
+                - If you can guarantee that ALL keys passed to the generated
+                  hash() function will be from the input key set, do not
+                  use option -s with emitc. This results in a simpler hash()
+                  function.
+
+                - If you cannot guarantee that all keys passed to the
+                  generated hash() function will be from the input key
+                  set
+                        - You MUST use option -s of emitc.
+
+                        - Even if hash(key) returns a valid index i, where
+                          i>= 0 && i<n, you will have to do a string
+                          comparison to determine if "key" is equal to the
+                          i'th key in the input key set that was used to
+                          generate the hash() function.
+
+                        - If you know the length of each key passed to
+                          hash(), use option -l of emitc. This might allow
+                          hash() to more quickly detect an invalid key
+                          passed to it based on the key's length.
+
+                        - You may or may not choose to use option -n of
+                          emitc. Using option -n may result in larger T[]
+                          tables, but it will save hash() from having to
+                          check that each character is in the range
+                          [minchar, maxchar].
+
+        (2) For small key sets:
+
+                - Use option -d2 of mph to use edge dimension d=2,
+                  instead of the default dimension d=3. This will allow
+                  you to reduce constant c, and do without table T2[].
+
+                - Use option -c of mph to experiment with different values
+                  of constant c, instead of the default value c=2.09 for d=2.
+
+                - Use option -m of mph to experiment with different values
+                  of maxlen. This is useful if you wish to further reduce
+                  the data size of the T[] tables.
+
+                - If you still want to further reduce the data size of the
+                  g[] and T[] tables, you could change their member storage
+                  type from "int" to "char" or "short" depending on the
+                  number of keys.
+
+        (3) For large key sets:
+
+                - Use the default dimension d=3 with mph, instead of
+                  dimension d=2. This is because with d=3, we can use
+                  a smaller constant c=1.23, instead of a constant c
+                  (usually) >= 2.0 for d=2. This results in a smaller
+                  g[] table for d=3.
+
+                  However, there is one possible disadvantage to using d=3
+                  over d=2 for large key sets - each call to hash() results
+                  in 3 accesses to the g[] table for d=3, compared to 2 for
+                  for d=2. Whether this has any noticeable effect depends on
+                  your application, memory size, cache size etc.
+ 
+                - Use the default constant c=1.23 for d=3. This is "almost
+                  optimal" for large key sets. Decreasing it below the
+                  default value c=1.23 usually increases the number of
+                  iterations. Increasing it above c=1.23 is not useful since
+                  for large key sets, mph usually only takes a single
+                  iteration anyway.
+
+                - The size of table g[] dominates the sizes of the T[]
+                  tables, so using option -m of mph is not worth it.
+
+--
+
+MEMORY REQUIREMENTS
+
+        The memory requirements of the generated hash function were indicated
+        above. This section details the memory requirements of mph to generate
+        the hash function. This may be useful if you intend to use mph with
+        enormous key sets.
+
+        Graph:first:    n  * sizeof(int)
+        Graph:edges     3m * sizeof(int)
+        Graph:next      3m * sizeof(int)
+        Graph:stack     m  * sizeof(int)
+        Keys:keys       m  * sizeof(char *)    (approx)
+        Keys:arena      size of key file       (approx)
+
+        Thus, the total memory requirements are approximately
+
+            (7m+n) * sizeof(int) + m * sizeof(char *) + size of key file
+
+        The memory requirements of the alternative implementation in directory
+        "arb" are approximately
+
+            (7m+2n) * sizeof(int) + m * sizeof(long) + m * sizeof(char *)
+            + size of key file
+
+        The memory requirements of the alternative implementation in directory
+        "mmap" are approximately
+
+            (7m+n) * sizeof(int)
+
+--
+
+REFERENCES
+
+        The primary reference is [1]. The most accessible is [2].
+        Most of these are/were available on the WWW.
+
+        [1] A Family of Perfect Hashing Methods
+            B. S. Majewski, N. C. Wormald, G. Havas and Z. J. Czech
+            Computer Journal (to appear).
+
+        [2] An optimal algorithm for generating minimal perfect hash functions
+            Z. J. Czech, G. Havas and B. S. Majewski
+            Information Processing Letters, 43(5):257-264, October 1992.
+
+        [3] Graphs, Hypergraphs and Hashing
+            G. Havas, B. S. Majewski, N. C. Wormald and Z. J. Czech
+            Graph Theoretic Concepts in Computer Science, Lecture Notes in
+            Computer Science, 790, 153-165.
+
+        [4] On Randomization in Sequential and Distributed Algorithms
+            R. Gupta, S. A. Smolka and S. Bhaskar
+            ACM Computing Surveys 26 (1994), 7-86.
