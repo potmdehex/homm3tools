@@ -18,6 +18,7 @@ homm3tools contributors
 * Avroveks
 * Chirno
 * damoaraimbo
+* Dahan
 * Daninja
 * DataPack
 * Evilnapkin
