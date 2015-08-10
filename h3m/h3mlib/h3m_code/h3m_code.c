@@ -4,8 +4,6 @@
 // of at eof was used, but the game starts crashing when description exceeds
 // somewhere close to 0xFFFF bytes.
 
-// TODO fix the currently crashy exit 0 so that game properly survives
-
 #include "../h3mlib.h"
 #include "../h3mlib_ctx.h"
 
