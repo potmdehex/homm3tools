@@ -58,3 +58,6 @@ Temporary Items
 *.pyc
 *.h3m
 *.lib
+*.exe
+*.ilk
+*.res
