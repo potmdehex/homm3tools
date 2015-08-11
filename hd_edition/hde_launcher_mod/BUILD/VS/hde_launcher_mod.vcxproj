@@ -62,6 +62,7 @@
   <ItemGroup>
     <ClInclude Include="..\..\hook.h" />
     <ClInclude Include="..\..\stylesheets.h" />
+    <ClInclude Include="..\..\version.h" />
     <CustomBuild Include="..\..\qfakejpegplugin.h">
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Moc%27ing qfakejpegplugin.h...</Message>

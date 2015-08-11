@@ -1,8 +1,8 @@
 #include "guimod.h"
 #include "clickablelabel.h"
-
 #include "qtu.cpp" // contains template function(s) so can't have normal header
 #include "stylesheets.h"
+#include "version.h"
 
 #include <QApplication>
 #include <QCheckBox>
@@ -113,7 +113,7 @@ void GuiMod::extendGui()
     fullscreenLbl->hide();
     fullscreenBox->hide();
 
-    versionLbl->setText(versionLbl->text() + QString(", HDE Mod v1.0"));
+    versionLbl->setText(versionLbl->text() + QString(", HDE Mod " VERSION));
     versionLbl->setParent(centralWidget);
     versionLbl->setStyleSheet(VERSIONLABEL_NEW_STYLESHEET);
     versionLbl->setGeometry(versionLbl->x() - 36, versionLbl->y(), 150, 21);
