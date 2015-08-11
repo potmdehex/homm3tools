@@ -23,6 +23,7 @@ Mix_FadeInMusic_t orig_Mix_FadeInMusic = (Mix_FadeInMusic_t)NULL;
 Mix_LoadMUS_t orig_Mix_LoadMUS = (Mix_LoadMUS_t)NULL;
 
 #define MUSIC_CHANNEL 2
+#define NEW_CHANNEL_COUNT 100
 
 static void *f_music_combat;
 
@@ -48,7 +49,7 @@ static DWORD WINAPI _MixPlayChannelTimed_thread(LPVOID lpParameter)
     struct Mix_PlayChannelTimed_ctx *ctx = (struct Mix_PlayChannelTimed_ctx *)lpParameter;
     int channel;
 
-    for (channel = 16; channel < 100; ++channel)
+    for (channel = 16; channel < NEW_CHANNEL_COUNT; ++channel)
     {
         if (0 == orig_Mix_Playing(channel))
         {
@@ -148,16 +149,21 @@ void *hooked_Mix_LoadMUS(const char *file)
     return orig_Mix_LoadMUS(file);
 }
 
+static int hooked_Mix_AllocateChannels(int numchans)
+{
+    // Allocate extra channels so that the game does not alter asynchronously 
+    // playing sounds (they are hooked to play on channels that the game does
+    // not know about)
+    orig_Mix_AllocateChannels(NEW_CHANNEL_COUNT);
+    return numchans;
+}
+
 void sound_nodelay_init(void)
 {
+    hook_trampoline_dis_x86_by_name("SDL2_mixer.dll", "Mix_AllocateChannels", hooked_Mix_AllocateChannels, (void**)&orig_Mix_AllocateChannels);
     hook_trampoline_dis_x86_by_name("SDL2_mixer.dll", "Mix_PlayChannelTimed", &hooked_Mix_PlayChannelTimed, (void**)&orig_Mix_PlayChannelTimed);
     hook_trampoline_dis_x86_by_name("SDL2_mixer.dll", "Mix_Playing", &hooked_Mix_Playing, (void**)&orig_Mix_Playing);
     hook_trampoline_dis_x86_by_name("SDL2_mixer.dll", "Mix_HaltChannel", &hooked_Mix_HaltChannel, (void**)&orig_Mix_HaltChannel);
     hook_trampoline_dis_x86_by_name("SDL2_mixer.dll", "Mix_FadeInMusic", &hooked_Mix_FadeInMusic, (void**)&orig_Mix_FadeInMusic);
     hook_trampoline_dis_x86_by_name("SDL2_mixer.dll", "Mix_LoadMUS", &hooked_Mix_LoadMUS, (void**)&orig_Mix_LoadMUS);
-
-    orig_Mix_AllocateChannels = (void *)GetProcAddress(GetModuleHandleA("SDL2_mixer.dll"), "Mix_AllocateChannels");
-
-    // Need them extra channels
-    orig_Mix_AllocateChannels(100);
 }
