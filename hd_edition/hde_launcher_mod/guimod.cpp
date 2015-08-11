@@ -57,14 +57,14 @@ void GuiMod::createCheckOptions(QWidget *parent, const QFont &font, const QPalet
         "XXL Maps Patch (removes minimap rendering)|xxl",
         "RMG|rmg"};
     bool defaults[] = {
-        true, // fullscreen, unused
-        true,
-        true,
-        true,
-        true,
-        true,
-        false,
-        false
+        true,  // fullscreen, unused
+        true,  // re-visit
+        true,  // hotkeys
+        true,  // fps
+        true,  // cursor
+        false, // sound
+        false, // xxl
+        false  // rmg
     };
 
     bool checked = 0;
@@ -218,6 +218,7 @@ void GuiMod::creditsBtnClicked()
         "AL-KASAB, "
         "Avroveks, "
         "Chirno, "
+        "Dahan, "
         "damoaraimbo, "
         "Daninja, "
         "DataPack, "
@@ -308,6 +309,10 @@ void GuiMod::optionLabelClicked()
 
 void GuiMod::hotkeysLinkActivated(const QString &link)
 {
+    // Hack to re-toggle the checkbox that was toggled when Question mark was clicked
+    QCheckBox *check = qobject_cast<QCheckBox *>(qtuFindChildWidget(m_main, "hotkeys|check"));
+    check->toggle();
+
     QMessageBox *msg = new QMessageBox();
     msg->setIcon(QMessageBox::Question);
     msg->setText("Quick Combat Battle Result Screen:\n"
