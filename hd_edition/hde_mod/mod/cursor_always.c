@@ -22,5 +22,5 @@ HCURSOR WINAPI hooked_SetCursor(HCURSOR hCursor)
 
 void cursor_always_init(void)
 {
-    hook_trampoline_dis_x86_by_name("user32.dll", "SetCursor", &hooked_SetCursor, (void**)&orig_SetCursor);
+    hook_trampoline_dis_x86_by_name("user32.dll", "SetCursor", hooked_SetCursor, (void**)&orig_SetCursor);
 }

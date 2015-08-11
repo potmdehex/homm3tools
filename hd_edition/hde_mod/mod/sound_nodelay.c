@@ -161,9 +161,9 @@ static int hooked_Mix_AllocateChannels(int numchans)
 void sound_nodelay_init(void)
 {
     hook_trampoline_dis_x86_by_name("SDL2_mixer.dll", "Mix_AllocateChannels", hooked_Mix_AllocateChannels, (void**)&orig_Mix_AllocateChannels);
-    hook_trampoline_dis_x86_by_name("SDL2_mixer.dll", "Mix_PlayChannelTimed", &hooked_Mix_PlayChannelTimed, (void**)&orig_Mix_PlayChannelTimed);
-    hook_trampoline_dis_x86_by_name("SDL2_mixer.dll", "Mix_Playing", &hooked_Mix_Playing, (void**)&orig_Mix_Playing);
-    hook_trampoline_dis_x86_by_name("SDL2_mixer.dll", "Mix_HaltChannel", &hooked_Mix_HaltChannel, (void**)&orig_Mix_HaltChannel);
-    hook_trampoline_dis_x86_by_name("SDL2_mixer.dll", "Mix_FadeInMusic", &hooked_Mix_FadeInMusic, (void**)&orig_Mix_FadeInMusic);
-    hook_trampoline_dis_x86_by_name("SDL2_mixer.dll", "Mix_LoadMUS", &hooked_Mix_LoadMUS, (void**)&orig_Mix_LoadMUS);
+    hook_trampoline_dis_x86_by_name("SDL2_mixer.dll", "Mix_PlayChannelTimed", hooked_Mix_PlayChannelTimed, (void**)&orig_Mix_PlayChannelTimed);
+    hook_trampoline_dis_x86_by_name("SDL2_mixer.dll", "Mix_Playing", hooked_Mix_Playing, (void**)&orig_Mix_Playing);
+    hook_trampoline_dis_x86_by_name("SDL2_mixer.dll", "Mix_HaltChannel", hooked_Mix_HaltChannel, (void**)&orig_Mix_HaltChannel);
+    hook_trampoline_dis_x86_by_name("SDL2_mixer.dll", "Mix_FadeInMusic", hooked_Mix_FadeInMusic, (void**)&orig_Mix_FadeInMusic);
+    hook_trampoline_dis_x86_by_name("SDL2_mixer.dll", "Mix_LoadMUS", hooked_Mix_LoadMUS, (void**)&orig_Mix_LoadMUS);
 }
