@@ -7,7 +7,7 @@ The code contained in this repository varies greatly in quality and should be se
 Pre-built binaries are available [here](https://github.com/potmdehex/homm3tools/releases).
 
 ### MSVC simple build instructions
- * Extract [gzip_utils.zip](https://github.com/potmdehex/homm3tools/releases/download/v1.0/gzip_utils.zip) into homm3tools directory
+ * Extract [gzip_utils.zip](https://github.com/potmdehex/homm3tools/releases/download/v1.11/gzip_utils.zip) into homm3tools directory
  * Open homm3tools\BUILD\VS\homm3tools.sln
  * Build
 
