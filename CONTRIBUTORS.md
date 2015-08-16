@@ -37,6 +37,7 @@ homm3tools contributors
 * Solipso
 * Urz 
 * Vampire_Rush
+* wikidfps
 
 ### References
 * h3m format: h3m_description.txt - Oleg Antoshkiv and Stanislav Ershov
