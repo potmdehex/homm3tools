@@ -60,8 +60,7 @@ int h3mlib_io_read(struct H3MLIB_CTX **ctx,
     uint32_t raw_size = 0;
     int ret = 0;
 
-    if (0 != (ret =
-            gu_decompress_file_to_mem(filename, (void *)&raw,
+    if (0 != (ret = gu_decompress_file_to_mem(filename, (void *)&raw,
                 (long *)&raw_size))) {
         return ret;
     }
