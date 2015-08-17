@@ -129,37 +129,34 @@ int gu_decompress_file_to_mem(const char *filename, void **dst, long *dst_size)
 {
     FILE *f = NULL;
     int ret = 0;
-    gzFile	gzf = NULL;
+    gzFile gzf = NULL;
+    long size = 0; 
+    void *buf = NULL;
 
-    if (NULL == (gzf = gzopen(filename, "rb"))) {
+    // Open and read file contents
+
+    if (NULL == (f = fopen(filename, "rb"))) {
         return 1;
     }
 
-    *dst_size = _gzsize(filename);
-    if (0 != *dst_size) {
-        *dst = malloc(*dst_size);
+    fseek(f, 0, SEEK_END);
+    size = ftell(f);
+    rewind(f);
+
+    buf = malloc(size);
+    if (NULL == buf) {
+        return 1;
     }
+    fread(buf, 1, size, f);
+    fclose(f);
 
-    if (0 == *dst_size || 0 != gzread(gzf, *dst, *dst_size)) {
-        /* Error check failed, simply read file contents without
-         * decompressing */
-        if (NULL == (f = fopen(filename, "rb"))) {
-            gzclose(gzf);
-            return 1;
-        }
+    // Attempt decompress of file, returning a copy of buf in dst if
+    // decompression fails (ofc a bit unoptimized to not just use same pointer)
+    ret = gu_decompress_mem(buf, size, dst, dst_size);
 
-        fseek(f, 0, SEEK_END);
-        *dst_size = ftell(f);
-        rewind(f);
+    free(buf);
 
-        *dst = malloc(*dst_size);
-        fread(*dst, 1, *dst_size, f);
-        fclose(f);
-    }
-
-    gzclose(gzf);
-
-    return 0;
+    return ret;
 }
 
 #ifdef _WIN32
