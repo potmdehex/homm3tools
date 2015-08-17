@@ -32,7 +32,7 @@ const char *town_defs[] = {
 struct POSTFIX_CTX
 {
     uint32_t random_town_oa;
-    uint32_t preset_town_oa[16];
+    uint32_t preset_town_oa[TOWN_OA_COUNT];
 };
 
 static int _enum_od_cb(uint8_t *x, uint8_t *y, uint8_t *z, uint32_t *oa_index, uint8_t *data, size_t data_size, void *cb_data)
@@ -60,7 +60,7 @@ static int _enum_od_cb(uint8_t *x, uint8_t *y, uint8_t *z, uint32_t *oa_index, u
 static void _postfix_init(h3mlib_ctx_t h3m, struct POSTFIX_CTX *ps_ctx)
 {
     memset(ps_ctx, 0xFF, sizeof((*ps_ctx)));
-    for (unsigned int i = 0; i < sizeof(town_defs) / sizeof(town_defs[0]); ++i)
+    for (unsigned int i = 0; i < TOWN_OA_COUNT; ++i)
     {
         h3m_get_oa_index(h3m, town_defs[i], &ps_ctx->preset_town_oa[i]);
 
@@ -70,7 +70,7 @@ static void _postfix_init(h3mlib_ctx_t h3m, struct POSTFIX_CTX *ps_ctx)
     }
 }
 
-void rmg_postfix(const char *filename)
+int rmg_postfix(const char *filename)
 {
     h3mlib_ctx_t h3m = NULL;
     struct POSTFIX_CTX ps_ctx = { 0 };
@@ -81,27 +81,29 @@ void rmg_postfix(const char *filename)
 
     if (0 == g_selectable_towns)
     {
-        return;
+        return 0;
     }
 
     OutputDebugStringA("@rmg_postfix fix map");
 
     h3m_read(&h3m, filename);
+
+    if (NULL == h3m)
+    {
+        OutputDebugStringA("failed to open map");
+        return 1;
+    }
+
     _postfix_init(h3m, &ps_ctx);
 
     h3m_add_oa_by_def(h3m, "avcranx0.def", &ps_ctx.random_town_oa);
-
     h3m_enum_od(h3m, _enum_od_cb, (void *)&ps_ctx);
-
-
-    OutputDebugStringA("selectable towns");
     h3m_towns_selectable(h3m);
-
-    //h3m_object_add(h3m, "Archer", 1,1, 0, NULL);
 
     h3m_desc_append(h3m, " [h3minternals.net]");
 
     h3m_write(h3m, filename);
-
     h3m_exit(&h3m);
+
+    return 0;
 }
