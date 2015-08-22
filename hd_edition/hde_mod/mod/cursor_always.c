@@ -1,4 +1,4 @@
-// Created by John Åkerblom 2015-05-10
+// Created by John Ã…kerblom 2015-05-10
 
 #include "common.h"
 #include "cursor_always.h"
