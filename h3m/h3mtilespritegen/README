@@ -1,6 +1,3 @@
 C89 library for generating tiles in the h3m 7 byte per tile format, specfically
 generating a correct sprite for the sprite bytes, based on the provided type of
 terrain/road/river for each tile and their surroundings.
-
-TODO: Port the road generation from Python into this lib and add river generation
-(rivers are very similar to roads)
