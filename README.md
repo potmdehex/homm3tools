@@ -13,7 +13,7 @@ Pre-built binaries are available [here](https://github.com/potmdehex/homm3tools/
 
 ### Contributions
 Documentation and other information is currently lacking, but contributions
-are welcome.
+are welcome. There are some issues listed on the [Issues page](https://github.com/potmdehex/homm3tools/issues)
 
 ##### [List of homm3tools contributors](https://github.com/potmdehex/homm3tools/blob/master/CONTRIBUTORS.md)
 
