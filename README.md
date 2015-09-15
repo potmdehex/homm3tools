@@ -17,9 +17,13 @@ Pre-built binaries are available [here](https://github.com/potmdehex/homm3tools/
  
 ### Contributions
 Documentation and other information is currently lacking, but contributions
-are welcome. Some issues are listed on the [Issues page](https://github.com/potmdehex/homm3tools/issues).
+are welcome. Some issues are listed on the [Issues page](https://github.com/potmdehex/homm3tools/issues). 
+Do not hesitate to contact me if you have questions, suggestions or feature requests.
 
 ##### [List of homm3tools contributors](https://github.com/potmdehex/homm3tools/blob/master/CONTRIBUTORS.md)
+
+### Donations
+If you like homm3tools and wish to donate towards its development, you can do so with [Paypal](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=FH4RSQKJTMWJS). Any donations are greatly appreciated.
 
 ### Disclaimer
 This software is not in any way official and is not endorsed by anyone.
