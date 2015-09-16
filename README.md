@@ -11,6 +11,10 @@ Pre-built binaries are available [here](https://github.com/potmdehex/homm3tools/
  * Open homm3tools\BUILD\VS\homm3tools.sln
  * Build
 
+### GCC simple build instructions (tested on Linux and cygwin)
+ * cd homm3tools/BUILD/gcc
+ * make
+ 
 ### Contributions
 Documentation and other information is currently lacking, but contributions
 are welcome. Some issues are listed on the [Issues page](https://github.com/potmdehex/homm3tools/issues).
