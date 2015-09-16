@@ -13,7 +13,8 @@
   <PropertyGroup Label="Globals">
     <ProjectGuid>{3B80D78C-999A-4034-B87D-F02E11430C34}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>h3mlib_helloworld</RootNamespace>
+    <RootNamespace>h3mhelloworld</RootNamespace>
+    <ProjectName>h3mhelloworld</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -86,7 +87,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\h3mlib_helloworld.c" />
+    <ClCompile Include="..\..\h3mhelloworld.c" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

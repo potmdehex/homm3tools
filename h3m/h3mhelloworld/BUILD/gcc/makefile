@@ -15,9 +15,9 @@ LFLAGS = -L $(LIBDIR)
 PLATFORM := $(shell uname)
 
 ifeq ($(OS),Windows_NT)
-	EXE = h3mlib_helloworld.exe
+	EXE = h3mhelloworld.exe
 else
-	EXE = h3mlib_helloworld
+	EXE = h3mhelloworld
 endif
 
 all: $(EXE)
