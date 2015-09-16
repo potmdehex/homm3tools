@@ -20,7 +20,7 @@ static int f_id_ok;
 static char *f_templates_path;
 static WCHAR *f_last_template;
 
-static BOOL _get_reg_value_a(const char *value_name, const char **pointer)
+static BOOL _get_reg_value_a(const char *value_name, char **pointer)
 {
     char value[MAX_PATH] = { 0 };
     DWORD value_length = sizeof(value)-1;
@@ -38,7 +38,7 @@ static BOOL _get_reg_value_a(const char *value_name, const char **pointer)
     return TRUE;
 }
 
-static BOOL _get_reg_value_w(const WCHAR *value_name, const WCHAR **pointer)
+static BOOL _get_reg_value_w(const WCHAR *value_name, WCHAR **pointer)
 {
     WCHAR value[MAX_PATH] = { 0 };
     DWORD value_length = sizeof(value)-1;
@@ -109,6 +109,7 @@ LRESULT CALLBACK new_rmg_dialog_WndProc(HWND hwnd, UINT Message, WPARAM wParam, 
                     }
                 }
                 free(f_templates_path);
+				f_templates_path = NULL;
             }
         }
         break;
@@ -203,9 +204,7 @@ static BOOL _CenterWindow(HWND hwnd, HWND hwnd_parent)
     return TRUE;
 }
 
-// Apart from containing very messy code, this code does not account for 
-// windows DPI settings, which means not all of the dialog can be seen with
-// non-standard DPI settings. TODO fix this
+// TODO clean up this ultra messy copy paste/trash code.
 VOID FixRMGDialog(HWND hwnd)
 {
     const wchar_t *str_roe = NULL;
@@ -215,7 +214,21 @@ VOID FixRMGDialog(HWND hwnd)
     //const wchar_t *str_random = NULL;
     //const wchar_t *str_random2 = NULL;
 
-    OutputDebugStringW(L"");
+	HWND hwnd_selectable_towns = NULL;
+	RECT rc;
+	POINT pt;
+	int main_w;
+	int main_h;
+	int roe_x;
+	int roe_y;
+	int gen_x;
+	int gen_y;
+	int ok_x;
+	int ok_y;
+	int mapversion_x;
+	int mapversion_y;
+	int element_count = 0;
+	//    HWND hwnd_random = FindWindowExW(hwnd, NULL, NULL, str_random);
 
 #if 1
     _GetLocalizedStrings(hwnd,
@@ -228,90 +241,110 @@ VOID FixRMGDialog(HWND hwnd)
         );
 #endif
 
-    HWND hwnd_roe = FindWindowExW(hwnd, NULL, NULL, str_roe);
-    HWND hwnd_sod = FindWindowExW(hwnd, NULL, NULL, str_sod);
-    HWND hwnd_generate = FindWindowExW(hwnd, NULL, NULL, str_generate);
-//    HWND hwnd_random = FindWindowExW(hwnd, NULL, NULL, str_random);
-    RECT rc;
-    POINT pt;
-    int ok_x = 0;
-    int ok_y = 0;
-    int roe_x = 0;
-    int roe_y = 0;
-    BOOL ok_found = FALSE;
+	HWND hwnd_roe = FindWindowExW(hwnd, NULL, NULL, str_roe);
+	HWND hwnd_ab = FindWindowExW(hwnd, NULL, NULL, str_ab);
+	HWND hwnd_sod = FindWindowExW(hwnd, NULL, NULL, str_sod);
+	HWND hwnd_generate = FindWindowExW(hwnd, NULL, NULL, str_generate);
 
-    GetWindowRect(hwnd_roe, &rc);
-    pt.x = rc.left;
-    pt.y = rc.top;
-    ScreenToClient(hwnd, &pt);
-    roe_x = pt.x;
-    roe_y = pt.y;
-    //char wow[256] = { 0 };
-    
-    //_snprintf(wow, sizeof(wow)-1, "%08x, %08X, %08X", str_roe, str_ab, str_sod);
-    //OutputDebugStringA(wow);
+	// Get size of main dialog
+	GetWindowRect(hwnd, &rc);
+	pt.x = rc.right - rc.left;
+	pt.y = rc.bottom - rc.top;
+	main_w = pt.x;
+	main_h = pt.y;
+
+	// Get pos of RoE checkbox
+	GetWindowRect(hwnd_roe, &rc);
+	pt.x = rc.left;
+	pt.y = rc.top;
+	ScreenToClient(hwnd, &pt);
+	roe_x = pt.x;
+	roe_y = pt.y;
+
+	// Get pos of Generate checkbox
+	GetWindowRect(hwnd_generate, &rc);
+	pt.x = rc.left;
+	pt.y = rc.top;
+	ScreenToClient(hwnd, &pt);
+	gen_x = pt.x;
+	gen_y = pt.y;
+
+    // Set RoE format and Enable RMG
     CheckRadioButton(hwnd, GetWindowLong(hwnd_roe, GWL_ID), GetWindowLong(hwnd_sod, GWL_ID), GetWindowLong(hwnd_roe, GWL_ID));
-    ShowWindow(hwnd_roe, SW_HIDE);
-    //EnableWindow(roe, FALSE);
     CheckDlgButton(hwnd, GetWindowLong(hwnd_generate, GWL_ID), BST_CHECKED);
-    //SendMessage(generate, BM_SETCHECK, BST_CHECKED, 0);
     EnableWindow(hwnd_generate, FALSE);
-    //ShowWindow(hwnd_ab, SW_HIDE);
-    //ShowWindow(hwnd_sod, SW_HIDE);
-    SetWindowPos(hwnd, NULL, 0, 0, 345, 247, SWP_NOZORDER | SWP_NOMOVE);
 
-    HWND child = NULL;
-    while (NULL != (child = FindWindowExA(hwnd, child, NULL, NULL)))
-    {
-        WCHAR text[256] = { 0 };
-        LONG style = GetWindowLong(child, GWL_STYLE);
-        GetWindowTextW(child, text, sizeof(text) / sizeof(text[0]) - 1);
-        GetWindowRect(child, &rc);
-        pt.x = rc.left;
-        pt.y = rc.top;
-        ScreenToClient(hwnd, &pt);
-        if (2 == wcslen(text)) // First pushbutton is OK button, Russian string undetectable
-        {
-            ok_found = TRUE;
-            ok_x = pt.x;
-            ok_y = pt.y;
-            f_id_ok = GetWindowLong(child, GWL_ID);
-            SetWindowPos(child, NULL, 0, 0, 60, 22, SWP_NOZORDER | SWP_NOMOVE);
-            continue;
-        }
-        else if (pt.x == roe_x // Random buttons are at same x as RoE button. Russian random buttons have too many fucking strings (6 found)
-            && pt.y > 200) // Don't check AB / SoD radio buttons which also have same x as RoE
-        {
-            OutputDebugStringW(text);
-            CheckRadioButton(hwnd, GetWindowLong(child, GWL_ID), GetWindowLong(child, GWL_ID), GetWindowLong(child, GWL_ID));
-        }
+	// Need to manually set RMG options to show and set the default settings (normally done when
+	// the Generate checkbox is checked)
+	HWND child = NULL;
+	element_count = 0;
+	for (; NULL != (child = FindWindowExA(hwnd, child, NULL, NULL)); ++element_count)
+	{
+		WCHAR text[256] = { 0 };
+		char classname[256] = { 0 }; 
+		LONG style = GetWindowLong(child, GWL_STYLE);
+		GetWindowTextW(child, text, sizeof(text) / sizeof(text[0]) - 1);
+		GetWindowTextA(child, classname, sizeof(classname)-1);
+		GetWindowRect(child, &rc);
+		pt.x = rc.left;
+		pt.y = rc.top;
+		ScreenToClient(hwnd, &pt);
 
-        SetWindowPos(child, NULL, pt.x, pt.y - 100, 0, 0, SWP_NOZORDER | SWP_NOSIZE);
-        // 125% dpi scaling:
-        //SetWindowPos(child, NULL, pt.x, pt.y - 125, 0, 0, SWP_NOZORDER | SWP_NOSIZE);
-        ShowWindow(child, SW_SHOW);
-    }
+		OutputDebugStringW(text);
+
+		if (2 == wcslen(text))
+		{
+			f_id_ok = GetWindowLong(child, GWL_ID);
+			ok_x = pt.x;
+			ok_y = pt.y;
+			continue;
+		}
+		else if (pt.x == roe_x && pt.y > gen_y) // Detect default radio button for Water content and Monster strength
+		{
+			CheckRadioButton(hwnd, GetWindowLong(child, GWL_ID), GetWindowLong(child, GWL_ID), GetWindowLong(child, GWL_ID));
+		}
+		else if (element_count < 4) // First 4 elements are map version settings, hide them by moving them away (because program shows again later)
+		{
+			if (0 == element_count) // First element is the map version group box
+			{
+				// Get pos of map version group box
+				GetWindowRect(child, &rc);
+				pt.x = rc.left;
+				pt.y = rc.top;
+				ScreenToClient(hwnd, &pt);
+				mapversion_x = pt.x;
+				mapversion_y = pt.y;
+			}
+			MoveWindow(child, -50, -50, 0, 0, TRUE);
+			continue;
+		}
+
+		// Set window to be shown, revealing the RMG options
+		ShowWindow(child, SW_SHOW);
+	}
 
     // Extra content here
-    //HWND hwnd_OK = FindWindowExA(hwnd, NULL, NULL, "OK");
-    GetWindowRect(child, &rc);
-    pt.x = rc.left;
-    pt.y = rc.top - 21;
-    ScreenToClient(hwnd, &pt);
-    
-    // If Ok button was not found, set default coords
-    if (0 == ok_x)
-    {
-        ok_x = 156;
-        ok_y = 23;
-    }
-
-    HWND hwnd_selectable_towns = CreateWindowA("Button", "Selectable player towns",
-        WS_VISIBLE | WS_CHILD | BS_AUTOCHECKBOX, pt.x, pt.y, 250, 21, hwnd, (HMENU)ID_SELECTABLE_TOWNS, NULL, 0);
     f_hwnd_templates = CreateWindowW(WC_COMBOBOX, TEXT(""),
         WS_VSCROLL | CBS_DROPDOWNLIST | CBS_HASSTRINGS | WS_CHILD | WS_OVERLAPPED | WS_VISIBLE,
-        ok_x + 70, ok_y, 150, 330, hwnd, (HMENU)ID_TEMPLATES, NULL, NULL);
-    _get_reg_value_a("templates_path", &f_templates_path);
+		gen_x, mapversion_y, 150, 330, hwnd, (HMENU)ID_TEMPLATES, NULL, NULL);
+	hwnd_selectable_towns = CreateWindowA("Button", "Selectable player towns",
+		WS_VISIBLE | WS_CHILD | BS_AUTOCHECKBOX, gen_x, mapversion_y + 50, 150, 21, hwnd, (HMENU)ID_SELECTABLE_TOWNS, NULL, 0);
+    
+	HFONT font = (HFONT)SendMessage(hwnd_roe, WM_GETFONT, 0, 0);
+	if (NULL == font)
+	{
+		font = GetStockObject(DEFAULT_GUI_FONT);
+	}
+
+	SendMessage(hwnd_selectable_towns, WM_SETFONT, (WPARAM)font, TRUE);
+	SendMessage(f_hwnd_templates, WM_SETFONT, (WPARAM)font, TRUE);
+
+	if (NULL != f_templates_path)
+	{
+		free(f_templates_path);
+		f_templates_path = NULL;
+	}
+	_get_reg_value_a("templates_path", &f_templates_path);
     if (NULL != f_templates_path)
     {
         WCHAR *last_template = NULL;
@@ -323,6 +356,8 @@ VOID FixRMGDialog(HWND hwnd)
             {
                 SendMessageW(f_hwnd_templates, CB_SETCURSEL, 0, 0);
             }
+
+			free(last_template);
         }
         else
         {
@@ -335,14 +370,11 @@ VOID FixRMGDialog(HWND hwnd)
         SendMessageW(f_hwnd_templates, CB_SETCURSEL, 0, 0);
     }
 
-    SetWindowPos(hwnd, NULL, 0, 0, 473, 471 - 100, SWP_NOMOVE | SWP_NOZORDER);
-    // 125% dpi scaling
-    //SetWindowPos(hwnd, NULL, 0, 0, 639, 596 - 100, SWP_NOMOVE | SWP_NOZORDER);
-    
+	SetWindowPos(hwnd, NULL, 0, 0, (int)((float)main_w * 1.371f), (int)((float)main_h * 1.907f), SWP_NOMOVE | SWP_NOZORDER);
+
     f_orig_rmg_dialog_proc = SetWindowLong(hwnd, GWL_WNDPROC, (LONG)new_rmg_dialog_WndProc);
 
-    HWND parent = NULL; //FindWindowA("SDL_app", TITLE);
-    _CenterWindow(hwnd, parent ? parent : GetDesktopWindow());
+    _CenterWindow(hwnd, GetDesktopWindow());
     SetForegroundWindow(hwnd);
 
     g_hwnd_rmg_dialog = hwnd;
