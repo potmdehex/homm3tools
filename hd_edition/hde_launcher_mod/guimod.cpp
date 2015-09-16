@@ -236,9 +236,10 @@ void GuiMod::creditsBtnClicked()
         "SelvesteSigurd, "
         "simonizer, "
         "Solipso, "
-        "Urz"
-        " and "
+        "Urz, "
         "Vampire_Rush"
+        " and "
+        "wikidfps"
         );
     msg->setIcon(QMessageBox::Warning); // It's pretty
     msg->show();
