@@ -11,7 +11,7 @@ STATICLIB := ../../../../OUTPUT/gcc/h3mtilespritegen.a
 # We forfeit -Wpedantic because flexible array members are used inside unions.
 # They could be replaced with array[1], but then -1 is needed at each sizeof
 # which is an unnecessary complication
-CFLAGS = $(INC) -std=c99 -DNO_ZLIB -O3 -Wall -Werror -Wno-unused -Wno-strict-aliasing
+CFLAGS = $(INC) -std=c99 -DNO_ZLIB -O3 -Wall -Werror -Wno-unused -Wno-unused-result -Wno-strict-aliasing
 LFLAGS = -fPIC -shared $(STATICLIB)
 
 PLATFORM := $(shell uname)

@@ -21,18 +21,18 @@
     #include <windows.h> // MAX_PATH
 #else
     #define MAX_PATH 255
+    #include <strings.h> // strcasecmp
+    #define stricmp strcasecmp
+#endif
+
+#ifdef _MSC_VER
+    #define snprintf _snprintf
 #endif
 
 #include <ctype.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-
-#ifdef _MSC_VER
-    #define snprintf _snprintf
-#else
-    #define stricmp strcasecmp
-#endif
 
 #define FORMAT_ANY -1
 
