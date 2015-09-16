@@ -17,7 +17,12 @@ int gu_decompress(const char *filename_in, const char *filename_out)
     return 1;
 }
 
-int gu_decompress_mem(const char *filename, void **buf, long *size)
+int gu_decompress_mem(const void *src, long src_size, void **dst, long *dst_size)
+{
+    return 1;
+}
+
+int gu_decompress_file_to_mem(const char *filename, void **dst, long *dst_size)
 {
     FILE *f = fopen(filename, "rb");
 
@@ -26,11 +31,11 @@ int gu_decompress_mem(const char *filename, void **buf, long *size)
     }
 
     fseek(f, 0, SEEK_END);
-    *size = ftell(f);
+    *dst_size = ftell(f);
     rewind(f);
 
-    *buf = malloc(*size);
-    fread(*buf, *size, 1, f);
+    *dst = malloc(*dst_size);
+    fread(*dst, *dst_size, 1, f);
 
     fclose(f);
 

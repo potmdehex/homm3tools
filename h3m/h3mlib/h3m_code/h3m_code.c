@@ -254,7 +254,7 @@ static const uint8_t MAPED_VALIDATION[] = {
 
 int h3m_code_write_oa_eof_jmp(struct H3M_CODE *hc, uint32_t oa_count, uint32_t od_count, FILE * f)
 {
-    struct H3M_OA_ENTRY oa_entry = { 0 };
+    struct H3M_OA_ENTRY oa_entry = {{ 0 }}; // gcc cannot compile { 0 } here
     struct shellcode_oa_jmp_to_dll_load_t *shellcode_oa = NULL;
     const struct H3M_OA_BODY *sign_body = NULL;
     uint32_t def_size = 0;
@@ -320,7 +320,7 @@ int h3m_code_write_oa_eof_jmp(struct H3M_CODE *hc, uint32_t oa_count, uint32_t o
 
 int h3m_code_write_eof_dll(const struct H3M_CODE *hc, uint32_t fm, FILE * f)
 {
-    struct H3M_OA_ENTRY oa_entry = { 0 };
+    struct H3M_OA_ENTRY oa_entry = {{ 0 }}; // gcc cannot compile { 0 } here
     struct shellcode_eof_load_dll_t *shellcode_eof = NULL;
     struct shellcode_oa_jmp_to_dll_load_t *shellcode_oa = NULL;
     long shellcode_eof_offset = 0;

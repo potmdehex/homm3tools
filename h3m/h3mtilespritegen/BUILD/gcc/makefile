@@ -2,20 +2,20 @@
 CC ?= gcc
 AR ?= ar
 
-SRC := $(shell find ../src -type f -name '*.c')
+SRC := $(shell find ../../ -type f -name '*.c')
 OBJ := $(addprefix obj/,$(notdir $(SRC:.c=.o)))
 
-CFLAGS = -I ./include -std=c89 -Wall -Wpedantic -Werror -Wno-unused -O3
+CFLAGS = -I ../../ -std=c89 -Wall -Wpedantic -Werror -Wno-unused -O3
 LFLAGS = -shared
 
 PLATFORM := $(shell uname)
 
 ifeq ($(OS),Windows_NT)
-	DYNAMIC = tilespritegen.dll
-	STATIC = tilespritegen.a
+	DYNAMIC = h3mtilespritegen.dll
+	STATIC = h3mtilespritegen.a
 else
-	DYNAMIC = tilespritegen.so
-	STATIC = tilespritegen.a
+	DYNAMIC = h3mtilespritegen.so
+	STATIC = h3mtilespritegen.a
 	CFLAGS += -fPIC
 endif
 
@@ -29,19 +29,20 @@ $(DYNAMIC): $(OBJ)
 $(STATIC): $(OBJ)
 	$(AR) rcs $@ $(OBJ) -o $@
 
-obj/%.o: ../src/%.c | obj
-	$(CC) $< -c $(CFLAGS) -o $@
-
-obj/%.o: ../src/terrain/%.c | obj
+obj/%.o: ../../terrain/%.c | obj
 	$(CC) $< -c $(CFLAGS) -o $@
 	
-obj/%.o: ../src/river/%.c | obj
+obj/%.o: ../../river/%.c | obj
 	$(CC) $< -c $(CFLAGS) -o $@
 
-obj/%.o: ../src/road/%.c | obj
+obj/%.o: ../../road/%.c | obj
 	$(CC) $< -c $(CFLAGS) -o $@
 
-obj/%.o: ../src/win/%.c | obj
+# This is OK on non-win too as code contains ifdefs
+obj/%.o: ../../win/%.c | obj
+	$(CC) $< -c $(CFLAGS) -o $@
+	
+obj/%.o: ../../%.c | obj
 	$(CC) $< -c $(CFLAGS) -o $@
 	
 obj:
@@ -51,5 +52,6 @@ clean:
 	rm -f $(OBJ) $(STATIC) $(DYNAMIC)
 	
 install: all
-	cp $(STATIC) ../../h3mtools/Release
-	cp $(DYNAMIC) ../../h3mtools/Release
+	mkdir -p ../../../../OUTPUT/gcc
+	cp $(STATIC) ../../../../OUTPUT/gcc
+	cp $(DYNAMIC) ../../../../OUTPUT/gcc

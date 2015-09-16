@@ -175,6 +175,7 @@ extern "C" {
     // Low-level object functions, see h3m_object_add for easier to user function
     int h3m_add_oa_by_def(h3mlib_ctx_t ctx, const char *def, int *oa_index);
     int h3m_add_oa_by_name(h3mlib_ctx_t ctx, const char *name, int *oa_index);
+	struct H3M_OA_ENTRY; // defined in h3m_structures/h3m_oa.h
     int h3m_add_oa_entry(h3mlib_ctx_t ctx, struct H3M_OA_ENTRY *oa_entry,
         int *oa_index);
     int h3m_add_od(h3mlib_ctx_t ctx, int oa_index, int x, int y, int z,
@@ -197,7 +198,7 @@ extern "C" {
     int h3m_code_unset(h3mlib_ctx_t ctx);
 
 /* Unicode API */
-#ifdef _WIN32
+#if defined _WIN32 && defined _MSC_VER
     int h3m_read_u(h3mlib_ctx_t *ctx, const wchar_t *filename);
 
     int h3m_read_with_cbs_u(h3mlib_ctx_t *ctx,

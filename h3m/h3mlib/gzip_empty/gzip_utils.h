@@ -8,7 +8,9 @@
 int gu_compress(const char *filename_in, const char *filename_out);
 int gu_decompress(const char *filename_in, const char *filename_out);
 
-int gu_decompress_mem(const char *filename, void **buf, long *size);
+int gu_decompress_file_to_mem(const char *filename, void **dst, long *dst_size);
+int gu_decompress_mem(const void *src, long src_size, void **dst, long *dst_size);
+
 void gu_free(void *buf);
 
 #endif

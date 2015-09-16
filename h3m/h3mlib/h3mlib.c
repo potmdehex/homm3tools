@@ -76,10 +76,12 @@ int h3m_read(h3mlib_ctx_t *ctx, const char *filename)
     return h3mlib_io_read(ctx, filename, NULL, NULL, NULL, NULL);
 }
 
+#if defined _WIN32 && defined _MSC_VER
 int h3m_read_u(h3mlib_ctx_t *ctx, const wchar_t *filename)
 {
     return h3mlib_io_read_u(ctx, filename, NULL, NULL, NULL, NULL);
 }
+#endif
 
 int h3m_read_with_cbs(h3mlib_ctx_t *ctx,
     const char *filename,
@@ -89,6 +91,7 @@ int h3m_read_with_cbs(h3mlib_ctx_t *ctx,
     return h3mlib_io_read(ctx, filename, cb_parse, cb_error, cb_def, cb_data);
 }
 
+#if defined _WIN32 && defined _MSC_VER
 int h3m_read_with_cbs_u(h3mlib_ctx_t *ctx,
     const wchar_t *filename,
     h3m_parse_cb_t cb_parse,
@@ -96,16 +99,19 @@ int h3m_read_with_cbs_u(h3mlib_ctx_t *ctx,
 {
     return h3mlib_io_read_u(ctx, filename, cb_parse, cb_error, cb_def, cb_data);
 }
+#endif
 
 int h3m_write(h3mlib_ctx_t ctx, const char *filename)
 {
     return h3mlib_io_write(ctx, filename);
 }
 
+#if defined _WIN32 && defined _MSC_VER
 int h3m_write_u(h3mlib_ctx_t ctx, const wchar_t *filename)
 {
     return h3mlib_io_write_u(ctx, filename);
 }
+#endif
 
 int h3m_exit(h3mlib_ctx_t *ctx)
 {
@@ -927,6 +933,7 @@ int h3m_object_patch(h3mlib_ctx_t ctx_main, const char *filename)
     return 0;
 }
 
+#if defined _WIN32 && defined _MSC_VER
 int h3m_object_patch_u(h3mlib_ctx_t ctx_main, const wchar_t *filename)
 {
     struct MERGE_CTX merge = { 0 };
@@ -943,6 +950,7 @@ int h3m_object_patch_u(h3mlib_ctx_t ctx_main, const wchar_t *filename)
 
     return 0;
 }
+#endif
 
 int h3m_get_oa_index(h3mlib_ctx_t ctx, const char *def, uint32_t *oa_index)
 {
@@ -987,7 +995,7 @@ int h3m_name_set(h3mlib_ctx_t ctx, const char *name)
     size_t n = strlen(name) + 1;
     ctx->h3m.bi.any.name = (NULL == ctx->h3m.bi.any.name) ?
         malloc(n + 1) : realloc(ctx->h3m.bi.any.name, n + 1);
-    strncpy(ctx->h3m.bi.any.name, name, n);
+    strncpy((char *)ctx->h3m.bi.any.name, name, n);
     ctx->h3m.bi.any.name_size = n;
 
     return 0;
@@ -998,7 +1006,7 @@ int h3m_desc_set(h3mlib_ctx_t ctx, const char *desc)
     size_t n = strlen(desc);
     ctx->h3m.bi.any.desc = (NULL == ctx->h3m.bi.any.desc) ?
         malloc(n + 1) : realloc(ctx->h3m.bi.any.desc, n + 1);
-    strncpy(ctx->h3m.bi.any.desc, desc, n);
+    strncpy((char *)ctx->h3m.bi.any.desc, desc, n);
     ctx->h3m.bi.any.desc_size = n;
 
     return 0;
@@ -1029,15 +1037,15 @@ int h3m_get_filename_from_gm1(const char *filename_gm1, char *filename_h3m,
     size_t n)
 {
     unsigned char *buf = NULL;
-    size_t buf_size = 0;
+    long buf_size = 0;
     size_t len = 0;
     unsigned char *loc = NULL;
 
-    if (0 != gu_decompress_file_to_mem(filename_gm1, &buf, &buf_size)) {
+    if (0 != gu_decompress_file_to_mem(filename_gm1, (void **)&buf, &buf_size)) {
         return 1;
     }
 
-    if (NULL == (loc = memmem(buf, buf_size, ".h3m", sizeof(".h3m") - 1))) {
+    if (NULL == (loc = memmem(buf, (size_t)buf_size, (uint8_t *)".h3m", sizeof(".h3m") - 1))) {
         gu_free(buf);
         return 2;
     }

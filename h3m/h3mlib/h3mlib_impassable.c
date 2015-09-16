@@ -31,8 +31,8 @@ void h3m_impassable_oa_mark(h3mlib_ctx_t ctx, int x, int y, int z, int oa_index,
 {
     struct PASS_CB_CTX pass_ctx = { ctx->h3m.bi.any.map_size, impassable, 1 };
     uint64_t passability =
-        *(uint64_t *)ctx->h3m.oa.entries[oa_index].body.
-        passable | *(uint64_t *)ctx->h3m.oa.entries[oa_index].body.active;
+        *(uint64_t *)ctx->h3m.oa.entries[oa_index].body.passable 
+        | *(uint64_t *)ctx->h3m.oa.entries[oa_index].body.active;
     h3m_analyze_passability(passability, x, y, z, NULL, NULL, _pass_cb,
         &pass_ctx);
 }

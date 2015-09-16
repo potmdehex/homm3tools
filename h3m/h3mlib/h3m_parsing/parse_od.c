@@ -5,6 +5,10 @@
 
 #include <stdio.h>
 
+#ifdef _MSC_VER
+    #define snprintf _snprintf
+#endif
+
 static int _parse_body(struct H3MLIB_CTX *ctx,
     struct H3M_OD_ENTRY *od_entry, struct META_OD_ENTRY *meta_od_entry)
 {
@@ -173,7 +177,7 @@ int parse_od(struct H3MLIB_CTX *ctx)
             //if (meta_od_entry->oa_type >= H3M_OBJECT_GREATEST)
             if (0xFF == meta_od_entry->oa_type) {
                 if (NULL != ctx->callbacks.cb_error) {
-                    _snprintf(error, sizeof(error) - 1,
+                    snprintf(error, sizeof(error) - 1,
                         "At coordinates '%d,%d,%d' in map '%s': unknown def '%s'"
                         " with unknown object size, cannot continue parsing",
                         od_entry->header.x,

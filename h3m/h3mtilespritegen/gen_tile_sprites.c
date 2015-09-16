@@ -93,7 +93,7 @@ retry:
                 **/
                 if (fail)
                 {
-                        //printf("fail@%d,%d\n", x, y);
+                        /*printf("fail@%d,%d\n", x, y);*/
                         idx = (size * y) + x;
                         terrain_types[idx] = (idx == prev_fail_idx)? 
                              T_SAND : T_DIRT;

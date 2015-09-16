@@ -61,3 +61,5 @@ Temporary Items
 *.exe
 *.ilk
 *.res
+*.a
+*.o

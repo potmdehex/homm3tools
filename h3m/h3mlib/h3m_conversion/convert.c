@@ -18,10 +18,9 @@
 #define MAX_CREATURES 7
 
 #ifdef _WIN32
-#include <windows.h>            // MAX_PATH
+    #include <windows.h> // MAX_PATH
 #else
-#include <linux/limits.h>
-#define MAX_PATH PATH_MAX
+    #define MAX_PATH 255
 #endif
 
 #include <ctype.h>
@@ -30,7 +29,9 @@
 #include <string.h>
 
 #ifdef _MSC_VER
-#define snprintf _snprintf
+    #define snprintf _snprintf
+#else
+    #define stricmp strcasecmp
 #endif
 
 #define FORMAT_ANY -1
@@ -101,13 +102,13 @@ static void _conv_init(struct CONV_CTX *conv, const char *log_name)
 #ifdef _WIN32
     CreateDirectoryA("conv_logs", NULL);
 #endif  /* _WIN32 */
-    _snprintf(filename, sizeof(filename) - 1, "conv_logs\\%s_log_critical.txt",
+    snprintf(filename, sizeof(filename) - 1, "conv_logs\\%s_log_critical.txt",
         log_name);
     conv->f_log_critical = fopen(filename, "wb");
-    _snprintf(filename, sizeof(filename) - 1, "conv_logs\\%s_log_warning.txt",
+   snprintf(filename, sizeof(filename) - 1, "conv_logs\\%s_log_warning.txt",
         log_name);
     conv->f_log_warning = fopen(filename, "wb");
-    _snprintf(filename, sizeof(filename) - 1, "conv_logs\\%s_log_info.txt",
+    snprintf(filename, sizeof(filename) - 1, "conv_logs\\%s_log_info.txt",
         log_name);
     conv->f_log_info = fopen(filename, "wb");
 #endif
@@ -241,14 +242,13 @@ static int _convert_oa_roe(struct H3MLIB_CTX *ctx_in,
         entry_in = &ctx_in->h3m.oa.entries[i];
         meta_in = &ctx_in->meta.oa_entries[i];
         entry_out = &ctx_out->h3m.oa.entries[count];
+        
         // TODO remove this version adjust hack
-        oa_type =
-            _oa_type_version_adjust(meta_in->type, entry_in->header.def,
+        oa_type = _oa_type_version_adjust(meta_in->type, 
+            (char *)entry_in->header.def,
             entry_in->body.object_number);
 
         switch (oa_type) {
-        case -1:
-            continue;
             // ABSOD objects to drop
         case H3M_OBJECT_PLACEHOLDER_HERO:      // TODO convert to random hero
         case H3M_OBJECT_ABANDONED_MINE_ABSOD:
@@ -291,12 +291,12 @@ static int _convert_oa_roe(struct H3MLIB_CTX *ctx_in,
         // WoG objects get thrown away here. TODO proper conversion, it's not that hard to convert
         // a lot of objects if there are hash maps in place (e.g WoG treasure chest -> normal treasure
         // chest etc)
-        if (-1 == _oa_type_from_def(entry_in->header.def)) {
+        if (-1 == _oa_type_from_def((char *)entry_in->header.def)) {
             free(entry_out->header.def);
             entry_out->header.def_size = sizeof("AVWmrnd0.def");
             entry_out->header.def = malloc(entry_out->header.def_size);
-            _snprintf(entry_out->header.def, entry_out->header.def_size, "%s",
-                "AVWmrnd0.def");
+            snprintf((char *)entry_out->header.def, entry_out->header.def_size,
+                "%s", "AVWmrnd0.def");
         }
 #endif
 
@@ -308,24 +308,24 @@ static int _convert_oa_roe(struct H3MLIB_CTX *ctx_in,
             free(entry_out->header.def);
             entry_out->header.def_size = sizeof("AVWmrnd0.def");
             entry_out->header.def = malloc(entry_out->header.def_size);
-            _snprintf(entry_out->header.def, entry_out->header.def_size, "%s",
-                "AVWmrnd0.def");
+            snprintf((char *)entry_out->header.def, entry_out->header.def_size,
+                "%s", "AVWmrnd0.def");
         }
         // Conflux hack, Conflux->Random Town
         else if (H3M_OBJECT_TOWN_ABSOD == oa_type) {
-            _snprintf(entry_out->header.def, entry_out->header.def_size, "%s",
-                "AVCranx0.def");
+            snprintf((char *)entry_out->header.def, entry_out->header.def_size,
+                "%s", "AVCranx0.def");
             entry_out->body.object_class = 0x4D;
             entry_out->body.object_number = 0;
         }
         // Conflux heroes hack, Conflux hero -> castle hero
         else if (H3M_OBJECT_HERO == oa_type) {
-            if (0 == stricmp(entry_out->header.def, "ah16_e.def")) {
-                _snprintf(entry_out->header.def, entry_out->header.def_size,
+            if (0 == stricmp((char *)entry_out->header.def, "ah16_e.def")) {
+                snprintf((char *)entry_out->header.def, entry_out->header.def_size,
                     "%s", "ah00_e.def");
                 entry_out->body.object_number = 0;
-            } else if (0 == stricmp(entry_out->header.def, "ah17_e.def")) {
-                _snprintf(entry_out->header.def, entry_out->header.def_size,
+            } else if (0 == stricmp((char *)entry_out->header.def, "ah17_e.def")) {
+                snprintf((char *)entry_out->header.def, entry_out->header.def_size,
                     "%s", "ah01_e.def");
                 entry_out->body.object_number = 1;
             }
@@ -473,7 +473,7 @@ static int _inline_conv_hero(uint32_t fm_src,
     // 0x80 is where conflux + AB campaign heroes begin, except 0xFF which is random
     if (0 != body->has_face && (body->face >= 0x80 && 0xFF != body->face)) {
         body->face = _hero_type_to_roe(body->face);
-        _snprintf(log_msg, sizeof(log_msg) - 1,
+        snprintf(log_msg, sizeof(log_msg) - 1,
             "[!] Lost AB/SoD Hero face for hero @%d,%d,%d\n",
             entry_out->header.x, entry_out->header.y, entry_out->header.z);
         _log_msg(conv, LOG_WARNING, log_msg);
@@ -485,7 +485,7 @@ static int _inline_conv_hero(uint32_t fm_src,
 
     if (body->type >= 0x80 && 0xFF != body->type) {
         body->type = _hero_type_to_roe(body->type);
-        _snprintf(log_msg, sizeof(log_msg) - 1,
+        snprintf(log_msg, sizeof(log_msg) - 1,
             "[!] Lost AB/SoD Hero type for hero @%d,%d,%d\n",
             entry_out->header.x, entry_out->header.y, entry_out->header.z);
         _log_msg(conv, LOG_WARNING, log_msg);
@@ -1007,7 +1007,7 @@ static int _convert_to_roe(struct H3MLIB_CTX *ctx_in,
     ctx_tmp->h3m.bi.any.name_size += strlen(prefix);
     ctx_tmp->h3m.bi.any.name = calloc(1, ctx_tmp->h3m.bi.any.name_size + 1);
 #ifdef _WIN32
-    _snprintf(ctx_tmp->h3m.bi.any.name, ctx_tmp->h3m.bi.any.name_size, "%s%s",
+    snprintf(ctx_tmp->h3m.bi.any.name, ctx_tmp->h3m.bi.any.name_size, "%s%s",
         prefix, ctx_in->h3m.bi.any.name);
 #else
     snprintf((char *)ctx_tmp->h3m.bi.any.name, ctx_tmp->h3m.bi.any.name_size,
@@ -1017,7 +1017,7 @@ static int _convert_to_roe(struct H3MLIB_CTX *ctx_in,
     ctx_tmp->h3m.bi.any.desc_size += sizeof(SUFFIX_DESC);
     ctx_tmp->h3m.bi.any.desc = calloc(1, ctx_tmp->h3m.bi.any.desc_size + 1);
 #ifdef _WIN32
-    _snprintf((char *)ctx_tmp->h3m.bi.any.desc, ctx_tmp->h3m.bi.any.desc_size,
+    snprintf((char *)ctx_tmp->h3m.bi.any.desc, ctx_tmp->h3m.bi.any.desc_size,
         "%s %s", ctx_in->h3m.bi.any.desc ? ctx_in->h3m.bi.any.desc : "",
         SUFFIX_DESC);
 #else
@@ -1031,7 +1031,7 @@ static int _convert_to_roe(struct H3MLIB_CTX *ctx_in,
         ctx_tmp->h3m.bi.any.desc[300] = 0;
     }
 
-    _conv_init(&conv, ctx_tmp->h3m.bi.any.name);
+    _conv_init(&conv, (char *)ctx_tmp->h3m.bi.any.name);
 
     _convert_players(ctx_in, ctx_tmp);
     _convert_ai(ctx_in, ctx_tmp);
@@ -1115,6 +1115,7 @@ int h3m_read_convert(h3mlib_ctx_t *ctx,
     return ret;
 }
 
+#if defined _WIN32 && defined _MSC_VER
 int h3m_read_convert_u(h3mlib_ctx_t *ctx,
     const wchar_t *filename,
     enum H3M_FORMAT target_format,
@@ -1151,3 +1152,4 @@ int h3m_read_convert_u(h3mlib_ctx_t *ctx,
 
     return ret;
 }
+#endif
