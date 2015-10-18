@@ -1,0 +1,45 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="generic">
+      <UniqueIdentifier>{ec5636fc-90c2-40b1-b95c-a95257cb5f04}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="poc">
+      <UniqueIdentifier>{babe6c77-3282-40ad-88cf-bcd1c281c132}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\generic\h3api.c">
+      <Filter>generic</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\generic\hooks.c">
+      <Filter>generic</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\generic\trigger.c">
+      <Filter>generic</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\poc\poc.c">
+      <Filter>poc</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\generic\h3api.h">
+      <Filter>generic</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\generic\h3struct.h">
+      <Filter>generic</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\generic\hooks.h">
+      <Filter>generic</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\generic\trigger.h">
+      <Filter>generic</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\generic\debug.h">
+      <Filter>generic</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\poc\poc.h">
+      <Filter>poc</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
