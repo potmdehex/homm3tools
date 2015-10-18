@@ -192,7 +192,21 @@ int parse_od(struct H3MLIB_CTX *ctx)
             }
 
             if (0 != _parse_body(ctx, od_entry, meta_od_entry)) {
-                SAFE_CHECK_NOT_PASSED()
+                if (NULL != ctx->callbacks.cb_error) {
+                    snprintf(error, sizeof(error)-1,
+                        "At coordinates '%d,%d,%d' in map '%s': unknown body size "
+                        "for def '%s' with object_class '%d'",
+                        od_entry->header.x,
+                        od_entry->header.y,
+                        od_entry->header.z,
+                        (char *)p->bi.any.name,
+                        (char *)
+                        p->oa.entries[od_entry->header.oa_index].header.def,
+                        p->oa.entries[od_entry->header.oa_index].body.object_class
+                        );
+                    ctx->callbacks.cb_error(error, ctx->callbacks.cb_data);
+                }
+                return 1;
             }
         }
     }

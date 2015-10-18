@@ -15,6 +15,12 @@
     #define snwprintf _snwprintf
 #endif
 
+int _error_cb(const char *error, void *cb_data)
+{
+    MessageBoxA(NULL, error, "Map Parsing Halted", MB_ICONERROR);
+    return 0;
+}
+
 int convert_to_roe(const wchar_t *src_path, const wchar_t *filename, const wchar_t *dest_path, convert_cb_t cb, void *cb_data)
 {
     h3mlib_ctx_t h3m = NULL;
@@ -27,7 +33,7 @@ int convert_to_roe(const wchar_t *src_path, const wchar_t *filename, const wchar
 
     snwprintf(fullpath, sizeof(fullpath) / sizeof(fullpath[0])-1, L"%s\\%s", src_path, filename);
 
-    h3m_read_convert_u(&h3m, fullpath, H3M_FORMAT_ROE, &fm_src, NULL, NULL, NULL, NULL);
+    h3m_read_convert_u(&h3m, fullpath, H3M_FORMAT_ROE, &fm_src, NULL, _error_cb, NULL, NULL);
 
     if (NULL == h3m)
     {

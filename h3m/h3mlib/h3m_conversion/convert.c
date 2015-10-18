@@ -244,10 +244,17 @@ static int _convert_oa_roe(struct H3MLIB_CTX *ctx_in,
         entry_out = &ctx_out->h3m.oa.entries[count];
         
         // TODO remove this version adjust hack
-        oa_type = _oa_type_version_adjust(meta_in->type, 
+        oa_type = _oa_type_version_adjust(meta_in->type,
             (char *)entry_in->header.def,
             entry_in->body.object_number);
 
+#if 1
+        // For H3 Succession Wars, do not drop any objects
+        if (oa_type == H3M_OBJECT_WITCH_HUT)
+            body_size_delta = -4;
+        else if(oa_type == H3M_OBJECT_GARRISON)
+            convert_binary_compatible = 1;
+#else
         switch (oa_type) {
             // ABSOD objects to drop
         case H3M_OBJECT_PLACEHOLDER_HERO:      // TODO convert to random hero
@@ -282,12 +289,23 @@ static int _convert_oa_roe(struct H3MLIB_CTX *ctx_in,
             break;
         }
 
+#endif
+
         entry_out->header.def =
             (uint8_t *)strdup((char *)entry_in->header.def);
         entry_out->header.def_size = strlen((char *)entry_out->header.def);
         memcpy(&entry_out->body, &entry_in->body, sizeof(entry_out->body));
 
 #if 1
+        // H3 Succession Wars
+        //if (-1 == _oa_type_from_def((char *)entry_in->header.def)) {
+        //    free(entry_out->header.def);
+        //    entry_out->header.def_size = sizeof("AVWmrnd0.def");
+        //    entry_out->header.def = malloc(entry_out->header.def_size);
+        //    snprintf((char *)entry_out->header.def, entry_out->header.def_size,
+        //        "%s", "AVWmrnd0.def");
+        //}
+#else
         // WoG objects get thrown away here. TODO proper conversion, it's not that hard to convert
         // a lot of objects if there are hash maps in place (e.g WoG treasure chest -> normal treasure
         // chest etc)
@@ -298,7 +316,6 @@ static int _convert_oa_roe(struct H3MLIB_CTX *ctx_in,
             snprintf((char *)entry_out->header.def, entry_out->header.def_size,
                 "%s", "AVWmrnd0.def");
         }
-#endif
 
         if (H3M_OBJECT_MONSTER_ABSOD == oa_type) {
             entry_out->body.object_number =
@@ -330,6 +347,7 @@ static int _convert_oa_roe(struct H3MLIB_CTX *ctx_in,
                 entry_out->body.object_number = 1;
             }
         }
+#endif
 
         entry_conv = calloc(1, sizeof(*entry_conv));
         entry_conv->oa_index_in = i;
@@ -668,6 +686,19 @@ static int _convert_od_roe(struct H3MLIB_CTX *ctx_in,
 
         HASH_FIND_INT(conv->oa_hash, &entry_in->header.oa_index, entry_conv);
 
+#if 1
+        // H3 Succession Wars
+        if (NULL == entry_conv) {
+            snprintf(log_msg, sizeof(log_msg)-1,
+                "[!!!] LOST object %s at [%d,%d,%d]\n",
+                H3M_OBJECT_CATEGORIES[meta_in->oa_type], entry_in->header.x,
+                entry_in->header.y, entry_in->header.z);
+            _log_msg(conv,
+                LOG_CRITICAL,
+                log_msg);
+            continue;
+        }
+#else 
         if (NULL == entry_conv) {
             if (H3M_OBJECT_GENERIC_IMPASSABLE_TERRAIN_ABSOD == meta_in->oa_type) {
                 oa_in = &ctx_in->h3m.oa.entries[entry_in->header.oa_index];
@@ -696,6 +727,7 @@ static int _convert_od_roe(struct H3MLIB_CTX *ctx_in,
 
             continue;
         }
+#endif
 
         memcpy(&entry_out->header, &entry_in->header, sizeof(entry_in->header));
         entry_out->header.oa_index = entry_conv->oa_index_out;
