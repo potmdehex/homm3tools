@@ -24,6 +24,7 @@
     <ClInclude Include="..\..\globals.h" />
     <ClInclude Include="..\..\gui.h" />
     <ClInclude Include="..\..\hooked.h" />
+    <ClInclude Include="..\..\messages.h" />
     <ClInclude Include="..\..\nt_undoc.h" />
     <ClInclude Include="..\..\patches.h" />
     <ClInclude Include="..\..\rmgdialog_fix.h" />
@@ -61,11 +62,11 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>../../../../OUTPUT/$(Configuration)/</OutDir>
+    <OutDir>D:\Copy of Heroes of Might and Magic III Complete\Mods\WoG\EraEditor\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>C:\Program Files (x86)\Steam\steamapps\common\Heroes of Might &amp; Magic III - HD Edition\</OutDir>
+    <OutDir>D:\Copy of Heroes of Might and Magic III Complete\Mods\WoG\EraEditor\</OutDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>

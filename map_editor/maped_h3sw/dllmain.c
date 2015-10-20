@@ -12,8 +12,6 @@ DWORD WINAPI _thread(LPVOID lpParameter)
     MSG msg = { 0 };
 
     gui_init();
-    Sleep(1000);
-    SendMessage(g_hwnd_main, 0x1337, 0, 0);
 
     while (0 != GetMessage(&msg, NULL, 0, 0))
     {
@@ -30,6 +28,8 @@ BOOL WINAPI DllMain(HINSTANCE hInstDll, DWORD fdwReason, LPVOID lpReserved)
     {
     case DLL_PROCESS_ATTACH:
         //patches_apply();
+
+        g_map_filename = strdup("Untitled.h3m");
         hooked_init();
         CloseHandle(CreateThread(NULL, 0, _thread, NULL, 0, NULL));
         break;

@@ -1,6 +1,7 @@
 // Created by John Åkerblom 2014-11-22
 
 #include "gui.h"
+#include "messages.h"
 #include "hooked.h"
 #include "globals.h"
 
@@ -18,6 +19,7 @@ static LONG f_orig_main_proc = 0;
 #define ID_H3MAPED_RECENT_DOCUMENT 0xE111
 #define ID_H3MAPED_NEW 0xE100
 #define ID_H3MAPED_SAVE 0xE103
+//#define H3MAPED_CLASS_PREFIX "Afx:400000:8:"
 #define H3MAPED_CLASS_PREFIX "Afx:400000:8:"
 
 // Tell h3maped that a recently opened document has been clicked
@@ -29,7 +31,9 @@ static LONG f_orig_main_proc = 0;
 
 // Tell h3maped that save has been pressed
 #define FORCE_MAP_SAVE() \
+    disable_NtCreateFile_hook = TRUE;  \
     CallWindowProc((WNDPROC)f_orig_main_proc, g_hwnd_main, WM_COMMAND, MAKELONG(ID_H3MAPED_SAVE, 1), 0);
+    disable_NtCreateFile_hook = FALSE;
 
 #define FORCE_MAP_NEW() \
     CallWindowProc((WNDPROC)f_orig_main_proc, g_hwnd_main, WM_COMMAND, MAKELONG(ID_H3MAPED_NEW, 1), 0);
@@ -51,39 +55,56 @@ static BOOL CALLBACK _EnumWindowsProc(HWND hwnd, LPARAM lParam)
     return TRUE;
 }
 
+DWORD WINAPI _DelayedReload(LPVOID lp)
+{
+    // Oh boy. Sleep and double reload required to work. Worst hack 20xx.
+    Sleep(100);
+
+    disable_NtCreateFile_hook = TRUE;
+
+    h3mlib_ctx_t h3m = NULL;
+    uint32_t src_fmt;
+
+    SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_TIME_CRITICAL);
+
+    h3m_read_convert_u(&h3m, g_map_filename_w, g_new_format, &src_fmt, NULL, NULL, NULL, NULL);
+    if (h3m != NULL) {
+        h3m_write_u(h3m, g_map_filename_w);
+        //h3m_write(h3m, "output.h3m");
+        h3m_exit(&h3m);
+    }
+    else {
+        OutputDebugStringA("There was an error opening the .h3m, trying to avoid crash");
+    }
+
+    g_convert_on_reload = FALSE;
+
+    disable_NtCreateFile_hook = FALSE;
+
+    SendMessage(g_hwnd_main, WM_RELOADMAP, 0, 0);
+    ExitThread(0);
+}
+
 LRESULT CALLBACK new_main_WndProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lParam)
 {
     BOOL bChecked = FALSE;
-    ShowWindow(hwnd, SW_HIDE);
 
     //OutputDebugStringA("in main wndproc");
 
     switch (Message)
     {
-    case 0x1338:
-        OutputDebugStringA("msg3");
-        SendMessage(FindWindowA("Heroes III", NULL), 0x13371337, 0, 0);
-        ExitProcess(0x1338);
+    case WM_RELOADMAP:
+        OutputDebugStringA("RELOAD");
+        FORCE_MAP_RELOAD();
         break;
-        /*case 0x1338:
-        SetTimer(NULL, 0, 2000, _TimerProc);
-        OutputDebugStringA("msg2");
-        break;*/
-    case 0x1337:
-        OutputDebugStringA("msg");
-        FORCE_MAP_NEW();
+    case WM_SAVERELOADMAP:
+        OutputDebugStringA("SAVE & RELOAD");
+        CloseHandle(CreateThread(NULL, 0, _DelayedReload, NULL, 0, NULL));
+        break;
+    case WM_SAVEMAP:
+        OutputDebugStringA("SAVE");
         FORCE_MAP_SAVE();
         break;
-    case WM_COMMAND:
-        switch (LOWORD(wParam))
-        {
-#if 0
-        case ID_H3MSNAKE:
-            OutputDebugStringA("right msg");
-            FORCE_MAP_RELOAD();
-            break;
-#endif
-        }
     }
 
     return CallWindowProc((WNDPROC)f_orig_main_proc, hwnd, Message, wParam, lParam);

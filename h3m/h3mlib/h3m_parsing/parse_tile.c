@@ -23,7 +23,7 @@ int parse_tile(struct H3MLIB_CTX *ctx)
     p->tiles = calloc(1, n);
     SAFE_READ_N(p->tiles, n, parsing)
 
-        if (NULL != ctx->callbacks.cb_parse) {
+    if (NULL != ctx->callbacks.cb_parse) {
         n = parsing->offset - orig_off;
         ret = ctx->callbacks.cb_parse(orig_off, "tiles", 
             &parsing->raw[orig_off], n, ctx->callbacks.cb_data);

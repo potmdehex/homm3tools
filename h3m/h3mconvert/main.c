@@ -177,6 +177,8 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
     BOOL bEnd = FALSE;
     MSG msg = { 0 };
 
+    uint32_t lol = 0x22e10046 - 0x83000000;
+
     icc.dwSize = sizeof(INITCOMMONCONTROLSEX);
     icc.dwICC  = ICC_LINK_CLASS;
     InitCommonControlsEx(&icc);

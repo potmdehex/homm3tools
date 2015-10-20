@@ -36,11 +36,17 @@
 
 #define FORMAT_ANY -1
 
-#define PREFIX_SOD "[SoD] "
-#define PREFIX_AB "[AB] "
-#define PREFIX_WOG "[WoG] "
+//#define PREFIX_SOD "[SoD] "
+//#define PREFIX_AB "[AB] "
+//#define PREFIX_WOG "[WoG] "
+//#define PREFIX_UNKNOWN ""
+//#define SUFFIX_DESC " [h3minternals.net] converted to RoE with h3mlib by potmdehex"
+
+#define PREFIX_SOD ""
+#define PREFIX_AB ""
+#define PREFIX_WOG ""
 #define PREFIX_UNKNOWN ""
-#define SUFFIX_DESC " [h3minternals.net] converted to RoE with h3mlib by potmdehex"
+#define SUFFIX_DESC ""
 
 struct OA_HASH {
     int oa_index_in;            // key
@@ -1056,12 +1062,14 @@ static int _convert_to_roe(struct H3MLIB_CTX *ctx_in,
     snprintf((char *)ctx_tmp->h3m.bi.any.desc, ctx_tmp->h3m.bi.any.desc_size,
         "%s %s", ctx_in->h3m.bi.any.desc, SUFFIX_DESC);
 #endif
-
+    
+#if 0
     // Heroes III HD Edition does not support maps with longer desc than 300
     if (ctx_tmp->h3m.bi.any.desc_size > 300) {
         ctx_tmp->h3m.bi.any.desc_size = 300;
         ctx_tmp->h3m.bi.any.desc[300] = 0;
     }
+#endif
 
     _conv_init(&conv, (char *)ctx_tmp->h3m.bi.any.name);
 
@@ -1138,6 +1146,23 @@ int h3m_read_convert(h3mlib_ctx_t *ctx,
     case H3M_FORMAT_ROE:
         ret = _convert_to_roe((struct H3MLIB_CTX *)ctx_in,
             (struct H3MLIB_CTX **)ctx);
+        break;
+    case H3M_FORMAT_SOD:
+        if (H3M_FORMAT_WOG == *source_format) {
+            *ctx = ctx_in;
+            ctx_in->h3m.format = H3M_FORMAT_SOD;
+            // Don't h3m_exit ctx_in here since ctx was set to it
+            return 0;
+        }
+        break;
+    case H3M_FORMAT_WOG:
+        if (H3M_FORMAT_SOD == *source_format) {
+            *ctx = ctx_in;
+            ctx_in->h3m.format = H3M_FORMAT_WOG;
+            // Don't h3m_exit ctx_in here since ctx was set to it
+            return 0;
+        }
+        break;
     default:
         break;
     }
@@ -1176,6 +1201,23 @@ int h3m_read_convert_u(h3mlib_ctx_t *ctx,
     case H3M_FORMAT_ROE:
         ret = _convert_to_roe((struct H3MLIB_CTX *)ctx_in,
             (struct H3MLIB_CTX **)ctx);
+        break;
+    case H3M_FORMAT_SOD:
+        if (H3M_FORMAT_WOG == *source_format) {
+            *ctx = ctx_in;
+            ctx_in->h3m.format = H3M_FORMAT_SOD;
+            // Don't h3m_exit ctx_in here since ctx was set to it
+            return 0;
+        }
+        break;
+    case H3M_FORMAT_WOG:
+        if (H3M_FORMAT_SOD == *source_format) {
+            *ctx = ctx_in;
+            ctx_in->h3m.format = H3M_FORMAT_WOG;
+            // Don't h3m_exit ctx_in here since ctx was set to it
+            return 0;
+        }
+        break;
     default:
         break;
     }

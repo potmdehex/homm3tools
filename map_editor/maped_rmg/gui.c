@@ -25,7 +25,8 @@ static LONG f_orig_main_proc = 0;
 // hook to instead reload current map.
 #define FORCE_MAP_RELOAD() \
     g_do_replace = 1; \
-    CallWindowProc((WNDPROC)f_orig_main_proc, g_hwnd_main, WM_COMMAND, ID_H3MAPED_RECENT_DOCUMENT, 0);
+    CallWindowProc((WNDPROC)f_orig_main_proc, g_hwnd_main, WM_COMMAND, ID_H3MAPED_RECENT_DOCUMENT, 0); \
+    g_do_replace = 0; 
 
 // Tell h3maped that save has been pressed
 #define FORCE_MAP_SAVE() \
@@ -71,7 +72,7 @@ LRESULT CALLBACK new_main_WndProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM
         break;*/
     case 0x1337:
         OutputDebugStringA("msg");
-        FORCE_MAP_NEW();
+        //FORCE_MAP_NEW();
         FORCE_MAP_SAVE();
         break;
     case WM_COMMAND:

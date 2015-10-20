@@ -65,6 +65,11 @@ int h3mlib_io_read(struct H3MLIB_CTX **ctx,
         return ret;
     }
 
+    if (NULL == raw) {
+        *ctx = NULL;
+        return 1;
+    }
+
     return h3mlib_io_read_mem(ctx, raw, raw_size, cb_parse, cb_error, cb_def,
         cb_data);
 }
@@ -432,6 +437,11 @@ int h3mlib_io_read_u(struct H3MLIB_CTX **ctx,
     if (0 != (ret = gu_decompress_file_to_mem_u(filename, (void *)&raw,
                 (long *)&raw_size))) {
         return ret;
+    }
+
+    if (NULL == raw) {
+        *ctx = NULL;
+        return 1;
     }
 
     return h3mlib_io_read_mem(ctx, raw, raw_size, cb_parse, cb_error, cb_def,
