@@ -106,9 +106,11 @@
     ((H3M_FORMAT_ROE == FM) ? (void *)A.roe.B : \
     (H3M_FORMAT_AB == FM) ? (void *)A.ab.B : \
     (void *)A.sod.B)
+
 #define FS_ABSOD_VOIDCAST(A, B, FM) \
     ((H3M_FORMAT_AB == FM) ? (void *)A.ab.B : \
     (void *)A.sod.B)
+
 #define FS_SOD_VOIDCAST(A, B, FM) \
     (void *)A.sod.B
 
