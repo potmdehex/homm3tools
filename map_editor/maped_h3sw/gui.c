@@ -2,14 +2,15 @@
 
 #include "gui.h"
 #include "messages.h"
+#include "resource.h"
 #include "hooked.h"
 #include "globals.h"
 
 #include <h3mlib.h>
 #include <string.h>
 #include <stdio.h>
-#include <commctrl.h>
 #include <windows.h>
+#include <commctrl.h>
 
 #pragma warning(disable:4996)
 
@@ -57,7 +58,7 @@ static BOOL CALLBACK _EnumWindowsProc(HWND hwnd, LPARAM lParam)
 
 DWORD WINAPI _DelayedReload(LPVOID lp)
 {
-    // Oh boy. Sleep and double reload required to work. Worst hack 20xx.
+    // Sleep hacks 2015... 0/10
     Sleep(100);
 
     disable_NtCreateFile_hook = TRUE;
@@ -126,6 +127,64 @@ static void _get_g_hwnd_main(void)
     }
 }
 
+HWND FindWindowRecursiveA(HWND hParent, LPCSTR lpszClass, LPCSTR lpszWindow)
+{
+    HWND hResult = FindWindowExA(hParent, NULL, lpszClass, lpszWindow);
+    HWND hChild;
+    if (hResult != NULL)
+        return hResult;
+
+    hChild = FindWindowExA(hParent, NULL, NULL, NULL);
+    if (hChild != NULL)
+    {
+        do
+        {
+            hResult = FindWindowRecursiveA(hChild, lpszClass, lpszWindow);
+            if (hResult != NULL)
+                return hResult;
+        } while ((hChild = GetNextWindow(hChild, GW_HWNDNEXT)) != NULL);
+    }
+
+    return NULL;
+}
+
+HWND _ReplaceIcons(HWND hMain)
+{
+    char dbg[256];
+    HWND hwnd_tb;
+    //HMODULE hm = LoadLibraryExA("hota_me.dll", NULL, LOAD_LIBRARY_AS_IMAGE_RESOURCE);
+
+    /*HWND hwnd_tb = FindWindowExA(g_hwnd_main, NULL, NULL, "Standard");
+
+    sprintf(dbg, "newdbg: %08X", hwnd_tb);
+    OutputDebugStringA(dbg);
+    hwnd_tb = FindWindowExA(hwnd_tb, NULL, NULL, "Mode");*/
+
+    retry:
+    hwnd_tb = FindWindowRecursiveA(hMain, NULL, "Terrain Type");
+    hwnd_tb = FindWindowExA(GetParent(hwnd_tb), hwnd_tb, NULL, NULL);
+    hwnd_tb = FindWindowExA(GetParent(hwnd_tb), hwnd_tb, NULL, NULL);
+
+    if (NULL == hwnd_tb) {
+        Sleep(100);
+        goto retry;
+    }
+
+    HIMAGELIST hl = ImageList_LoadImageA(GetModuleHandleA("maped_h3sw.dll"), MAKEINTRESOURCE(IDB_BITMAP1), 32, 1, -1, IMAGE_BITMAP, 0x2040);
+    //HIMAGELIST hl = ImageList_LoadImageA(hm, 0x8D, 32, 1, -1, 0, 0x2040);
+
+    sprintf(dbg, "list: %08X, error %d", hl, GetLastError());
+    OutputDebugStringA(dbg);
+
+    SetWindowPos(hwnd_tb, NULL, 0, 0, 150, 200, SWP_NOMOVE | SWP_NOZORDER | SWP_DEFERERASE);
+    SendMessageA(hwnd_tb, TB_SETIMAGELIST, 0, hl);
+    
+    LONG style = 0; UDM_GETPOS
+    style = GetWindowLong(hwnd_tb, GWL_STYLE);
+    style |= 0x8000;
+    SetWindowLong(hwnd_tb, GWL_STYLE, style);
+}
+
 void gui_init(void)
 {
     HMENU hCurrent = NULL;
@@ -133,4 +192,6 @@ void gui_init(void)
     _get_g_hwnd_main();
 
     f_orig_main_proc = SetWindowLong(g_hwnd_main, GWL_WNDPROC, (long)new_main_WndProc);
+
+    _ReplaceIcons(g_hwnd_main);
 }

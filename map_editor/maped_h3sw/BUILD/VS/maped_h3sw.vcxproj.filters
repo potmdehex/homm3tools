@@ -62,5 +62,12 @@
     <ClInclude Include="..\..\messages.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\resource.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="h3sw_terrains.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="..\..\Resource.rc" />
   </ItemGroup>
 </Project>
