@@ -3,10 +3,6 @@
 #include "gui.h"
 #include "messages.h"
 #include "nt_undoc.h"
-#include "rmgdialog_fix.h"
-#include "rmg_postfix.h"
-
-#include "traverse_funcs.h"
 
 #include <h3mlib.h>
 
@@ -67,6 +63,7 @@ static HWND f_orig_ab;
 static HWND f_orig_wog;
 static HWND f_orig_ok;
 static BOOL f_enable_sod_postfix;
+BOOL disable_NtCreateFile_hook;
 
 //
 // Hooked functions
@@ -102,13 +99,17 @@ static BOOL WINAPI hooked_CallWindowProcA(
     )
 {
     WPARAM new_wParam;
+    char title[256];
 
     if (WM_COMMAND == message)
     {
         switch (wParam)
         {
         case IDOK:
-            OnMapSpecificationsOK(hwnd);
+            GetWindowTextA(hwnd, title, sizeof(title)-1);
+            if (0 == strcmp(title, "Map Specifications")) {
+                OnMapSpecificationsOK(hwnd);
+            }
             break;
         case 0x1337:
             g_new_format = H3M_FORMAT_ROE;
@@ -163,9 +164,9 @@ VOID _FixVersionOptions(HWND hwnd)
     f_orig_wog = FindWindowExA(hwnd, NULL, NULL, "In the &Wake of Gods");
     //f_orig_ok = FindWindowExA(hwnd, NULL, NULL, "OK");
 
-    ShowWindow(f_orig_roe, SW_HIDE);
+    /*ShowWindow(f_orig_roe, SW_HIDE);
     ShowWindow(f_orig_ab, SW_HIDE);
-    ShowWindow(f_orig_wog, SW_HIDE);
+    ShowWindow(f_orig_wog, SW_HIDE);*/
     
     GetWindowRect(f_orig_ab, &rc);
     orig_ab_pt.x = rc.left;
@@ -178,9 +179,9 @@ VOID _FixVersionOptions(HWND hwnd)
     ScreenToClient(hwnd, &orig_wog_pt);
 
     // DEBUG 
-    /*SetWindowPos(f_orig_roe, NULL, 0, 90, 0, 0, SWP_NOZORDER | SWP_NOSIZE);
+    SetWindowPos(f_orig_roe, NULL, 0, 90, 0, 0, SWP_NOZORDER | SWP_NOSIZE);
     SetWindowPos(f_orig_ab, NULL, 0, 110, 0, 0, SWP_NOZORDER | SWP_NOSIZE);
-    SetWindowPos(f_orig_wog, NULL, 0, 130, 0, 0, SWP_NOZORDER | SWP_NOSIZE);*/
+    SetWindowPos(f_orig_wog, NULL, 0, 130, 0, 0, SWP_NOZORDER | SWP_NOSIZE);
 
     HFONT hFont;
     LOGFONT lf;
@@ -194,9 +195,9 @@ VOID _FixVersionOptions(HWND hwnd)
     //TODO cleanup/free
 
     HWND new_roe = CreateWindowA("BUTTON", "A Strategic Quest", WS_VISIBLE | WS_CHILD | BS_AUTORADIOBUTTON, orig_ab_pt.x, orig_wog_pt.y, 150, 21, hwnd, 0x1337, NULL, 0);
-    HWND new_ab = CreateWindowA("BUTTON", "The Succession Wars", WS_VISIBLE | WS_CHILD | BS_AUTORADIOBUTTON, orig_ab_pt.x, orig_ab_pt.y, 150, 21, hwnd, 0x1337+1, NULL, 0);
-    HWND new_sod = CreateWindowA("BUTTON", "Shadow of Death", WS_VISIBLE | WS_CHILD | BS_AUTORADIOBUTTON, orig_wog_pt.x, orig_wog_pt.y, 150, 21, hwnd, 0x1337+2, NULL, 0);
-    HWND new_wog = CreateWindowA("BUTTON", "The Mandate of Heaven", WS_VISIBLE | WS_CHILD | BS_AUTORADIOBUTTON, orig_wog_pt.x, orig_ab_pt.y, 150, 21, hwnd, 0x1337+3, NULL, 0);
+    HWND new_ab = CreateWindowA("BUTTON", "The Succession Wars", WS_VISIBLE | WS_CHILD | BS_AUTORADIOBUTTON, orig_ab_pt.x, orig_ab_pt.y, 150, 21, hwnd, 0x1337 + 1, NULL, 0);
+    HWND new_sod = CreateWindowA("BUTTON", "Shadow of Death", WS_VISIBLE | WS_CHILD | BS_AUTORADIOBUTTON, orig_wog_pt.x, orig_wog_pt.y, 150, 21, hwnd, 0x1337 + 2, NULL, 0);
+    HWND new_wog = CreateWindowA("BUTTON", "The Mandate of Heaven", WS_VISIBLE | WS_CHILD | BS_AUTORADIOBUTTON, orig_wog_pt.x, orig_ab_pt.y, 150, 21, hwnd, 0x1337 + 3, NULL, 0);
 
     switch (g_map_format) 
     {
@@ -279,6 +280,7 @@ BOOL WINAPI hooked_GetSaveFileNameA(
     )
 {
     char dest[MAX_PATH] = { 0 };
+    BOOL ret;
 
     if (f_enable_GetSaveFilenameA_hook != FALSE)
     {
@@ -297,13 +299,16 @@ BOOL WINAPI hooked_GetSaveFileNameA(
         f_enable_GetSaveFilenameA_hook = FALSE;
         return TRUE;
     }
+    else
+    {
+        disable_NtCreateFile_hook = TRUE;
+        ret = orig_GetSaveFileNameA(lpofn);
+        disable_NtCreateFile_hook = FALSE;
+    }
 
-    return orig_GetSaveFileNameA(lpofn);
-    //ExitProcess(1337); 
+    return ret;
 }
 
-
-BOOL disable_NtCreateFile_hook;
 static NTSTATUS NTAPI hooked_NtCreateFile(
     _Out_     PHANDLE FileHandle,
     _In_      ACCESS_MASK DesiredAccess,
@@ -468,9 +473,8 @@ NTSTATUS NTAPI hooked_NtClose(
 
    
 pass:
-    ret = orig_NtClose(Handle);
-
 #endif
+    ret = orig_NtClose(Handle);
 
     return ret;
 }
@@ -497,30 +501,6 @@ static BOOL _inline_hook_function(const char *dll_name,
     return TRUE;
 }
 
-// NEEDLE: 8B F0 85 F6 74 51 8B 4E 20 8D 46 20
-// -0x13
-sub_loadh3m_t   orig_sub_loadh3m = (sub_loadh3m_t)0x0045CD6B;
-
-static void __stdcall hooked_sub_loadh3m(const char *h3m_path)
-{
-    __asm pushad
-    //OutputDebugStringA(g_map_filename);
-    //OutputDebugStringA(h3m_path);
-    __asm popad
-    __asm
-    {
-        CMP g_do_replace, 0
-        JE past
-        PUSH EAX
-        MOV EAX, g_map_filename
-        MOV h3m_path, EAX
-        POP EAX
-        MOV g_do_replace, 0
-        past :
-    }
-    orig_sub_loadh3m(h3m_path);
-}
-
 static int WINAPI hooked_lstrcmpiA(
     _In_  LPCSTR lpString1,
     _In_  LPCSTR lpString2
@@ -536,6 +516,59 @@ static int WINAPI hooked_lstrcmpiA(
     }
 }
 
+
+// NEEDLE: 8B F0 85 F6 74 51 8B 4E 20 8D 46 20
+// -0x13
+sub_loadh3m_t   orig_sub_loadh3m = (sub_loadh3m_t)0x0045CD6B;
+
+static void __declspec(naked) hooked_sub_loadh3m(void)
+{
+    __asm
+    {
+
+        CMP g_do_replace, 0
+        JE past
+        CMP g_map_filename, 0
+        JE past
+        PUSH EAX
+        MOV EAX, g_map_filename
+        MOV DWORD PTR [ESP + 4 + 4], EAX // change arg1
+        POP EAX
+        MOV g_do_replace, 0
+    past :
+        JMP orig_sub_loadh3m
+    }    
+}
+
+#define OBJECTSCONTROL_SIZE 0x11D // scrollbar_size (0x15) + ( pixel_size (0x42) * col_count (0x04) )
+#define OBJECTCOLUMNS_COUNT 0x04
+
+// NEEDLE: 8D 04 40 03 C8 8B 44 24 10 89 08
+// -0x28
+void *orig_sub_setrightpanelsize = (void *)0x0048BF19;
+
+static void __declspec(naked) hooked_sub_setrightpanelsize(void)
+{
+    __asm PUSH DWORD PTR [ESP+4]
+    __asm CALL orig_sub_setrightpanelsize
+    __asm MOV ECX, OBJECTSCONTROL_SIZE
+    __asm MOV [EAX], ECX
+    __asm RETN 4
+}
+
+// NEEDLE: FF 70 40 8B 16 8B CE
+// -0x12
+void *orig_sub_setobjectscontrolsize = (void *)0x005013A3;
+
+static void __declspec(naked) hooked_sub_setobjectscontrolsize(void)
+{
+    __asm CMP DWORD PTR [ESP], 0x0048C2D8
+    __asm JNE pass
+    __asm MOV DWORD PTR [EDI + 0x10], OBJECTSCONTROL_SIZE
+pass:
+    __asm JMP orig_sub_setobjectscontrolsize
+}
+
 void hooked_init(void)
 {
     _inline_hook_function("user32.dll", "MessageBoxA", hooked_MessageBoxA, (void**)&orig_MessageBoxA);
@@ -547,5 +580,23 @@ void hooked_init(void)
     _inline_hook_function("user32.dll", "CallWindowProcA", hooked_CallWindowProcA, (void**)&orig_CallWindowProcA);
 
     _inline_hook_function("kernel32.dll", "lstrcmpiA", hooked_lstrcmpiA, (void**)&orig_lstrcmpiA);
+
     hook_trampoline_dis_x86((void **)&orig_sub_loadh3m, hooked_sub_loadh3m);
+    hook_trampoline_dis_x86((void **)&orig_sub_setrightpanelsize, hooked_sub_setrightpanelsize);
+    hook_trampoline_dis_x86((void **)&orig_sub_setobjectscontrolsize, hooked_sub_setobjectscontrolsize);
+
+    // Binary patch max column count comparison:
+    DWORD dwOldProtect = 0;
+    unsigned char colcmp_needle[] = {
+        0xFF, 0x45, 0xE0, // INC DWORD PTR SS : [EBP - 0x20]
+        0xFF, 0x45, 0xDC, // INC DWORD PTR SS : [EBP - 0x24]
+        0x83, 0x7D, 0xDC, 0x03 // CMP DWORD PTR SS : [EBP - 0x24], 0x3
+    };
+    BYTE *colcmp = hook_find_by_needle(GetModuleHandleA(NULL), colcmp_needle, sizeof(colcmp_needle));
+    colcmp += sizeof(colcmp_needle)-1;
+    VirtualProtect(colcmp, 1, PAGE_EXECUTE_READWRITE, &dwOldProtect);
+    // Replace:
+    // Original instruction: CMP DWORD PTR SS : [EBP - 24], 3
+    // New instruction:      CMP DWORD PTR SS : [EBP - 24], OBJECTCOLUMNS_COUNT
+    *colcmp = OBJECTCOLUMNS_COUNT;
 }

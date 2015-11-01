@@ -58,32 +58,53 @@ static BOOL CALLBACK _EnumWindowsProc(HWND hwnd, LPARAM lParam)
 
 DWORD WINAPI _DelayedReload(LPVOID lp)
 {
-    // Sleep hacks 2015... 0/10
-    Sleep(100);
-
-    disable_NtCreateFile_hook = TRUE;
-
     h3mlib_ctx_t h3m = NULL;
-    uint32_t src_fmt;
+    uint32_t src_fmt = 0;
+    if (g_map_filename_w == NULL)
+        return 0;
 
-    SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_TIME_CRITICAL);
+    if (g_convert_on_reload != FALSE) {
+retry:
+        disable_NtCreateFile_hook = TRUE;
+        
+        h3m_read_convert_u(&h3m, g_map_filename_w, g_new_format, &src_fmt, NULL, NULL, NULL, NULL);
+        if (h3m != NULL) {
+            if (0 == h3m_write_u(h3m, g_map_filename_w)) {
+                g_map_format = g_new_format;
+                OutputDebugStringA("version updated");
+            }
+            else {
+                OutputDebugStringA("write fail");
+            }
+            //h3m_write(h3m, "output.h3m");
+            h3m_exit(&h3m);
+        }
+        else {
+            char dbg[256];
+            _snprintf(dbg, sizeof(dbg)-1, "Error opening h3m, formats: %08X %08X", src_fmt, g_new_format);
+            OutputDebugStringA(dbg);
+            OutputDebugStringW(g_map_filename_w);
 
-    h3m_read_convert_u(&h3m, g_map_filename_w, g_new_format, &src_fmt, NULL, NULL, NULL, NULL);
-    if (h3m != NULL) {
-        h3m_write_u(h3m, g_map_filename_w);
-        //h3m_write(h3m, "output.h3m");
-        h3m_exit(&h3m);
+            // If the destination format is SoD, we are letting the maped convert to WoG first.
+            // If the maped did not convert it yet we reload & retry
+            if (g_new_format == H3M_FORMAT_SOD && src_fmt != H3M_FORMAT_WOG) {
+                OutputDebugStringA("SoD reload");
+                SendMessage(g_hwnd_main, WM_SAVEMAP, 0, 0);
+                SendMessage(g_hwnd_main, WM_RELOADMAP, 0, 0);
+                goto retry;
+            }
+        }
+
+        //g_convert_on_reload = FALSE;
+
+        disable_NtCreateFile_hook = FALSE;
     }
     else {
-        OutputDebugStringA("There was an error opening the .h3m, trying to avoid crash");
+        g_map_format = g_new_format;
     }
 
-    g_convert_on_reload = FALSE;
-
-    disable_NtCreateFile_hook = FALSE;
-
     SendMessage(g_hwnd_main, WM_RELOADMAP, 0, 0);
-    ExitThread(0);
+    return 0;
 }
 
 LRESULT CALLBACK new_main_WndProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lParam)
@@ -100,6 +121,7 @@ LRESULT CALLBACK new_main_WndProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM
         break;
     case WM_SAVERELOADMAP:
         OutputDebugStringA("SAVE & RELOAD");
+        FORCE_MAP_SAVE();
         CloseHandle(CreateThread(NULL, 0, _DelayedReload, NULL, 0, NULL));
         break;
     case WM_SAVEMAP:
@@ -179,7 +201,7 @@ HWND _ReplaceIcons(HWND hMain)
     SetWindowPos(hwnd_tb, NULL, 0, 0, 150, 200, SWP_NOMOVE | SWP_NOZORDER | SWP_DEFERERASE);
     SendMessageA(hwnd_tb, TB_SETIMAGELIST, 0, hl);
     
-    LONG style = 0; UDM_GETPOS
+    LONG style = 0;
     style = GetWindowLong(hwnd_tb, GWL_STYLE);
     style |= 0x8000;
     SetWindowLong(hwnd_tb, GWL_STYLE, style);
