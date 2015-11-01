@@ -205,6 +205,8 @@ HWND _ReplaceIcons(HWND hMain)
     style = GetWindowLong(hwnd_tb, GWL_STYLE);
     style |= 0x8000;
     SetWindowLong(hwnd_tb, GWL_STYLE, style);
+
+    g_hwnd_terrain_types = hwnd_tb;
 }
 
 void gui_init(void)

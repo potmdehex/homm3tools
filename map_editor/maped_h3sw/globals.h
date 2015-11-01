@@ -18,4 +18,5 @@ extern int g_selectable_towns;
 extern uint32_t g_map_format;
 extern uint32_t g_new_format;
 extern BOOL g_convert_on_reload;
+extern HWND g_hwnd_terrain_types;
 #endif

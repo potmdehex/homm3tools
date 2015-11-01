@@ -164,9 +164,9 @@ VOID _FixVersionOptions(HWND hwnd)
     f_orig_wog = FindWindowExA(hwnd, NULL, NULL, "In the &Wake of Gods");
     //f_orig_ok = FindWindowExA(hwnd, NULL, NULL, "OK");
 
-    /*ShowWindow(f_orig_roe, SW_HIDE);
+    ShowWindow(f_orig_roe, SW_HIDE);
     ShowWindow(f_orig_ab, SW_HIDE);
-    ShowWindow(f_orig_wog, SW_HIDE);*/
+    ShowWindow(f_orig_wog, SW_HIDE);
     
     GetWindowRect(f_orig_ab, &rc);
     orig_ab_pt.x = rc.left;
@@ -179,9 +179,9 @@ VOID _FixVersionOptions(HWND hwnd)
     ScreenToClient(hwnd, &orig_wog_pt);
 
     // DEBUG 
-    SetWindowPos(f_orig_roe, NULL, 0, 90, 0, 0, SWP_NOZORDER | SWP_NOSIZE);
-    SetWindowPos(f_orig_ab, NULL, 0, 110, 0, 0, SWP_NOZORDER | SWP_NOSIZE);
-    SetWindowPos(f_orig_wog, NULL, 0, 130, 0, 0, SWP_NOZORDER | SWP_NOSIZE);
+    //SetWindowPos(f_orig_roe, NULL, 0, 90, 0, 0, SWP_NOZORDER | SWP_NOSIZE);
+    //SetWindowPos(f_orig_ab, NULL, 0, 110, 0, 0, SWP_NOZORDER | SWP_NOSIZE);
+    //SetWindowPos(f_orig_wog, NULL, 0, 130, 0, 0, SWP_NOZORDER | SWP_NOSIZE);
 
     HFONT hFont;
     LOGFONT lf;

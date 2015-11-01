@@ -15,3 +15,4 @@ HWND g_hwnd_rmg_dialog = NULL;
 uint32_t g_map_format = 0;
 uint32_t g_new_format;
 BOOL g_convert_on_reload;
+HWND g_hwnd_terrain_types;
