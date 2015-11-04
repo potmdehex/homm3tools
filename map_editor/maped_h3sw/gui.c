@@ -170,7 +170,7 @@ HWND FindWindowRecursiveA(HWND hParent, LPCSTR lpszClass, LPCSTR lpszWindow)
     return NULL;
 }
 
-HWND _ReplaceIcons(HWND hMain)
+HWND _ReplaceIcons(VOID)
 {
     char dbg[256];
     HWND hwnd_tb;
@@ -182,15 +182,13 @@ HWND _ReplaceIcons(HWND hMain)
     OutputDebugStringA(dbg);
     hwnd_tb = FindWindowExA(hwnd_tb, NULL, NULL, "Mode");*/
 
-    retry:
-    hwnd_tb = FindWindowRecursiveA(hMain, NULL, "Terrain Type");
-    hwnd_tb = FindWindowExA(GetParent(hwnd_tb), hwnd_tb, NULL, NULL);
-    hwnd_tb = FindWindowExA(GetParent(hwnd_tb), hwnd_tb, NULL, NULL);
+    // TODO remove sleephack, hook LoadImageA and set own bitmap there to prevent game from changing images
+    Sleep(500);
 
-    if (NULL == hwnd_tb) {
-        Sleep(100);
-        goto retry;
-    }
+    _get_g_hwnd_main();
+    hwnd_tb = FindWindowRecursiveA(g_hwnd_main, NULL, "Terrain Type");
+    hwnd_tb = FindWindowExA(GetParent(hwnd_tb), hwnd_tb, NULL, NULL);
+    hwnd_tb = FindWindowExA(GetParent(hwnd_tb), hwnd_tb, NULL, NULL);
 
     HIMAGELIST hl = ImageList_LoadImageA(GetModuleHandleA("maped_h3sw.dll"), MAKEINTRESOURCE(IDB_BITMAP1), 32, 1, -1, IMAGE_BITMAP, 0x2040);
     //HIMAGELIST hl = ImageList_LoadImageA(hm, 0x8D, 32, 1, -1, 0, 0x2040);
@@ -205,6 +203,8 @@ HWND _ReplaceIcons(HWND hMain)
     style = GetWindowLong(hwnd_tb, GWL_STYLE);
     style |= 0x8000;
     SetWindowLong(hwnd_tb, GWL_STYLE, style);
+    InvalidateRect(hwnd_tb, NULL, TRUE);
+    UpdateWindow(hwnd_tb);
 
     g_hwnd_terrain_types = hwnd_tb;
 }
@@ -217,5 +217,5 @@ void gui_init(void)
 
     f_orig_main_proc = SetWindowLong(g_hwnd_main, GWL_WNDPROC, (long)new_main_WndProc);
 
-    _ReplaceIcons(g_hwnd_main);
+    _ReplaceIcons();
 }
