@@ -12,7 +12,7 @@
 extern char *strdup(const char *);      // utarray.h references strdup, not used
 #endif
 
-#include <utarray.h>
+#include "../../../3rdparty/uthash/src/utarray.h"
 
 #define META_PUSH_PTR(DYN_POINTERS, BODY, MEMBER, SIZE, SKIP) \
     { \

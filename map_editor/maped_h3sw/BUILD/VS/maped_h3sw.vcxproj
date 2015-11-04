@@ -16,9 +16,6 @@
     <ClCompile Include="..\..\gui.c" />
     <ClCompile Include="..\..\hooked.c" />
     <ClCompile Include="..\..\patches.c" />
-    <ClCompile Include="..\..\rmgdialog_fix.c" />
-    <ClCompile Include="..\..\rmg_postfix.c" />
-    <ClCompile Include="..\..\traverse_funcs.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\globals.h" />
@@ -28,9 +25,6 @@
     <ClInclude Include="..\..\nt_undoc.h" />
     <ClInclude Include="..\..\patches.h" />
     <ClInclude Include="..\..\resource.h" />
-    <ClInclude Include="..\..\rmgdialog_fix.h" />
-    <ClInclude Include="..\..\rmg_postfix.h" />
-    <ClInclude Include="..\..\traverse_funcs.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="h3sw_terrains.bmp" />

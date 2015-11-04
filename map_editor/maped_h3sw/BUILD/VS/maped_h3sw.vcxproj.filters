@@ -24,15 +24,6 @@
     <ClCompile Include="..\..\patches.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\rmg_postfix.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\rmgdialog_fix.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\traverse_funcs.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\globals.h">
@@ -48,15 +39,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\patches.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\rmg_postfix.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\rmgdialog_fix.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\traverse_funcs.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\messages.h">
