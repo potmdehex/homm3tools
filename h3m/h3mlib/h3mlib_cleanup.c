@@ -6,7 +6,7 @@
 #include "h3m_structures/h3m.h"
 #include "format_select.h"
 
-#include <uthash.h>
+#include "../../../3rdparty/uthash/src/uthash.h"
 #include <stdlib.h>
 #include <string.h>
 

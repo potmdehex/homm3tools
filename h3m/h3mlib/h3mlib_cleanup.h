@@ -5,7 +5,7 @@
 
 #include "h3mlib_ctx.h"
 
-#include <utarray.h>
+#include "../../../3rdparty/uthash/src/utarray.h"
 
 int h3mlib_cleanup(struct H3MLIB_CTX **ctx);
 
