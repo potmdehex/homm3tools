@@ -9,7 +9,7 @@
 #include "../format_select.h"
 #include "../safe_read.h"
 
-#include "../h3m_structures/h3m_od_body_dynamic.h"
+#include "../h3m_structures/object_details/h3m_od_body_dynamic.h"
 
 #include <stdlib.h>
 #include <string.h>

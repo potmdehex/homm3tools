@@ -3,7 +3,7 @@
 #include "rmg_postfix.h"
 
 #include <h3mlib.h>
-#include <h3m_structures/h3m_od_body_dynamic.h> // HACK
+#include <h3m_structures/object_details/h3m_od_body_dynamic.h> // HACK
 
 #include "globals.h"
 

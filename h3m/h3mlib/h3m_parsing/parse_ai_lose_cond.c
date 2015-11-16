@@ -2,7 +2,7 @@
 
 #include "../h3mlib.h"
 #include "../h3mlib_ctx.h"
-#include "../h3m_structures/h3m_ai_lose_cond.h"
+#include "../h3m_structures/additional_info/h3m_ai_lose_cond.h"
 #include "../format_select.h"
 #include "../safe_read.h"
 

@@ -2,7 +2,7 @@
 
 #include "../h3mlib.h"
 #include "meta_push.h"
-#include "../h3m_structures/h3m_od_body_dynamic.h"
+#include "../h3m_structures/object_details/h3m_od_body_dynamic.h"
 
 #define RESET_PTR(a) if (NULL != a) { free(a); a = NULL; }
 

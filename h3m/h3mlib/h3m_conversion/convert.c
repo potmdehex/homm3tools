@@ -9,7 +9,7 @@
 #include "../h3mlib_cleanup.h"
 
 #include "../meta/meta_push_od.h"
-#include "../h3m_structures/h3m_oa.h"
+#include "../h3m_structures/object_attributes/h3m_oa.h"
 
 // Currently creature conversion is only done for creatures inside objects
 // TODO also convert creature objects on the map
