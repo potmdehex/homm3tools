@@ -103,7 +103,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalLibraryDirectories>../../../../OUTPUT/$(Configuration)/;../../../../3rdparty/libudis86/$(Configuration)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>win_utils.lib;gzip_utils.lib;h3mlib.lib;h3mtilespritegen_static.lib;libudis86.lib;psapi.lib;kernel32.lib;user32.lib;advapi32.lib;</AdditionalDependencies>
+      <AdditionalDependencies>win_utils.lib;gzip_utils.lib;h3mlib.lib;h3mtilespritegen_static.lib;libudis86.lib;psapi.lib;kernel32.lib;user32.lib;advapi32.lib;gdi32.lib;</AdditionalDependencies>
       <EntryPointSymbol>
       </EntryPointSymbol>
     </Link>

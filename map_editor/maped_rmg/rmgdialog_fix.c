@@ -328,7 +328,7 @@ VOID FixRMGDialog(HWND hwnd)
         WS_VSCROLL | CBS_DROPDOWNLIST | CBS_HASSTRINGS | WS_CHILD | WS_OVERLAPPED | WS_VISIBLE,
 		gen_x, mapversion_y, 150, 330, hwnd, (HMENU)ID_TEMPLATES, NULL, NULL);
 	hwnd_selectable_towns = CreateWindowA("Button", "Selectable player towns",
-		WS_VISIBLE | WS_CHILD | BS_AUTOCHECKBOX, gen_x, mapversion_y + 50, 150, 21, hwnd, (HMENU)ID_SELECTABLE_TOWNS, NULL, 0);
+		WS_VISIBLE | WS_CHILD | BS_AUTOCHECKBOX, gen_x, mapversion_y + 50, 170, 21, hwnd, (HMENU)ID_SELECTABLE_TOWNS, NULL, 0);
     
 	HFONT font = (HFONT)SendMessage(hwnd_roe, WM_GETFONT, 0, 0);
 	if (NULL == font)
