@@ -183,79 +183,7 @@
     <ClInclude Include="..\..\h3m_structures\h3m.h">
       <Filter>h3m_structures</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\h3m_structures\h3m_ai.h">
-      <Filter>h3m_structures</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\h3m_structures\h3m_ai_custom_hero.h">
-      <Filter>h3m_structures</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\h3m_structures\h3m_ai_hero_settings.h">
-      <Filter>h3m_structures</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\h3m_structures\h3m_ai_lose_cond.h">
-      <Filter>h3m_structures</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\h3m_structures\h3m_ai_rumor.h">
-      <Filter>h3m_structures</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\h3m_structures\h3m_ai_teams.h">
-      <Filter>h3m_structures</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\h3m_structures\h3m_ai_win_cond.h">
-      <Filter>h3m_structures</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\h3m_structures\h3m_bi.h">
-      <Filter>h3m_structures</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\h3m_structures\h3m_common.h">
-      <Filter>h3m_structures</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\h3m_structures\h3m_event.h">
-      <Filter>h3m_structures</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\h3m_structures\h3m_event_body.h">
-      <Filter>h3m_structures</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\h3m_structures\h3m_oa.h">
-      <Filter>h3m_structures</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\h3m_structures\h3m_oa_body.h">
-      <Filter>h3m_structures</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\h3m_structures\h3m_od.h">
-      <Filter>h3m_structures</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\h3m_structures\h3m_od_body_dynamic.h">
-      <Filter>h3m_structures</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\h3m_structures\h3m_od_body_ext_contents.h">
-      <Filter>h3m_structures</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\h3m_structures\h3m_od_body_ext_guardians.h">
-      <Filter>h3m_structures</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\h3m_structures\h3m_od_body_ext_mesg_and_treasure.h">
-      <Filter>h3m_structures</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\h3m_structures\h3m_od_body_ext_quest.h">
-      <Filter>h3m_structures</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\h3m_structures\h3m_od_body_ext_town_event.h">
-      <Filter>h3m_structures</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\h3m_structures\h3m_od_body_static.h">
-      <Filter>h3m_structures</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\h3m_structures\h3m_od_body_unused.h">
-      <Filter>h3m_structures</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\h3m_structures\h3m_player.h">
-      <Filter>h3m_structures</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\h3m_structures\h3m_player_ai.h">
-      <Filter>h3m_structures</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\h3m_structures\h3m_tile.h">
       <Filter>h3m_structures</Filter>
     </ClInclude>
     <ClInclude Include="..\..\h3m_parsing\h3mlib_parsing.h">
@@ -321,6 +249,78 @@
     <ClInclude Include="..\..\h3m_code\h3m_code.h">
       <Filter>h3m_code</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\h3m_structures\additional_info\h3m_ai.h">
+      <Filter>h3m_structures\additional_info</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\h3m_structures\additional_info\h3m_ai_custom_hero.h">
+      <Filter>h3m_structures\additional_info</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\h3m_structures\additional_info\h3m_ai_hero_settings.h">
+      <Filter>h3m_structures\additional_info</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\h3m_structures\additional_info\h3m_ai_lose_cond.h">
+      <Filter>h3m_structures\additional_info</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\h3m_structures\additional_info\h3m_ai_rumor.h">
+      <Filter>h3m_structures\additional_info</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\h3m_structures\additional_info\h3m_ai_teams.h">
+      <Filter>h3m_structures\additional_info</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\h3m_structures\additional_info\h3m_ai_win_cond.h">
+      <Filter>h3m_structures\additional_info</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\h3m_structures\basic_info\h3m_bi.h">
+      <Filter>h3m_structures\basic_info</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\h3m_structures\events\h3m_event.h">
+      <Filter>h3m_structures\events</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\h3m_structures\events\h3m_event_body.h">
+      <Filter>h3m_structures\events</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\h3m_structures\tiles\h3m_tile.h">
+      <Filter>h3m_structures\tiles</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\h3m_structures\players\h3m_player.h">
+      <Filter>h3m_structures\players</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\h3m_structures\players\h3m_player_ai.h">
+      <Filter>h3m_structures\players</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\h3m_structures\object_details\h3m_od.h">
+      <Filter>h3m_structures\object_details</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\h3m_structures\object_details\h3m_od_body_dynamic.h">
+      <Filter>h3m_structures\object_details</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\h3m_structures\object_details\h3m_od_body_ext_contents.h">
+      <Filter>h3m_structures\object_details</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\h3m_structures\object_details\h3m_od_body_ext_guardians.h">
+      <Filter>h3m_structures\object_details</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\h3m_structures\object_details\h3m_od_body_ext_mesg_and_treasure.h">
+      <Filter>h3m_structures\object_details</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\h3m_structures\object_details\h3m_od_body_ext_quest.h">
+      <Filter>h3m_structures\object_details</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\h3m_structures\object_details\h3m_od_body_ext_town_event.h">
+      <Filter>h3m_structures\object_details</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\h3m_structures\object_details\h3m_od_body_static.h">
+      <Filter>h3m_structures\object_details</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\h3m_structures\object_details\h3m_od_body_unused.h">
+      <Filter>h3m_structures\object_details</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\h3m_structures\object_attributes\h3m_oa.h">
+      <Filter>h3m_structures\object_attributes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\h3m_structures\object_attributes\h3m_oa_body.h">
+      <Filter>h3m_structures\object_attributes</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\README" />
@@ -352,6 +352,27 @@
     </Filter>
     <Filter Include="h3m_code">
       <UniqueIdentifier>{01000df3-55b8-42c5-a0dd-fb6c116d5add}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="h3m_structures\additional_info">
+      <UniqueIdentifier>{e99bf16e-b909-4bb6-95cc-44158a91d351}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="h3m_structures\basic_info">
+      <UniqueIdentifier>{f55e792f-0cea-4d7c-ba60-b77eb8737ca1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="h3m_structures\events">
+      <UniqueIdentifier>{51bc611f-e904-4a2e-a3a0-190d77b8c871}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="h3m_structures\object_attributes">
+      <UniqueIdentifier>{50567b23-daca-4777-b0ee-a0559a4687aa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="h3m_structures\object_details">
+      <UniqueIdentifier>{5aa5091a-e41a-442b-ae89-8af5892f8406}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="h3m_structures\tiles">
+      <UniqueIdentifier>{d13a2de5-c8a0-4175-8bf7-6a8a53598e24}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="h3m_structures\players">
+      <UniqueIdentifier>{3322a183-685e-4b20-87b0-b9bf6644ebfd}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

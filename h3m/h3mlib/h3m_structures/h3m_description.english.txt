@@ -1,0 +1,504 @@
+Downloaded from: http://corexii.com/h3m_description.english.txt
+   ╔╦╦╦════════════════════════════════════════════════════════════════╦╦╦╗
+   ║║║║                                                                ║║║║
+   ║║║║  Описание формата карт для игры Heroes of Might and Magic III  ║║║║
+   ║║║║       (C) Oleg Antoshkiv 2:4623/55.37@fidonet.org              ║║║║
+   ║║║║         (C) Stanislav Ershov (дополнения для SoD)              ║║║║
+   ║║║║           (кто дополнит добавьте сюда свое имя)                ║║║║
+   ╚╩╩╩════════════════════════════════════════════════════════════════╩╩╩╝
+
+   Attention: map files (*.h3m) are packed with the GZIP archiver
+
+
+   Notation:
+   The first number in a line is the length of an element.
+
+   1     { element length in bytes
+   ├─ 1  { these elements are only present for some values
+   └─ 1  { of the previous element; their amount may also vary
+
+   *     { same length as for the previous element
+   ?     { purpose unknown, the default value is in parentheses
+  (?)    { change of value doesn't affect the game
+
+██████████████████████████████████████████████████████████████████████████████
+██                             Basic map parameters                         ██
+██████████████████████████████████████████████████████████████████████████████
+
+ Length Description (code)
+
+   4   Format identifier
+           0E 00 00 00 - RoE
+           15 00 00 00 - AB
+           1C 00 00 00 - SoD
+   1   ? Is set in { 01 } if there's at least one hero on the map
+   4   Height and width of the map in squares (the map is square)
+   1   0-Single-level map, 1-Two-level map
+   4   Length of the map's name in bytes
+   *   Map name
+   4   Length of the map's description
+   *   Map description
+   1   Map difficulty (0-Easy,1-Normal,2-Hard,3-Expert,4-Impossible)
+
+██████████████████████████████████████████████████████████████████████████████
+██                          Players' attributes                             ██
+██████████████████████████████████████████████████████████████████████████████
+
+   Here are players' attributes in this order:
+   Red, Blue, Tan, Green, Orange, Purple, Teal, Pink
+
+   This sequence of bytes is written for each player:
+   1   Heroes' mastery level cap
+   1   Whether it can be played by a human:  1 - yes, 0 - no
+   1   Whether it can be played by an AI: 1 - yes, 0 - no
+   1   Behavior: 0-Random, 1-Warrior, 2-Builder, 3-Explorer
+   1   Whether it is set which towns the player owns
+   2   Which towns the player owns: Bit=1 - owns, Bit=0 - doesn't own
+           Bit0 Castle
+           Bit1 Rampart          ┌───────────────────────────────╖
+           Bit2 Tower            │if the player owns Random Town,║
+           Bit3 Inferno          │it is assumed that he owns     ║
+           Bit4 Necropolis       │every type of towns            ║
+           Bit5 Dungeon          ╘═══════════════════════════════╝
+           Bit6 Stronghold
+           Bit7 Fortress
+           Bit8 Conflux
+   1   Whether the player owns Random Town: 1-yes, 0-no
+   1   Player's main town: 1-yes 0-no
+   ├─ 1   Whether to create a hero
+   ├─ 1   Type of town: FF - Random town, others correspond to 0 - Castle etc.
+   ├─ 1   X-coordinate of the castle
+   ├─ 1   Y-coordinate of the castle
+   └─ 1   Z-coordinate of the castle
+
+   
+██████████████████████████████████████████████████████████████████████████████
+██                     Player's available heroes                            ██
+██████████████████████████████████████████████████████████████████████████████
+
+   1  Does he have Random Hero: 1-yes, 0-no
+   1  Hero's type from 00 to 7F (128 types of heroes total)
+   │  (when FF - there's no hero) and the following bytes are absent:
+   ├─ 1   Number of the hero's face (128 types total)
+   │      (standard face if FF)
+   ├─ 4   length of the hero's name (when 0, there's no name - default name)
+   ├─ #   hero name
+   ├─ 1   garbage ( not found what it affects, always either 00 or other
+   │      random values)
+   └─ 4   player's amount of heroes
+      └─ #
+         ├─ 1   hero identifier
+         ├─ 4   length of the hero's name
+         └─ #   hero name
+
+██████████████████████████████████████████████████████████████████████████████
+██                         Special Victory Condition                        ██
+██████████████████████████████████████████████████████████████████████████████
+
+   1   Is there a Special Victory Condition:
+   │   ■ FF - no
+   │   ■ 00 - Acquire a specific artifact
+   │   ■ 01 - Accumulate creatures
+   │   ■ 02 - Accumulate resources
+   │   ■ 03 - Upgrade a specific town
+   │   ■ 04 - Build the grail structure
+   │   ■ 05 - Defeat a specific Hero
+   │   ■ 06 - Capture a specific town
+   │   ■ 07 - Defeat a specific monster
+   │   ■ 08 - Flag all creature dwelling
+   │   ■ 09 - Flag all mines
+   │   ■ 0A - Transport a specific artifact
+
+   ■ Acquire a specific artifact
+   ├─ 1   Regular ending also possible: 1-yes, 0-no (doesn't work)
+   ├─ 1   Whether the computer can reach it
+   └─ 1   Artifact code
+
+   ■ Accumulate creatures
+   ├─ 1   Regular ending also possible: 1-yes, 0-no
+   ├─ 1   Whether the computer can reach it: 1-yes, 0-no
+   ├─ 2   Unit code
+   └─ 4   Amount
+
+   ■ Accumulate resources
+   ├─ 1  Regular ending also possible: 1-yes, 0-no
+   ├─ 1  Whether the computer can reach it: 1-yes, 0-no
+   ├─ 1  Resource code:┌────────────────────────╖
+   │                   │0 - Wood     4 - Crystal║
+   │                   │1 - Mercury  5 - Gems   ║
+   │                   │2 - Ore      6 - Gold   ║
+   │                   │3 - Sulfur              ║
+   │                   ╘════════════════════════╝
+   └─ 4  Amount
+
+   ■ Upgrade a specific town
+   ├─ 1  Regular ending also possible: 1-yes, 0-no
+   ├─ 1  Whether the computer can reach it: 1-yes, 0-no (?)
+   ├─ 1  X-coordinate of the town
+   ├─ 1  Y-coordinate of the town
+   ├─ 1  Z-coordinate of the town
+   ├─ 1  Hall Level:   0-Town, 1-City,    2-Capitol
+   └─ 1  Castle Level: 0-Fort, 1-Citadel, 2-Castle
+
+   ■ Build the grail structure
+   ├─ 1  Regular ending also possible: 1-yes, 0-no (?)
+   ├─ 1  Whether the computer can reach it: 1-yes, 0-no (?)
+   ├─ 1  X-coordinate of the town
+   ├─ 1  Y-coordinate of the town
+   └─ 1  Z-coordinate of the town
+
+   ■ Defeat a specific Hero
+   ├─ 1  Regular ending also possible: 1-yes, 0-no (?)
+   ├─ 1  Whether the computer can reach it: 1-yes, 0-no (?)
+   ├─ 1  X-coordinate of the hero
+   ├─ 1  Y-coordinate of the hero
+   └─ 1  Z-coordinate of the hero
+
+   ■ Capture a specific town
+   ├─ 1  Regular ending also possible: 1-yes, 0-no (?)
+   ├─ 1  Whether the computer can reach it: 1-yes, 0-no (?)
+   ├─ 1  X-coordinate of the town
+   ├─ 1  Y-coordinate of the town
+   └─ 1  Z-coordinate of the town
+
+   ■ Defeat a specific monster
+   ├─ 1  Regular ending also possible: 1-yes, 0-no
+   ├─ 1  Whether the computer can reach it: 1-yes, 0-no (?)
+   ├─ 1  X-coordinate of the town
+   ├─ 1  Y-coordinate of the town
+   └─ 1  Z-coordinate of the town
+
+   ■ Flag all creature dwelling
+   ├─ 1  Regular ending also possible: 1-yes, 0-no
+   └─ 1  Whether the computer can reach it: 1-yes, 0-no
+
+   ■ Flag all mines
+   ├─ 1  Regular ending also possible: 1-yes, 0-no
+   └─ 1  Whether the computer can reach it: 1-yes, 0-no
+
+   ■ Transport a specific artefact
+   ├─ 1  Regular ending also possible: 1-yes, 0-no (?)
+   ├─ 1  Whether the computer can reach it: 1-yes, 0-no
+   ├─ 1  Artifact code
+   ├─ 1  X-coordinate of the town
+   ├─ 1  Y-coordinate of the town
+   └─ 1  Z-coordinate of the town
+
+██████████████████████████████████████████████████████████████████████████████
+██                         Special loss condition                           ██
+██████████████████████████████████████████████████████████████████████████████
+
+   1   Is there a Special Loss Condition
+   │   ■ FF - None
+   │   ■ 00 - Lose a specific town
+   │   ■ 01 - Lose a specific hero
+   │   ■ 02 - Time expires
+
+   ■ Lose a specific town
+   ├─ 1  X-coordinate of the town
+   ├─ 1  Y-coordinate of the town
+   └─ 1  Z-coordinate of the town
+
+   ■ Lose a specific hero
+   ├─ 1  X-coordinate of the hero
+   ├─ 1  Y-coordinate of the hero
+   └─ 1  Z-coordinate of the hero
+
+   ■ Time expires
+   └─ 2  Length in days
+
+██████████████████████████████████████████████████████████████████████████████
+██                                   Teams                                  ██
+██████████████████████████████████████████████████████████████████████████████
+
+   1  Number of teams, 0 - no teams
+   │
+   │      Next 8 bytes are absent if there are no teams:
+   │
+   ├─ 1   Team number for Red
+   ├─ 1   Team number for Blue
+   ├─ 1   Team number for Tan
+   ├─ 1   Team number for Green
+   ├─ 1   Team number for Orange
+   ├─ 1   Team number for Purple
+   ├─ 1   Team number for Teal
+   └─ 1   Team number for Pink
+
+██████████████████████████████████████████████████████████████████████████████
+██                          Available heroes                                ██
+██████████████████████████████████████████████████████████████████████████████
+
+  20 bytes. The game has 156 types of heroes total, these 16 bytes contain
+  info about whether the hero is present in the game (to disallow duplicate
+  heroes)
+
+  If a hero is in "available heroes" of a player, it can't be hired.
+
+  Every byte contains info about 8 heroes
+  (0 - hero taken, 1 - hero available)
+
+    Byte number  -  Hero type
+
+             00  -  Knight
+             01  -  Cleric
+             02  -  Ranger
+             03  -  Druid
+             04  -  Alchemist
+             05  -  Wizard
+             06  -  Demoniac
+             07  -  Heretic
+             08  -  Death Knight
+             09  -  Necromancer
+             0a  -  Overlord
+             0b  -  Warlock
+             0c  -  Barbarian
+             0d  -  Battle Mage
+             0e  -  Beastmaster
+             0f  -  Witch
+             10  -  Traveller [Wanderer? - transl.]
+             11  -  Elementalist
+             12  -  additional heroes (Mutare, Mutare Drake etc.)
+             13  -  additional heroes (Mutare, Mutare Drake etc.)
+
+   4   empty
+
+   1   Amount of custom heroes
+   #   
+   ├─ 1 hero ID
+   ├─ 1 hero portrait
+   ├─ 4 length of hero's name
+   ├─ # hero's name
+   └─ 1 which players can hire him (bitfield) FF - all
+
+██████████████████████████████████████████████████████████████████████████████
+██                             .....?                                       ██
+██████████████████████████████████████████████████████████████████████████████
+
+   31 bytes filled with 00 (reserved for new versions? observed in all
+   standard maps and campaigns)
+
+██████████████████████████████████████████████████████████████████████████████
+██                            Random artifacts                              ██
+██████████████████████████████████████████████████████████████████████████████
+
+   18 bytes. The game contains many artifacts :)
+   bit=0 - artifact can appear
+   bit=1 - artifact can't appear
+
+██████████████████████████████████████████████████████████████████████████████
+██                             Rumors                                       ██
+██████████████████████████████████████████████████████████████████████████████
+
+   4   Amount of Rumors
+   │
+   ├─ 4   Length of the 1st rumor's name
+   ├─ #   1st rumor's name
+   ├─ 4   Length of the 1st rumor
+   ├─ #   1st rumor
+   │
+   ├─ 4   Length of the 2nd rumor's name
+   ├─ #   2nd rumor's name
+   ├─ 4   Length of the 2nd rumor
+   ├─ #   2nd rumor
+   .      ...  (etc. for all Rumors)
+
+██████████████████████████████████████████████████████████████████████████████
+██                          Hero settings                                   ██
+██████████████████████████████████████████████████████████████████████████████
+
+  Additional hero settings (experience, primary and secondary skills,
+  artifacts, spells)
+
+  1 byte (repeated for every hero, 156 times total) next bytes absent if 0:
+  ├─ 1   whether experience is set
+  │  └─ 4   experience
+  ├─ 1   whether secondary skills are set
+  │  └─ 4   amount of skills
+  │     ├─ 1   skill identifier
+  │     └─ 1   skill lever ( 0 - basic, 1 - advanced, 2 - expert)
+  ├─ 1   whether artifacts are set
+  │  ├─ 2   headwear artifact identifier ( FF FF - default)
+  │  ├─ 2   shoulders
+  │  ├─ 2   neck
+  │  ├─ 2   right hand
+  │  ├─ 2   left hand
+  │  ├─ 2   torso
+  │  ├─ 2   right ring
+  │  ├─ 2   left ring
+  │  ├─ 2   legs [feet? - transl.]
+  │  ├─ 2   misc 1
+  │  ├─ 2   misc 2
+  │  ├─ 2   misc 3
+  │  ├─ 2   misc 4
+  │  ├─ 2   device [vehicle? - transl.] 1
+  │  ├─ 2   device 2
+  │  ├─ 2   device 3
+  │  ├─ 2   device 4
+  │  ├─ 2   spellbook
+  │  ├─ 2   misc 5
+  │  └─ 2   amount of things in the backpack
+  │     └─ # 
+  │        └─ 2   artifact identifier
+  ├─ 1   whether biography is set
+  │  └─ 4   bio length
+  │     └─ #   bio
+  ├─ 1   whether gender is set
+  │  └─ 1   gender ( FF - default, 00 - male, 01 - female)
+  ├─ 1   whether spells are set
+  │  └─ 9   bitfield for spells
+  └─ 1   whether primary skills are set
+     ├─ 1   attack value
+     ├─ 1   defence value
+     ├─ 1   spell power value
+     └─ 1   knowledge value
+
+██████████████████████████████████████████████████████████████████████████████
+██                               Land map                                   ██
+██████████████████████████████████████████████████████████████████████████████
+
+   Size: (map_size)^2 * 7
+   (description follows)
+
+██████████████████████████████████████████████████████████████████████████████
+██                            Underground map                               ██
+██████████████████████████████████████████████████████████████████████████████
+
+   Size: (map_size)^2 * 7
+   This part is absent for one-level maps.
+   (description follows)
+
+██████████████████████████████████████████████████████████████████████████████
+██                     Land and underground map format                      ██
+██████████████████████████████████████████████████████████████████████████████
+
+  First byte - surface codes:
+   00 - Dirt            (0F 3F 50) (RGB colors on the map)
+   01 - Sand            (8F CF DF)
+   02 - Grass           (00 40 00)
+   03 - Snow            (C0 C0 B0)
+   04 - Swamp           (6F 80 4F)
+   05 - Rough           (30 70 80)
+   06 - Subterranean    (30 80 00)
+   07 - Lava            (4F 4F 4F)
+   08 - Water           (90 50 0F)
+   09 - Rock            (00 00 00)
+
+  Second byte - surface picture type (there are quite many)
+
+  Third byte - river type:
+   01 - Clear
+   02 - Icy
+   03 - Muddy
+   04 - Lava
+
+  Fourth byte - river properties:
+                                            ┌───┐
+   00, 01, 02, 03 - 4 variations of segment │ ╔═╡
+                            ┌─╥─┐           └─╨─┘
+   04             - segment ╞═╬═╡
+                            └─╨─┘           ┌───┐
+   05, 06         - 2 variations of segment ╞═╦═╡
+                                            └─╨─┘
+                                            ┌─╥─┐
+   07, 08         - 2 variations of segment │ ╠═╡
+                                            └─╨─┘
+                                            ┌─╥─┐
+   09, 0A         - 2 variations of segment │ ║ │
+                                            └─╨─┘
+                                            ┌───┐
+   0B, 0C         - 2 variations of segment ╞═══╡
+                                            └───┘
+
+  Fifth byte - road type:
+   01 - Dirt
+   02 - Gravel
+   03 - Cobblestone
+
+  Sixth byte - road properties
+                                               ┌───┐
+   00,01,02,03,04,05 - 6 variations of segment │ ╔═╡
+                                               └─╨─┘
+                                            ┌─╥─┐
+   06, 07         - 2 variations of segment │ ╠═╡
+                                            └─╨─┘
+                                            ┌───┐
+   08, 09         - 2 variations of segment ╞═╦═╡
+                                            └─╨─┘
+                                            ┌─╥─┐
+   0A, 0B         - 2 variations of segment │ ║ │
+                                            └─╨─┘
+                                            ┌───┐
+   0C, 0D         - 2 variations of segment ╞═══╡
+                                            └───┘
+                            ┌───┐
+   0E             - segment │ ║ │
+                            └─╨─┘
+                            ┌───┐
+   0F             - segment │ ══╡
+                            └───┘
+                            ┌─╥─┐
+   10             - segment ╞═╬═╡
+                            └─╨─┘
+
+
+  Seventh byte - sets mirroring of squares
+
+   Bit values: 76543210
+               --CcBbAa     (bits marked as '-' don't matter)
+
+   a - toggles vertical mirroring of land
+   A - toggles horizontal mirroring of land
+       (doesn't work for some land types).
+   b - toggles vertical mirroring of river
+   B - toggles horizontal mirroring of river
+   c - toggles vertical mirroring of road
+   C - toggles horizontal mirroring of road
+
+
+██████████████████████████████████████████████████████████████████████████████
+██                             Object attributes                            ██
+██████████████████████████████████████████████████████████████████████████████
+
+   Here are properties of all objects on the map including castles and heroes
+   (but not land itself, roads and rivers) and Events, both placed on the map
+   and global events (these are set in Map Specifications)
+
+   4   Amount of objects on the map (two objects that don't ever appear on
+   │   the map are also described here, for unknown purpose)
+   └─ #  ( from objects.txt )
+      ├─ 4   sprite name length
+      ├─ #   sprite name
+      ├─ 6   which squares are passable, counted from the bottom right corner
+      │      bit = 1 - passable
+      │      bit = 0 - impassable
+      ├─ 6   active squares (overlaid on impassable squares)
+      │      bit = 1 - active
+      │      bit = 0 - passive
+      ├─ 2   what kinds of landscape it can be put on
+      │      bit0 - water
+      │      bit1 - lava
+      │      bit2 - underground
+      │      bit3 - rocks
+      │      bit4 - swamp
+      │      bit5 - snow
+      │      bit6 - grass
+      │      bit7 - sand
+      │      bit8 - dirt
+      ├─ 2   what landscape group the object will be in the editor
+      │      same as previous
+      ├─ 4   object class
+      ├─ 4   object number
+      ├─ 1   object group (editor)
+      │      1 - towns  2 - monsters  5 - treasure
+      │      3 - heroes 4 - artifacts
+      ├─ 1   whether the object will be over or below object
+      └─ 16  unknown (so far seen zeroes here) doesn't appear in objects.txt
+
+   4   Amount of objects on the map
+   └─ #
+      └─ 
+
+██████████████████████████████████████████████████████████████████████████████
+
+
+

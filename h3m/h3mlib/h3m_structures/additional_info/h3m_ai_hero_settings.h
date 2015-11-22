@@ -6,7 +6,7 @@
 // Included by h3m_ai.h
 
 #include "../msvc_comp_stdint.h"
-#include "h3m_common.h"
+#include "../h3m_common.h"
 
 #pragma pack(push, 1)
 

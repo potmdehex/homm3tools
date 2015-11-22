@@ -5,11 +5,11 @@
 
 #include "../h3mlib.h"
 #include "../h3mlib_ctx.h"
-#include "../h3m_structures/h3m_od_body_ext_contents.h"
-#include "../h3m_structures/h3m_od_body_ext_guardians.h"
-#include "../h3m_structures/h3m_od_body_ext_quest.h"
+#include "../h3m_structures/object_details/h3m_od_body_ext_contents.h"
+#include "../h3m_structures/object_details/h3m_od_body_ext_guardians.h"
+#include "../h3m_structures/object_details/h3m_od_body_ext_quest.h"
 
-#include <utarray.h>
+#include "../../../3rdparty/uthash/src/utarray.h"
 
 int parse_od(struct H3MLIB_CTX *ctx);
 

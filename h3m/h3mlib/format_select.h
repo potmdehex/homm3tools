@@ -91,13 +91,27 @@
     A.sod.B
 
 #define FS_ANY_PTR(A, B, FM) \
+    ((H3M_FORMAT_ROE == FM) ? A->roe.B : \
+    (H3M_FORMAT_AB == FM) ? A->ab.B : \
+    A->sod.B)
+
+#define FS_ABSOD_PTR(A, B, FM) \
+    ((H3M_FORMAT_AB == FM) ? A->ab.B : \
+    A->sod.B)
+
+#define FS_SOD_PTR(A, B, FM) \
+    A->sod.B
+
+#define FS_ANY_VOIDCAST(A, B, FM) \
     ((H3M_FORMAT_ROE == FM) ? (void *)A.roe.B : \
     (H3M_FORMAT_AB == FM) ? (void *)A.ab.B : \
     (void *)A.sod.B)
-#define FS_ABSOD_PTR(A, B, FM) \
+
+#define FS_ABSOD_VOIDCAST(A, B, FM) \
     ((H3M_FORMAT_AB == FM) ? (void *)A.ab.B : \
     (void *)A.sod.B)
-#define FS_SOD_PTR(A, B, FM) \
+
+#define FS_SOD_VOIDCAST(A, B, FM) \
     (void *)A.sod.B
 
 //
@@ -173,16 +187,16 @@
 // use an additional macro separately for arrays as opposed to other variables
 // just for that reason when it works for both like this.
 #define FS_ANY_READ_SIZEOF(DESTA, DESTB, PAR, FM) \
-    SAFE_READ_N(FS_ANY_PTR(&DESTA, DESTB, FM), FS_ANY_SIZEOF(DESTA, DESTB, FM), PAR)
+    SAFE_READ_N(FS_ANY_VOIDCAST(&DESTA, DESTB, FM), FS_ANY_SIZEOF(DESTA, DESTB, FM), PAR)
 
 #define FS_ABSOD_READ_SIZEOF(DESTA, DESTB, PAR, FM) \
     if (FM >= H3M_FORMAT_AB) { \
-        SAFE_READ_N(FS_ABSOD_PTR(&DESTA, DESTB, FM), FS_ABSOD_SIZEOF(DESTA, DESTB, FM), PAR) \
+        SAFE_READ_N(FS_ABSOD_VOIDCAST(&DESTA, DESTB, FM), FS_ABSOD_SIZEOF(DESTA, DESTB, FM), PAR) \
     }
 
 #define FS_SOD_READ_SIZEOF(DESTA, DESTB, PAR, FM) \
     if (FM >= H3M_FORMAT_SOD) { \
-        SAFE_READ_N(FS_SOD_PTR(&DESTA, DESTB, FM), FS_SOD_SIZEOF(DESTA, DESTB, FM), PAR) \
+        SAFE_READ_N(FS_SOD_VOIDCAST(&DESTA, DESTB, FM), FS_SOD_SIZEOF(DESTA, DESTB, FM), PAR) \
     }
 
 //
@@ -190,23 +204,23 @@
 //                    See FS_*_READ_SIZEOF for more details.
 //
 #define FS_ANY_WRITE_SIZEOF(SRCA, SRCB, F, FM) \
-    fwrite(FS_ANY_PTR(&SRCA, SRCB, FM), FS_ANY_SIZEOF(SRCA, SRCB, FM), 1, F);
+    fwrite(FS_ANY_VOIDCAST(&SRCA, SRCB, FM), FS_ANY_SIZEOF(SRCA, SRCB, FM), 1, F);
 
 #define FS_ABSOD_WRITE_SIZEOF(SRCA, SRCB, F, FM) \
     if (FM >= H3M_FORMAT_AB) { \
-        fwrite(FS_ABSOD_PTR(&SRCA, SRCB, FM), FS_ABSOD_SIZEOF(SRCA, SRCB, FM), 1, F); \
+        fwrite(FS_ABSOD_VOIDCAST(&SRCA, SRCB, FM), FS_ABSOD_SIZEOF(SRCA, SRCB, FM), 1, F); \
     }
 
 #define FS_SOD_WRITE_SIZEOF(SRCA, SRCB, F, FM) \
     if (FM >= H3M_FORMAT_SOD) { \
-        fwrite(FS_SOD_PTR(&SRCA, SRCB, FM), FS_SOD_SIZEOF(SRCA, SRCB, FM), 1, F); \
+        fwrite(FS_SOD_VOIDCAST(&SRCA, SRCB, FM), FS_SOD_SIZEOF(SRCA, SRCB, FM), 1, F); \
     }
 
 //
 // FS_*_READ_N: Read into AB member of format F N bytes
 //
 #define FS_ANY_READ_N(DESTA, DESTB, N, PAR, FM) \
-    SAFE_READ_N(FS_ANY_PTR(&DESTA, DESTB, FM), N, PAR)
+    SAFE_READ_N(FS_ANY_VOIDCAST(&DESTA, DESTB, FM), N, PAR)
 
 /*#define FS_ABSOD_READ_N(SRCA, SRCB, N, F, FM) \
     if (FM >= H3M_FORMAT_AB) \
@@ -224,16 +238,16 @@
 // FS_*_WRITE_N: Write from AB member of format F N bytes
 //
 #define FS_ANY_WRITE_N(SRCA, SRCB, N, F, FM) \
-    fwrite(FS_ANY_PTR(&SRCA, SRCB, FM), N, 1, F);
+    fwrite(FS_ANY_VOIDCAST(&SRCA, SRCB, FM), N, 1, F);
 
 #define FS_ABSOD_WRITE_N(SRCA, SRCB, N, F, FM) \
     if (FM >= H3M_FORMAT_AB) { \
-        fwrite(FS_ABSOD_PTR(&SRCA, SRCB, FM), N, 1, F); \
+        fwrite(FS_ABSOD_VOIDCAST(&SRCA, SRCB, FM), N, 1, F); \
     }
 
 #define FS_SOD_WRITE_N(SRCA, SRCB, N, F, FM) \
     if (FM >= H3M_FORMAT_SOD) { \
-        fwrite(FS_SOD_PTR(&SRCA, SRCB, FM), N, 1, F); \
+        fwrite(FS_SOD_VOIDCAST(&SRCA, SRCB, FM), N, 1, F); \
     }
 
 //

@@ -6,7 +6,6 @@
 // Included by h3m.h
 
 #include "../msvc_comp_stdint.h"
-#include "h3m_common.h"
 
 #pragma pack(push, 1)
 
