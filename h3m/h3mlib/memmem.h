@@ -4,6 +4,6 @@
 #include <stdlib.h>
 
 unsigned char *memmem(unsigned char *haystack, size_t hlen,
-    unsigned char *needle, size_t nlen);
+    const unsigned char *needle, size_t nlen);
 
 #endif

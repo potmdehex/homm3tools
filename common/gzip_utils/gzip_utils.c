@@ -109,11 +109,10 @@ int _inflate(const void *src, int srcLen, void *dst, int dstLen) {
 
 int gu_decompress_mem(const void *src, long src_size, void **dst, long *dst_size)
 {
-    /* Retrieve uncompressed size from the last 4 bytes of the file where it is
-     * stored in the gzip format */
-    *dst_size = *(long *)&((unsigned char *)src)[src_size - 4];
+    // Assume uncompressed size is bigger/equal to compressed size
+    *dst = malloc(src_size);
+    *dst_size = src_size;
 
-    *dst = malloc(*dst_size);
     /* If decrompession with Z_DATA ERROR src is likely not compressed,
      * so simply return src buffer */
     if (Z_DATA_ERROR == _inflate(src, src_size, *dst, *dst_size)) {

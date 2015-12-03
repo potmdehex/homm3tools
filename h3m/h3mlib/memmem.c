@@ -12,7 +12,7 @@
  * Modified types, original author: caf, http://stackoverflow.com/questions/2188914/c-searching-for-a-string-in-a-file
  */
 unsigned char *memmem(unsigned char *haystack, size_t hlen,
-    unsigned char *needle, size_t nlen)
+    const unsigned char *needle, size_t nlen)
 {
     unsigned char needle_first;
     unsigned char *p = haystack;
