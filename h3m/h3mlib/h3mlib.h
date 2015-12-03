@@ -27,6 +27,7 @@ extern "C" {
         H3M_FORMAT_ROE = 0x0000000E,
         H3M_FORMAT_AB = 0x00000015,
         H3M_FORMAT_SOD = 0x0000001C,
+        H3M_FORMAT_CHR = 0x0000001D,
         H3M_FORMAT_WOG = 0x00000033
     };
 
