@@ -28,19 +28,20 @@ int h3c_read_convert_mem(h3clib_ctx_t *ctx,
     // For now use a hacky way of conversion using memmem and inplace byte 
     // replacement until actual parsing is implemented. 
     // 1. change first 4 bytes
-    // 2. change campaign map
-    // 3. search for each .h3m, save pointers
-    // 4. search for 1c 00 00 00 01 / vice versa, replace. distance to next 1c 00 00 00 01 is map size, save
-    // 5. set the map sizes
+    // 2. search for each .h3m, save pointers, count amount
+    // 3. search for 1c 00 00 00 01 / vice versa, replace. distance to next 1c 00 00 00 01 is map size, save
+    // 4. set the map sizes
+    // 5. change campaign map
     unsigned int pos = 0;
     unsigned int prev_pos = 0;
     unsigned int h3m_size = 0;
+    unsigned int h3m_count = 0;
     unsigned int needle_size = 0;
     uint32_t *size_pointers[MAX_MAPS];
     const uint8_t *needle = NULL;
     int ret = 0;
     int i = 0;
-
+    
     // Right now only SoD<->CHR conversion is supported, target opposite format
     if (*(uint32_t *)raw == H3C_FORMAT_CHR)
         target_format = H3C_FORMAT_SOD;
@@ -57,9 +58,6 @@ int h3c_read_convert_mem(h3clib_ctx_t *ctx,
     // Set h3c format identifier
     *(uint32_t *)raw = (target_format == H3C_FORMAT_SOD) ? H3C_FORMAT_SOD
         : H3C_FORMAT_CHR;
-    // Set campaign map. 0x0D == Armageddon, a campaign with 8 maps.
-    // Chronicles is always 0 here as it only has one campaign map
-    *((uint8_t *)raw + sizeof(uint32_t)) = (target_format == H3C_FORMAT_SOD) ? 0x0D : 0;
 
     // Find the locations of the size values for each map
     for (i = 0; i < MAX_MAPS; ++i) {
@@ -75,6 +73,7 @@ int h3c_read_convert_mem(h3clib_ctx_t *ctx,
         // Set new position past this map's size
         pos = p - raw + sizeof(uint32_t);
     }
+    h3m_count = i;
 
     // Find the h3m format values and replace them
     needle = (*source_format == H3C_FORMAT_SOD)? NEEDLE_SOD : NEEDLE_H3C;
@@ -102,12 +101,34 @@ int h3c_read_convert_mem(h3clib_ctx_t *ctx,
     }
 
     // Set size of last map as well, which is not set in the loop
-    if (size_pointers[i - 1] != NULL) {
-        *(size_pointers[i - 1]) = (raw_size - (uint32_t)pos)
+    if (size_pointers[h3m_count - 1] != NULL) {
+        *(size_pointers[h3m_count - 1]) = (raw_size - (uint32_t)pos)
             + sizeof(uint32_t);
     }
 
-    // TODO replace Tarnum hero for CHR->SoDint h3c_write(h3clib_ctx_t ctx, const char *filename);
+    // Set campaign map. H3C campaigns contain 5 or 8 maps, so for conversion
+    // to SoD choose campaign maps with that amount of h3ms
+    // Chronicles is always 0 here as it only has one campaign map
+    if (target_format == H3C_FORMAT_CHR) {
+        *((uint8_t *)raw + sizeof(uint32_t)) = 0;
+    } 
+    else {
+        uint8_t *p = ((uint8_t *)raw + sizeof(uint32_t));
+
+        switch (h3m_count)
+        {
+        case 5:
+             *p = H3C_MAP_BIRTH_OF_A_BARBARIAN; // has 5 h3ms
+            break;
+        case 8:
+            *p = H3C_MAP_ARMAGEDDON; // has 8 h3ms
+            break;
+        default:
+            break;
+        }   
+    }
+
+    // TODO replace Tarnum hero for CHR->SoD
 
     *ctx = calloc(1, sizeof(*ctx));
     (*ctx)->raw = raw;

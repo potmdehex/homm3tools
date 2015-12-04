@@ -5,6 +5,9 @@
 
 #include <stdint.h>
 
+#define H3C_MAP_ARMAGEDDON 0x0D // 8 maps
+#define H3C_MAP_BIRTH_OF_A_BARBARIAN 0x0F // 5 maps
+
 struct H3C_HEADER
 {
     uint32_t format;
