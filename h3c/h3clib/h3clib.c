@@ -128,7 +128,8 @@ int h3c_read_convert_mem(h3clib_ctx_t *ctx,
         }   
     }
 
-    // TODO replace Tarnum hero for CHR->SoD
+    // TODO replace Tarnum hero for CHR->SoD, and remove/replace any missing 
+    // .defs
 
     *ctx = calloc(1, sizeof(*ctx));
     (*ctx)->raw = raw;
