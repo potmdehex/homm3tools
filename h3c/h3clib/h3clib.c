@@ -152,6 +152,9 @@ int h3c_read_convert(h3clib_ctx_t *ctx,
         return ret;
     }
 
+    // TODO support multiply compressed files here, otherwise only header is
+    // uncompressed (h3ms are compressed separately)
+
     return h3c_read_convert_mem(ctx, raw, raw_size, target_format,
         source_format, cb_error, cb_data);
 }
@@ -209,6 +212,9 @@ int h3c_read_convert_u(h3clib_ctx_t *ctx,
         (long *)&raw_size))) {
         return ret;
     }
+
+    // TODO support multiply compressed files here, otherwise only header is
+    // uncompressed (h3ms are compressed separately)
 
     return h3c_read_convert_mem(ctx, raw, raw_size, target_format,
         source_format, cb_error, cb_data);
