@@ -22,7 +22,7 @@ int parse_od_hero(struct H3MLIB_CTX *ctx,
 
     if (p->format >= H3M_FORMAT_AB) {
         SAFE_READ_SIZEOF(&od_entry->absod_id, parsing)
-            meta_od_entry->has_absod_id = 1;
+        meta_od_entry->has_absod_id = 1;
     }
 
     SAFE_READ_SIZEOF(&body->owner, parsing)

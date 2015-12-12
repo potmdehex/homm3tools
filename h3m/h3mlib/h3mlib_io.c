@@ -358,20 +358,20 @@ static int _h3mlib_io_write_f(struct H3MLIB_CTX *ctx, FILE * f)
             continue;
         }
 
-        if (0 != meta_od_entry->has_absod_id) {
+        if (fm >= H3M_FORMAT_AB && 0 != meta_od_entry->has_absod_id) {
             fwrite(&od_entry->absod_id, sizeof(od_entry->absod_id), 1, f);
         }
 
         if (0 == meta_od_entry->binary_compatible) {
             _write_dynamic_od(od_entry->body, meta_od_entry->body_size,
                 meta_od_entry->dyn_pointers, f);
-        } else                  // Binary compatible, do normal write
-        {
+        } else { // Binary compatible, do normal write
             fwrite(od_entry->body, meta_od_entry->body_size, 1, f);
         }
     }
 
     _write_events(ctx, f);
+
     // 124 bytes end padding
     fwrite(nullpad, sizeof(nullpad), 1, f);
 

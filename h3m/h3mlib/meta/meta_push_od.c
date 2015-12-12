@@ -57,7 +57,7 @@ static int _meta_push_od_event(uint32_t fm,
     META_PUSH_PTR(meta_od_entry->dyn_pointers, body, body->contents.creatures,
         n, 0)
 
-        return 0;
+    return 0;
 }
 
 static int _meta_push_od_hero(uint32_t fm,
@@ -74,7 +74,8 @@ static int _meta_push_od_hero(uint32_t fm,
 
     n = (body->name) ? sizeof(body->name) + body->name->size : 0;
     META_PUSH_PTR(meta_od_entry->dyn_pointers, body, body->name, n, 0)
-        if (fm < H3M_FORMAT_SOD) {
+
+    if (fm < H3M_FORMAT_SOD) {
         META_PUSH_SKIP(meta_od_entry->dyn_pointers, body, body->has_experience,
             sizeof(body->has_experience))
     } else if (fm >= H3M_FORMAT_SOD && 0 == body->has_experience) {
@@ -99,7 +100,7 @@ static int _meta_push_od_hero(uint32_t fm,
         sizeof(body->creatures->roe) : sizeof(body->creatures->absod);
     META_PUSH_PTR(meta_od_entry->dyn_pointers, body, body->creatures, n, 0)
 
-        if (NULL != body->artifacts) {
+    if (NULL != body->artifacts) {
         // Get artifacts size, a bit tricky
         n = (H3M_FORMAT_ROE == fm) ? sizeof(body->artifacts->roe)
             : ((H3M_FORMAT_AB == fm) ? sizeof(body->artifacts->ab)
@@ -121,7 +122,7 @@ static int _meta_push_od_hero(uint32_t fm,
             body->biography->size : 0;
         META_PUSH_PTR(meta_od_entry->dyn_pointers, body, body->biography, n, 0)
 
-            if (H3M_FORMAT_AB == fm) {
+        if (H3M_FORMAT_AB == fm) {
             META_PUSH_SKIP(meta_od_entry->dyn_pointers, body, body->has_spells,
                 sizeof(body->has_spells))
         }
@@ -159,7 +160,7 @@ static int _meta_push_od_message_bearer(uint32_t fm,
     META_PUSH_PTR(meta_od_entry->dyn_pointers, body, body->mesg,
         body->mesg_size, 0)
 
-        return 0;
+    return 0;
 }
 
 static int _meta_push_od_monster(uint32_t fm,
@@ -176,9 +177,8 @@ static int _meta_push_od_monster(uint32_t fm,
         META_PUSH_PTR(meta_od_entry->dyn_pointers, body,
             body->mesg_and_treasure.mesg, body->mesg_and_treasure.mesg_size, 0)
 
-            n =
-            ((H3M_FORMAT_ROE ==
-                fm) ? sizeof(body->mesg_and_treasure.treasure->roe)
+        n = ((H3M_FORMAT_ROE == fm) ? 
+            sizeof(body->mesg_and_treasure.treasure->roe)
             : sizeof(body->mesg_and_treasure.treasure->absod));
         META_PUSH_PTR(meta_od_entry->dyn_pointers, body,
             body->mesg_and_treasure.treasure, n, 0)
@@ -241,13 +241,13 @@ static int _meta_push_od_quest_guard(uint32_t fm,
         n = sizeof_quest((uint8_t *)body->quest.objective, body->quest_type);
         META_PUSH_PTR(meta_od_entry->dyn_pointers, body, body->quest.objective,
             n, 0)
-            META_PUSH_PTR(meta_od_entry->dyn_pointers, body,
+        META_PUSH_PTR(meta_od_entry->dyn_pointers, body,
             body->quest.deadline_and_mesg.proposal_mesg,
             body->quest.deadline_and_mesg.proposal_mesg_size, 0)
-            META_PUSH_PTR(meta_od_entry->dyn_pointers, body,
+        META_PUSH_PTR(meta_od_entry->dyn_pointers, body,
             body->quest.deadline_and_mesg.progress_mesg,
             body->quest.deadline_and_mesg.progress_mesg_size, 0)
-            META_PUSH_PTR(meta_od_entry->dyn_pointers, body,
+        META_PUSH_PTR(meta_od_entry->dyn_pointers, body,
             body->quest.deadline_and_mesg.completion_mesg,
             body->quest.deadline_and_mesg.completion_mesg_size, 0)
     } else {
@@ -274,7 +274,7 @@ static int _meta_push_od_seers_hut(uint32_t fm,
     n = sizeof_reward(fm, body->reward_type);
     META_PUSH_PTR(meta_od_entry->dyn_pointers, body, body->reward, n, 0)
 
-        return 0;
+    return 0;
 }
 
 static int _meta_push_od_town(uint32_t fm,
@@ -292,10 +292,10 @@ static int _meta_push_od_town(uint32_t fm,
     n = (H3M_FORMAT_ROE == fm) ? 
         sizeof(body->creatures->roe) : sizeof(body->creatures->absod);
     META_PUSH_PTR(meta_od_entry->dyn_pointers, body, body->creatures, n, 0)
-        META_PUSH_PTR(meta_od_entry->dyn_pointers, body, body->buildings,
+    META_PUSH_PTR(meta_od_entry->dyn_pointers, body, body->buildings,
         sizeof(*body->buildings), sizeof(body->has_fort))
 
-        if (H3M_FORMAT_ROE == fm) {
+    if (H3M_FORMAT_ROE == fm) {
         META_PUSH_SKIP(meta_od_entry->dyn_pointers, body,
             body->must_have_spells, sizeof(body->must_have_spells))
     }
@@ -313,10 +313,10 @@ static int _meta_push_od_town(uint32_t fm,
 
             META_PUSH_PTR(entry->dyn_pointers, event, event->name,
                 event->name_size, 0)
-                META_PUSH_PTR(entry->dyn_pointers, event, event->mesg,
+            META_PUSH_PTR(entry->dyn_pointers, event, event->mesg,
                 event->mesg_size, 0)
-                if (fm < H3M_FORMAT_SOD) {
-                META_PUSH_SKIP(entry->dyn_pointers, event,
+            if (fm < H3M_FORMAT_SOD) {
+            META_PUSH_SKIP(entry->dyn_pointers, event,
                     event->applies_to_human, sizeof(event->applies_to_human))
             }
             utarray_push_back(p_array, &entry);
