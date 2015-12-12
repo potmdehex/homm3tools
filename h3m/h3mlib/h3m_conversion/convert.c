@@ -1051,6 +1051,48 @@ static int _convert_to_roe(struct H3MLIB_CTX *ctx_in,
     return 0;
 }
 
+// Converts from Chronicles to SoD
+static int _convert_od_sod(struct H3MLIB_CTX *ctx, uint32_t src_fm)
+{
+    size_t count = ctx->h3m.od.count;
+    struct H3M_OD_ENTRY *entry = NULL;
+    struct META_OD_ENTRY *meta = NULL;
+    unsigned int i = 0;
+    int ret = 0;
+
+    for (i = 0; i < count; ++i) {
+        entry = &ctx->h3m.od.entries[i];
+        meta = &ctx->meta.od_entries[i];
+
+        // Convert Tarnum portrait (0x66) to Crag Hack (0xA3) for CHR->SoD conversion
+        if (H3M_FORMAT_CHR == src_fm) {
+            if (H3M_OBJECT_HERO == meta->oa_type) {
+                if (0x66 == ((struct H3M_OD_BODY_DYNAMIC_HERO *)entry->body)->face) {
+                    ((struct H3M_OD_BODY_DYNAMIC_HERO *)entry->body)->face = 0xA3;
+                }
+            }
+        }
+    }
+
+    return 0;
+}
+
+int _convert_to_sod(struct H3MLIB_CTX *ctx)
+{
+    uint32_t src_fm = ctx->h3m.format;
+
+    ctx->h3m.format = H3M_FORMAT_SOD;
+
+    // TODO convert hero id in players
+
+    // TODO special handling for WoG too, removing WoG objects etc
+    if (H3M_FORMAT_CHR == src_fm) {
+        _convert_od_sod(ctx, src_fm);
+    }
+
+    return 0;
+}
+
 struct CB_DATA_WRAPPER {
     uint32_t fm_src;
     h3m_parse_cb_t user_cb;
@@ -1078,24 +1120,18 @@ static int _h3m_read_cb(uint32_t offset, const char *member, void *p, size_t n,
     return 0;
 }
 
-int h3m_read_convert(h3mlib_ctx_t *ctx,
-    const char *filename,
+static int _h3m_read_convert(h3mlib_ctx_t *ctx,
+    h3mlib_ctx_t ctx_in,
+    struct CB_DATA_WRAPPER *wrap,
     enum H3M_FORMAT target_format,
     enum H3M_FORMAT *source_format,
     h3m_parse_cb_t cb_parse,
     h3m_error_cb_t cb_error, h3m_custom_def_cb_t cb_def, void *cb_data)
 {
-    h3mlib_ctx_t ctx_in = NULL;
     int ret = 0;
-    struct CB_DATA_WRAPPER wrap = { 0 };
-    wrap.user_cb = cb_parse;
-    wrap.user_cb_data = cb_data;
-
-    ret = h3m_read_with_cbs(&ctx_in, filename, _h3m_read_cb, cb_error, 
-        cb_def, &wrap);
 
     if (NULL != source_format) {
-        *source_format = wrap.fm_src;
+        *source_format = wrap->fm_src;
     }
 
     if (NULL == ctx_in) {
@@ -1106,6 +1142,26 @@ int h3m_read_convert(h3mlib_ctx_t *ctx,
     case H3M_FORMAT_ROE:
         ret = _convert_to_roe((struct H3MLIB_CTX *)ctx_in,
             (struct H3MLIB_CTX **)ctx);
+        break;
+    case H3M_FORMAT_SOD:
+        if (H3M_FORMAT_WOG == *source_format || H3M_FORMAT_CHR == *source_format) {
+            ret = _convert_to_sod(ctx_in);
+
+            *ctx = ctx_in;
+            // Don't h3m_exit ctx_in here since ctx was set to it
+            return ret;
+        }
+        break;
+    case H3M_FORMAT_WOG:
+        if (H3M_FORMAT_SOD == *source_format) {
+            // For conversion to WoG from SoD just change format identifier
+            ctx_in->h3m.format = H3M_FORMAT_WOG;
+
+            *ctx = ctx_in;
+            // Don't h3m_exit ctx_in here since ctx was set to it
+            return 0;
+        }
+        break;
     default:
         break;
     }
@@ -1113,6 +1169,27 @@ int h3m_read_convert(h3mlib_ctx_t *ctx,
     h3m_exit(&ctx_in);
 
     return ret;
+
+}
+
+int h3m_read_convert(h3mlib_ctx_t *ctx,
+    const char *filename,
+    enum H3M_FORMAT target_format,
+    enum H3M_FORMAT *source_format,
+    h3m_parse_cb_t cb_parse,
+    h3m_error_cb_t cb_error, h3m_custom_def_cb_t cb_def, void *cb_data)
+{
+    h3mlib_ctx_t ctx_in = NULL;
+    struct CB_DATA_WRAPPER wrap = { .user_cb = cb_parse, .user_cb_data = cb_data };
+    int ret = 0;
+
+    if (0 != (ret = h3m_read_with_cbs(&ctx_in, filename, _h3m_read_cb, 
+        cb_error, cb_def, &wrap))) {
+        return 1;
+    }
+
+    return _h3m_read_convert(ctx, ctx_in, &wrap, target_format,
+        source_format, cb_parse, cb_error, cb_def, cb_data);
 }
 
 #if defined _WIN32 && defined _MSC_VER
@@ -1124,32 +1201,15 @@ int h3m_read_convert_u(h3mlib_ctx_t *ctx,
     h3m_error_cb_t cb_error, h3m_custom_def_cb_t cb_def, void *cb_data)
 {
     h3mlib_ctx_t ctx_in = NULL;
+    struct CB_DATA_WRAPPER wrap = { .user_cb = cb_parse, .user_cb_data = cb_data };
     int ret = 0;
-    struct CB_DATA_WRAPPER wrap = { 0 };
-    wrap.user_cb = cb_parse;
-    wrap.user_cb_data = cb_data;
 
-    ret = h3m_read_with_cbs_u(&ctx_in, filename, _h3m_read_cb, cb_error, 
-        cb_def, &wrap);
-
-    if (NULL != source_format) {
-        *source_format = wrap.fm_src;
+    if (0 != (ret = h3m_read_with_cbs_u(&ctx_in, filename, _h3m_read_cb, 
+        cb_error, cb_def, &wrap))) {
+        return 1;
     }
 
-    if (NULL == ctx_in) {
-        return -1;
-    }
-
-    switch (target_format) {
-    case H3M_FORMAT_ROE:
-        ret = _convert_to_roe((struct H3MLIB_CTX *)ctx_in,
-            (struct H3MLIB_CTX **)ctx);
-    default:
-        break;
-    }
-
-    h3m_exit(&ctx_in);
-
-    return ret;
+    return _h3m_read_convert(ctx, ctx_in, &wrap, target_format,
+        source_format, cb_parse, cb_error, cb_def, cb_data);
 }
 #endif
