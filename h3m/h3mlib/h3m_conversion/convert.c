@@ -712,7 +712,8 @@ static int _convert_od_roe(struct H3MLIB_CTX *ctx_in,
             if (0 != (ret = _od_body_conv(ctx_in, ctx_out, entry_in, entry_out,
                         meta_in, meta_out, conv))) {
                 // Object conversion failed - fall back to defaults
-                if (0 != (get_default_od_body(meta_in->oa_type,
+                if (0 != (get_default_od_body(H3M_FORMAT_ROE, 
+                            meta_in->oa_type,
                             &entry_out->body,
                             &meta_out->binary_compatible,
                             &meta_out->body_size))) {

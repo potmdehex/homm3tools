@@ -524,6 +524,9 @@ int h3m_add_od(h3mlib_ctx_t ctx, int oa_index, int x, int y, int z,
     size_t n = 0;
     int binary_compatible = 0;
     int idx = 0;
+    const char *def = NULL;
+    char def_lower[16] = { 0 };
+    char *cp = NULL;
 
     idx = ctx->h3m.od.count++;
     ctx->h3m.od.entries = realloc(ctx->h3m.od.entries,
@@ -543,8 +546,20 @@ int h3m_add_od(h3mlib_ctx_t ctx, int oa_index, int x, int y, int z,
         : calloc(1, n);
     meta_od_entry = &ctx->meta.od_entries[meta_od_index];
 
-    oa_type = def_types_hash((char *)ctx->h3m.oa.entries[oa_index].header.def);
-    get_default_od_body(oa_type, &body, &binary_compatible, &body_size);
+    // Add default OD body, looking it up in hash by lowercase def name
+
+    def = (char *)ctx->h3m.oa.entries[oa_index].header.def;
+
+    // TODO reused downcasing function
+    strncpy(def_lower, def, sizeof(def_lower)-1);
+    cp = def_lower;
+    for (; *cp; ++cp)
+        *cp = (char)tolower((int)*cp);
+    def = def_lower;
+
+    oa_type = def_types_hash(def);
+    get_default_od_body(ctx->h3m.format, oa_type, &body, &binary_compatible,
+        &body_size);
 
     od_entry->body = body;
     memset(meta_od_entry, 0, sizeof(*(meta_od_entry)));
@@ -552,6 +567,13 @@ int h3m_add_od(h3mlib_ctx_t ctx, int oa_index, int x, int y, int z,
     meta_od_entry->body_size = body_size;
     meta_od_entry->oa_type = oa_type;
     meta_od_entry->dyn_pointers = NULL;
+
+    // Only heroes and monsters have the absod id (used for defeat x quests)
+    if (H3M_OBJECT_MONSTER == oa_type || H3M_OBJECT_HERO == oa_type) {
+        meta_od_entry->has_absod_id = 1;
+    } else {
+        meta_od_entry->has_absod_id = 0;
+    }
 
     if (NULL != od_index) {
         *od_index = idx;
