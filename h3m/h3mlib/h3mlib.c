@@ -568,9 +568,14 @@ int h3m_add_od(h3mlib_ctx_t ctx, int oa_index, int x, int y, int z,
     meta_od_entry->oa_type = oa_type;
     meta_od_entry->dyn_pointers = NULL;
 
-    // Only heroes and monsters have the absod id (used for defeat x quests)
-    if (H3M_OBJECT_MONSTER == oa_type || H3M_OBJECT_HERO == oa_type) {
-        meta_od_entry->has_absod_id = 1;
+    // Only towns, heroes and monsters have the absod id 
+    // (used for win cond/defeat x quests)
+    if (H3M_OBJECT_TOWN == oa_type || H3M_OBJECT_MONSTER == oa_type 
+            || H3M_OBJECT_HERO == oa_type) {
+        // TODO throughout h3mlib absod id support needs to be improved,
+        // so e.g several objects with their own ids can be added
+        meta_od_entry->has_absod_id = 1; 
+        od_entry->absod_id = 0x13333337;
     } else {
         meta_od_entry->has_absod_id = 0;
     }
@@ -691,17 +696,23 @@ static int _set_creatures(h3mlib_ctx_t ctx, int od_index, int *types,
     int i = 0;
 
     switch (meta_od_entry->oa_type) {
-    case H3M_OBJECT_HERO:
-        hero_body->owner = ((struct H3M_OD_BODY_DYNAMIC_HERO *)body)->owner;
-        hero_body->type = ((struct H3M_OD_BODY_DYNAMIC_HERO *)body)->type;
-        hero_body->has_creatures = 1;
-        hero_body->patrol_radius = 0xFF;
-        creatures = hero_body->creatures;
-        body = (uint8_t *)hero_body;
-        //body_size = sizeof(*hero_body);
+    //case H3M_OBJECT_HERO:
+    //    hero_body->owner = calloc
+    //    hero_body->owner = ((struct H3M_OD_BODY_DYNAMIC_HERO *)body)->owner;
+    //    hero_body->type = ((struct H3M_OD_BODY_DYNAMIC_HERO *)body)->type;
+    //    hero_body->has_creatures = 1;
+    //    hero_body->patrol_radius = 0xFF;
+    //    creatures = hero_body->creatures;
+    //    body = (uint8_t *)hero_body;
+    //    //body_size = sizeof(*hero_body);
+    //    break;
+    //    //case H3M_OBJECT_TOWN:
+    //    //    break;
+    case H3M_OBJECT_GARRISON:
+    case H3M_OBJECT_GARRISON_ABSOD:
+        creatures = (union H3M_COMMON_ARMY *)
+            (&((union H3M_OD_BODY_STATIC_GARRISON *)body)->any.creatures);
         break;
-        //case H3M_OBJECT_TOWN:
-        //    break;
     default:
         return 1;
     }
@@ -714,7 +725,7 @@ static int _set_creatures(h3mlib_ctx_t ctx, int od_index, int *types,
     } else {
         for (i = 0; i < 7; ++i) {
             creatures->absod.slots[i].type = types[i];
-            creatures->absod.slots[i].type = types[i];
+            creatures->absod.slots[i].quantity = types[i];
         }
     }
 
@@ -732,7 +743,7 @@ int h3m_object_fill_random_creatures(h3mlib_ctx_t ctx, int od_index)
     int quantities[7];
 
     for (i = 0; i < 7; ++i) {
-        types[i] = (rand() + 1) % 117;
+        types[i] = (rand() + 1) % 117; // TODO better way of randoming creatures
         quantities[i] = (rand() + 1) % 1000;
     }
 
