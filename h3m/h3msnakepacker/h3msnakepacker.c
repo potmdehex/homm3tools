@@ -16,17 +16,17 @@ int main(void)
 
     h3m_name_set(h3m, "h3msnake2");
 
-    if (0 != h3m_code_set_dll(h3m, "..\\..\\..\\..\\OUTPUT\\Release\\h3complete_snakeloader.dll")) {
+    if (0 != h3m_modembed_set_dll(h3m, "..\\..\\..\\..\\OUTPUT\\Release\\h3complete_snakeloader.dll")) {
         h3m_exit(&h3m);
         return 1;
     }
 
     h3m_desc_set(h3m, DESC_PREFIX_COMPLETE DESC);
-    h3m_code_set_target(h3m, H3M_CODE_TARGET_COMPLETE);
+    h3m_modembed_set_target(h3m, H3M_MODEMBED_TARGET_COMPLETE);
     h3m_write(h3m, "h3msnake2_h3complete.h3m");
 
     h3m_desc_set(h3m, DESC_PREFIX_HDMOD DESC);
-    h3m_code_set_target(h3m, H3M_CODE_TARGET_HDMOD);
+    h3m_modembed_set_target(h3m, H3M_MODEMBED_TARGET_HDMOD);
     h3m_write(h3m, "h3msnake2_hdmod.h3m");
 
     h3m_exit(&h3m);

@@ -3,9 +3,9 @@
 #ifndef __H3M_COMMON_H_DEF__
 #define __H3M_COMMON_H_DEF__
 
-// Included by h3m_od_dynamic.h, h3m_od_static.h
+#include "h3m_common_spells.h"
 
-#include "../msvc_comp_stdint.h"
+#include "../../utils/msvc_comp_stdint.h"
 
 #pragma pack(push, 1)
 
@@ -125,8 +125,8 @@ struct H3M_COMMON_WORN_ARTIFACTS_ROE {
     H3M_COMMON_ARTIFACT_TYPE_ROE device2;
     H3M_COMMON_ARTIFACT_TYPE_ROE device3;
     H3M_COMMON_ARTIFACT_TYPE_ROE device4;
-    H3M_COMMON_ARTIFACT_TYPE_ROE misc5;
     H3M_COMMON_ARTIFACT_TYPE_ROE spellbook;
+    H3M_COMMON_ARTIFACT_TYPE_ROE misc5;
     // ROE - no unknown here
 };                              // Size 18
 
@@ -148,8 +148,9 @@ struct H3M_COMMON_WORN_ARTIFACTS_AB {
     H3M_COMMON_ARTIFACT_TYPE_ABSOD device2;
     H3M_COMMON_ARTIFACT_TYPE_ABSOD device3;
     H3M_COMMON_ARTIFACT_TYPE_ABSOD device4;
-    H3M_COMMON_ARTIFACT_TYPE_ABSOD misc5;
     H3M_COMMON_ARTIFACT_TYPE_ABSOD spellbook;
+    H3M_COMMON_ARTIFACT_TYPE_ABSOD misc5;
+    
     // AB - no unknown here
 };                              // Size 36
 
@@ -171,9 +172,9 @@ struct H3M_COMMON_WORN_ARTIFACTS_SOD {
     H3M_COMMON_ARTIFACT_TYPE_ABSOD device2;
     H3M_COMMON_ARTIFACT_TYPE_ABSOD device3;
     H3M_COMMON_ARTIFACT_TYPE_ABSOD device4;
-    H3M_COMMON_ARTIFACT_TYPE_ABSOD misc5;
-    H3M_COMMON_ARTIFACT_TYPE_ABSOD spellbook;
     uint16_t unknown;           // SOD - uint16_t unknown here
+    H3M_COMMON_ARTIFACT_TYPE_ABSOD spellbook;
+    H3M_COMMON_ARTIFACT_TYPE_ABSOD misc5;
 };                              // Size 38
 
 union H3M_COMMON_WORN_ARTIFACTS {

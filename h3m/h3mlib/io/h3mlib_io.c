@@ -1,11 +1,11 @@
 // Created by John Åkerblom 2014-11-18
 
-#include "format_select.h"
-#include "h3mlib.h"
-#include "h3mlib_io.h"
-#include "h3m_code/h3m_code.h"
-#include "h3m_parsing/parse_h3m.h"
-#include "h3m_structures/h3m.h"
+#include "../utils/format_select.h"
+#include "../h3mlib.h"
+#include "../io/h3mlib_io.h"
+#include "../h3m_modembed/h3m_modembed.h"
+#include "../h3m_parsing/parse_h3m.h"
+#include "../h3m_structures/h3m.h"
 
 #ifndef NO_ZLIB
 #include <gzip_utils.h>
@@ -342,7 +342,7 @@ static int _h3mlib_io_write_f(struct H3MLIB_CTX *ctx, FILE * f)
     // If we a DLL has been marked to be embbedded, add OA for loading it here
     // at the end of OA section
     if (NULL != ctx->h3m_code.dll) {
-        h3m_code_write_oa_eof_jmp(&ctx->h3m_code, ctx->h3m.oa.count, 
+        h3m_modembed_write_oa_eof_jmp(&ctx->h3m_code, ctx->h3m.oa.count, 
             ctx->h3m.od.count, f);
     }
 
@@ -376,7 +376,7 @@ static int _h3mlib_io_write_f(struct H3MLIB_CTX *ctx, FILE * f)
     fwrite(nullpad, sizeof(nullpad), 1, f);
 
     if (NULL != ctx->h3m_code.dll) {
-        h3m_code_write_eof_dll(&ctx->h3m_code, fm, f);
+        h3m_modembed_write_eof_dll(&ctx->h3m_code, fm, f);
         if (NULL != ctx->h3m_code.shellcode_oa) {
             free(ctx->h3m_code.shellcode_oa);
             ctx->h3m_code.shellcode_oa = NULL;

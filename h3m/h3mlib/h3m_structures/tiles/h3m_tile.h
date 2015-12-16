@@ -3,7 +3,7 @@
 #ifndef __H3M_TILE_H_DEF__
 #define __H3M_TILE_H_DEF__
 
-#include "../msvc_comp_stdint.h"
+#include "../utils/msvc_comp_stdint.h"
 
 #define TERRAIN_TYPE_IS_VALID(T) \
     ((T.terrain_type <= T_ROCK)? 1 : 0)

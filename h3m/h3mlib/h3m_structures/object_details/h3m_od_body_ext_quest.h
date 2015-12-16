@@ -5,8 +5,8 @@
 
 // Included by h3m_od_body_ext.h
 
-#include "../../msvc_comp_stdint.h"
-#include "../h3m_common.h"
+#include "../../utils/msvc_comp_stdint.h"
+#include "../common/h3m_common.h"
 
 #pragma pack(push, 1)
 

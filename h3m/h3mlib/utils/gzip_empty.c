@@ -2,7 +2,7 @@
 
 #ifdef NO_ZLIB
 
-#include "gzip_utils.h"
+#include "gzip_empty.h"
 
 #include <stdio.h>
 #include <stdlib.h>

@@ -1,11 +1,11 @@
 // Created by John Åkerblom 2015-12-14
 
-#ifndef __H3M_OD_BODY_EXT_SPELLS_H_DEF__
-#define __H3M_OD_BODY_EXT_SPELLS_H_DEF__
+#ifndef __H3M_COMMON_SPELLS_H_DEF__
+#define __H3M_COMMON_SPELLS_H_DEF__
 
 #pragma pack(push, 1)
 
-struct H3M_OD_BODY_EXT_SPELLS
+struct H3M_COMMON_SPELLS
 {
     unsigned int summon_boat : 1;
     unsigned int scuttle_boat : 1;

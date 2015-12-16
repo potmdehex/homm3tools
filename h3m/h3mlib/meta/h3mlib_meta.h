@@ -9,7 +9,7 @@
 #ifndef __H3MLIB_META_H_DEF__
 #define __H3MLIB_META_H_DEF__
 
-#include "../msvc_comp_stdint.h"
+#include "../utils/msvc_comp_stdint.h"
 #include "../h3m_structures/h3m.h"
 
 #ifdef _MSC_VER

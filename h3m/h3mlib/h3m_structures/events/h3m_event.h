@@ -5,7 +5,7 @@
 
 // Included by h3m.h
 
-#include "../msvc_comp_stdint.h"
+#include "../utils/msvc_comp_stdint.h"
 #include "h3m_event_body.h"
 
 #pragma pack(push, 1)

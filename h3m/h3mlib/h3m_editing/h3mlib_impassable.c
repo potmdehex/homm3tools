@@ -1,8 +1,8 @@
 // Created by John Åkerblom 2015-01-24
 // Ported (mostly copy paste) from hlm (by John Åkerblom) C++ code
 
-#include "h3mlib.h"
-#include "h3mlib_ctx.h"
+#include "../h3mlib.h"
+#include "../internal/h3mlib_ctx.h"
 
 struct PASS_CB_CTX {
     size_t map_size;

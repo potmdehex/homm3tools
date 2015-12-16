@@ -2,7 +2,7 @@
 
 #include "../h3mlib.h"
 #include "parse_tile.h"
-#include "../safe_read.h"
+#include "../utils/safe_read.h"
 
 #include <stdlib.h>
 #include <string.h>

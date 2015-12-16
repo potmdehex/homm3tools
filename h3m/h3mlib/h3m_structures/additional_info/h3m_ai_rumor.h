@@ -5,7 +5,7 @@
 
 // Included by h3m_ai.h
 
-#include "../msvc_comp_stdint.h"
+#include "../utils/msvc_comp_stdint.h"
 #include "../h3mlib.h"
 
 #pragma pack(push, 1)

@@ -4,7 +4,7 @@
 #define __PARSE_PLAYERS_H_DEF__
 
 #include "../h3mlib.h"
-#include "../h3mlib_ctx.h"
+#include "../internal/h3mlib_ctx.h"
 #include "parse_player_ai.h"
 
 int parse_players_roe(struct H3MLIB_CTX *ctx);

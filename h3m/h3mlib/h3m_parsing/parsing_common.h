@@ -6,8 +6,8 @@
 #include "../h3mlib.h"
 #include "../meta/meta_push.h"
 #include "../meta/meta_push_od.h"
-#include "../format_select.h"
-#include "../safe_read.h"
+#include "../utils/format_select.h"
+#include "../utils/safe_read.h"
 
 #include "../h3m_structures/object_details/h3m_od_body_dynamic.h"
 

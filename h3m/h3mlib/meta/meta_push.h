@@ -1,9 +1,9 @@
 // Created by John Åkerblom 2015-01-24
 
-#ifndef __META_PUSH_H_DEF__
-#define __META_PUSH_H_DEF__
+#ifndef __META_OBJECT_PUSH_H_DEF__
+#define __META_OBJECT_PUSH_H_DEF__
 
-#include "../msvc_comp_stdint.h"
+#include "../utils/msvc_comp_stdint.h"
 #include "h3mlib_meta.h"
 
 #ifdef _MSC_VER
@@ -14,7 +14,7 @@ extern char *strdup(const char *);      // utarray.h references strdup, not used
 
 #include "../../../3rdparty/uthash/src/utarray.h"
 
-#define META_PUSH_PTR(DYN_POINTERS, BODY, MEMBER, SIZE, SKIP) \
+#define META_OBJECT_PUSH_PTR(DYN_POINTERS, BODY, MEMBER, SIZE, SKIP) \
     { \
         struct META_DYN_POINTER *PTR_STRUCT = calloc(1, sizeof(*PTR_STRUCT)); \
         PTR_STRUCT->body = (uint8_t *)BODY; \
@@ -29,7 +29,7 @@ extern char *strdup(const char *);      // utarray.h references strdup, not used
         utarray_push_back(DYN_POINTERS, &PTR_STRUCT); \
     }
 
-#define META_PUSH_SKIP(DYN_POINTERS, BODY, MEMBER, SKIP) \
+#define META_OBJECT_PUSH_SKIP(DYN_POINTERS, BODY, MEMBER, SKIP) \
     { \
         struct META_DYN_POINTER *PTR_STRUCT = calloc(1, sizeof(*PTR_STRUCT)); \
         PTR_STRUCT->body = (uint8_t *)BODY; \
@@ -43,7 +43,7 @@ extern char *strdup(const char *);      // utarray.h references strdup, not used
         utarray_push_back(DYN_POINTERS, &PTR_STRUCT); \
     }
 
-#define META_PUSH_ARRAY(DYN_POINTERS, BODY, MEMBER, ARRAY) \
+#define META_OBJECT_PUSH_ARRAY(DYN_POINTERS, BODY, MEMBER, ARRAY) \
     { \
         struct META_DYN_POINTER *PTR_STRUCT = calloc(1, sizeof(*PTR_STRUCT)); \
         PTR_STRUCT->body = (uint8_t *)BODY; \

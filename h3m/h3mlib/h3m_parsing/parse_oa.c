@@ -3,9 +3,9 @@
 #include "../h3mlib.h"
 #include "parse_oa.h"
 #include "parse_oa_meta_type.h"
-#include "../safe_read.h"
+#include "../utils/safe_read.h"
 
-#include "../h3m_object.h"
+#include "../meta/meta_object.h"
 
 #include "../gen/def_bodies_array.h"
 

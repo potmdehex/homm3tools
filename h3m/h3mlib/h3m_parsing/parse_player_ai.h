@@ -4,7 +4,7 @@
 #define __PARSE_PLAYER_AI_H_DEF__
 
 #include "../h3mlib.h"
-#include "../h3mlib_ctx.h"
+#include "../internal/h3mlib_ctx.h"
 
 int parse_player_ai_absod(int idx, struct H3MLIB_CTX *ctx);
 

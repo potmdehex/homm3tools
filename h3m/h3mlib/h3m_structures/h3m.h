@@ -3,7 +3,7 @@
 #ifndef __H3M_H_DEF__
 #define __H3M_H_DEF__
 
-#include "../msvc_comp_stdint.h"
+#include "../utils/msvc_comp_stdint.h"
 
 #define H3M_MAX_PLAYERS 8
 

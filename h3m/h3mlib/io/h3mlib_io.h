@@ -3,8 +3,8 @@
 #ifndef __H3MLIB_IO_H_DEF__
 #define __H3MLIB_IO_H_DEF__
 
-#include "h3mlib.h"
-#include "h3mlib_ctx.h"
+#include "../h3mlib.h"
+#include "../internal/h3mlib_ctx.h"
 
 int h3mlib_io_read_mem(struct H3MLIB_CTX **ctx,
     uint8_t *raw,

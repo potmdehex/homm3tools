@@ -5,8 +5,8 @@
 
 // Included by h3m_ai.h
 
-#include "../msvc_comp_stdint.h"
-#include "../h3m_common.h"
+#include "../utils/msvc_comp_stdint.h"
+#include "../common/h3m_common.h"
 
 #pragma pack(push, 1)
 
@@ -30,9 +30,9 @@ struct H3M_AI_HERO_SETTINGS_ARTIFACTS {
     uint16_t device2;
     uint16_t device3;
     uint16_t device4;
+    uint16_t unknown;
     uint16_t spellbook;
     uint16_t misc5;
-    uint16_t unknown;
     uint16_t backpack_count;
 
     struct H3M_COMMON_BACKPACK_ENTRY *backpack_entries; // DYNAMIC MEMBER

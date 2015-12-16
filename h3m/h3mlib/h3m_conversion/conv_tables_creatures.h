@@ -5,8 +5,8 @@
 #ifndef __CONV_TABLES_CREATURES_H_DEF__
 #define __CONV_TABLES_CREATURES_H_DEF__
 
-#include "../h3m_creature.h"
-#include "../msvc_comp_stdint.h"
+#include "../h3m_constants/h3m_creature.h"
+#include "../utils/msvc_comp_stdint.h"
 
 int creature_type_conv_table_roe[] = {
     H3M_CREATURE_PIKEMAN,       // Pikeman

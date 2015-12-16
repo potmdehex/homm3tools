@@ -5,14 +5,14 @@
 // somewhere close to 0xFFFF bytes.
 
 #include "../h3mlib.h"
-#include "../h3mlib_ctx.h"
+#include "../internal/h3mlib_ctx.h"
 
-#include "h3m_code.h"
+#include "h3m_modembed.h"
 
 #include <assert.h>
 #include <stdio.h>
 
-#define H3M_CODE_TARGET_MAX 2
+#define H3M_MODEMBED_TARGET_MAX 2
 
 #pragma pack(push, 1)
 
@@ -252,7 +252,7 @@ static const uint8_t MAPED_VALIDATION[] = {
 };
 #pragma pack(pop)
 
-int h3m_code_write_oa_eof_jmp(struct H3M_CODE *hc, uint32_t oa_count, uint32_t od_count, FILE * f)
+int h3m_modembed_write_oa_eof_jmp(struct H3M_MODEMBED *hm, uint32_t oa_count, uint32_t od_count, FILE * f)
 {
     struct H3M_OA_ENTRY oa_entry = {{ 0 }}; // gcc cannot compile { 0 } here
     struct shellcode_oa_jmp_to_dll_load_t *shellcode_oa = NULL;
@@ -264,12 +264,12 @@ int h3m_code_write_oa_eof_jmp(struct H3M_CODE *hc, uint32_t oa_count, uint32_t o
     assert(sizeof(SHELLCODE_OA_JMP_TO_DLL_LOAD) == sizeof(*shellcode_oa));
 
     // IAT values not retrieved for demo target, so demo target is currently not supported here
-    if (0 != hc->target && 1 != hc->target) {
+    if (0 != hm->target && 1 != hm->target) {
         return 1;
     }
 
-    const struct offsets_t *const ofs = TARGET_OFFSETS[hc->target];
-    const struct iat_t *const iat = TARGET_IATS[hc->target];
+    const struct offsets_t *const ofs = TARGET_OFFSETS[hm->target];
+    const struct iat_t *const iat = TARGET_IATS[hm->target];
 
     // Write an OA entry for sign object, to use it to make map valid in both map editor and game
     def_size = sizeof(SIGN_DEF)-1;
@@ -286,7 +286,7 @@ int h3m_code_write_oa_eof_jmp(struct H3M_CODE *hc, uint32_t oa_count, uint32_t o
     fwrite(initial_nul, 1, sizeof(initial_nul), f);
 
     // Save offset of this shellcode so it can be adjusted later
-    hc->shellcode_oa_offset = ftell(f);
+    hm->shellcode_oa_offset = ftell(f);
 
     // Construct & write shellcode in OA def name
     shellcode_oa = malloc(sizeof(*shellcode_oa));
@@ -309,16 +309,16 @@ int h3m_code_write_oa_eof_jmp(struct H3M_CODE *hc, uint32_t oa_count, uint32_t o
         4))->header.oa_index = oa_count;
     fwrite(&oa_entry.body, 1, sizeof(MAPED_VALIDATION), f);
 
-    if (NULL != hc->shellcode_oa) {
-        free(hc->shellcode_oa);
-        hc->shellcode_oa = NULL;
+    if (NULL != hm->shellcode_oa) {
+        free(hm->shellcode_oa);
+        hm->shellcode_oa = NULL;
     }
-    hc->shellcode_oa = (uint8_t *)shellcode_oa;
+    hm->shellcode_oa = (uint8_t *)shellcode_oa;
 
     return 0;
 }
 
-int h3m_code_write_eof_dll(const struct H3M_CODE *hc, uint32_t fm, FILE * f)
+int h3m_modembed_write_eof_dll(const struct H3M_MODEMBED *hm, uint32_t fm, FILE * f)
 {
     struct H3M_OA_ENTRY oa_entry = {{ 0 }}; // gcc cannot compile { 0 } here
     struct shellcode_eof_load_dll_t *shellcode_eof = NULL;
@@ -329,13 +329,13 @@ int h3m_code_write_eof_dll(const struct H3M_CODE *hc, uint32_t fm, FILE * f)
     assert(sizeof(SHELLCODE_OA_JMP_TO_DLL_LOAD) == sizeof(*shellcode_oa));
 
     // Currently demo target not supported for DLL loading as IAT values not retrieved
-    if (0 != hc->target && 1 != hc->target) {
+    if (0 != hm->target && 1 != hm->target) {
         return 1;
     }
 
-    const struct offsets_t *const ofs = TARGET_OFFSETS[hc->target];
-    const struct iat_t *const iat = TARGET_IATS[hc->target];
-    uint32_t orig_retn = TARGET_RETNS[hc->target];
+    const struct offsets_t *const ofs = TARGET_OFFSETS[hm->target];
+    const struct iat_t *const iat = TARGET_IATS[hm->target];
+    uint32_t orig_retn = TARGET_RETNS[hm->target];
 
     // Construct DLL loading shellcode
     shellcode_eof = malloc(sizeof(*shellcode_eof));
@@ -350,20 +350,20 @@ int h3m_code_write_eof_dll(const struct H3M_CODE *hc, uint32_t fm, FILE * f)
     shellcode_eof->GetProcAddress2 = iat->GetProcAddress;
     shellcode_eof->LoadLibraryA = iat->LoadLibraryA;
     shellcode_eof->WriteFile = iat->WriteFile;
-    shellcode_eof->dll_size = hc->dll_size;
+    shellcode_eof->dll_size = hm->dll_size;
     shellcode_eof->orig_retn = orig_retn;
     shellcode_eof->map_format = fm;
 
     // Preserve file position, then write dll loading shellcoding as well as dll
     shellcode_eof_offset = ftell(f);
     fwrite(shellcode_eof, 1, sizeof(*shellcode_eof), f);
-    fwrite(hc->dll, 1, hc->dll_size, f);
+    fwrite(hm->dll, 1, hm->dll_size, f);
 
     // Go back in file and adjust the OA shellcode using the file positions we now know
-    shellcode_oa = (struct shellcode_oa_jmp_to_dll_load_t *)hc->shellcode_oa;
+    shellcode_oa = (struct shellcode_oa_jmp_to_dll_load_t *)hm->shellcode_oa;
     shellcode_oa->shellcode_eof_offset = shellcode_eof_offset;
     shellcode_oa->total_file_size = ftell(f);
-    fseek(f, hc->shellcode_oa_offset, SEEK_SET);
+    fseek(f, hm->shellcode_oa_offset, SEEK_SET);
     fwrite(shellcode_oa, 1, sizeof(*shellcode_oa), f);
 
     // Restore file pointer to end of file
@@ -374,7 +374,7 @@ int h3m_code_write_eof_dll(const struct H3M_CODE *hc, uint32_t fm, FILE * f)
     return 0;
 }
 
-int h3m_code_set_dll(h3mlib_ctx_t ctx, const char *dll)
+int h3m_modembed_set_dll(h3mlib_ctx_t ctx, const char *dll)
 {
     size_t n = 0;
     FILE *f = NULL;
@@ -404,14 +404,14 @@ int h3m_code_set_dll(h3mlib_ctx_t ctx, const char *dll)
     return 0;
 }
 
-int h3m_code_set_target(h3mlib_ctx_t ctx, enum H3M_CODE_TARGET target)
+int h3m_modembed_set_target(h3mlib_ctx_t ctx, enum H3M_MODEMBED_TARGET target)
 {
     ctx->h3m_code.target = target;
 
     return 0;
 }
 
-int h3m_code_unset(h3mlib_ctx_t ctx)
+int h3m_modembed_unset(h3mlib_ctx_t ctx)
 {
     if (NULL != ctx->h3m_code.dll) {
         free(ctx->h3m_code.dll);

@@ -3,8 +3,8 @@
 #include "../h3mlib.h"
 #include "parse_event.h"
 
-#include "../format_select.h"
-#include "../safe_read.h"
+#include "../utils/format_select.h"
+#include "../utils/safe_read.h"
 
 #include <stdlib.h>
 #include <string.h>

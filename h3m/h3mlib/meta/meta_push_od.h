@@ -1,9 +1,9 @@
 // Created by John Åkerblom 2015-01-24
 
-#ifndef __META_PUSH_OD_H_DEF__
-#define __META_PUSH_OD_H_DEF__
+#ifndef __META_OBJECT_PUSH_OD_H_DEF__
+#define __META_OBJECT_PUSH_OD_H_DEF__
 
-#include "../msvc_comp_stdint.h"
+#include "../utils/msvc_comp_stdint.h"
 #include "h3mlib_meta.h"
 
 int meta_push_od(uint32_t fm, uint8_t *body,

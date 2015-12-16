@@ -1,12 +1,12 @@
 // Created by John Åkerblom 2014-01-22
 
 #include "../h3mlib.h"
-#include "../h3m_creature.h"
-#include "../h3m_object_categories.h"
+#include "../h3m_constants/h3m_creature.h"
+#include "../meta/meta_object_name.h"
 
-#include "../default_od_body.h"
-#include "../h3mlib_ctx.h"
-#include "../h3mlib_cleanup.h"
+#include "../h3m_editing/default_od_body.h"
+#include "../internal/h3mlib_ctx.h"
+#include "../internal/h3mlib_ctx_cleanup.h"
 
 #include "../meta/meta_push_od.h"
 #include "../h3m_structures/object_attributes/h3m_oa.h"
@@ -175,34 +175,34 @@ static int _oa_type_version_adjust(int meta_type, const char *def,
     int val = 0;
 
     switch (meta_type) {
-    case H3M_OBJECT_ARTIFACT:
+    case META_OBJECT_ARTIFACT:
         // Greatest RoE artifact is Orb of Inhibition at 126 TODO make define
         meta_type =
             (object_number >
-            126) ? H3M_OBJECT_ARTIFACT_SOD : H3M_OBJECT_ARTIFACT;
+            126) ? META_OBJECT_ARTIFACT_SOD : META_OBJECT_ARTIFACT;
         break;
-        /*case H3M_OBJECT_DWELLING:
-           meta_type = (H3M_OBJECT_DWELLING == _oa_type_from_def(def)) ? H3M_OBJECT_DWELLING : H3M_OBJECT_DWELLING_ABSOD;
+        /*case META_OBJECT_DWELLING:
+           meta_type = (META_OBJECT_DWELLING == _oa_type_from_def(def)) ? META_OBJECT_DWELLING : META_OBJECT_DWELLING_ABSOD;
            break; */
-    case H3M_OBJECT_TOWN:
+    case META_OBJECT_TOWN:
         // Greatest town is Fortress at 7 TODO make define
         meta_type =
-            (object_number > 7) ? H3M_OBJECT_TOWN_ABSOD : H3M_OBJECT_TOWN;
+            (object_number > 7) ? META_OBJECT_TOWN_ABSOD : META_OBJECT_TOWN;
         break;
-    case H3M_OBJECT_DWELLING:
+    case META_OBJECT_DWELLING:
         // Greatest RoE Dwelling is Swordsman dwelling at 58 (TODO verify)  TODO make define
         meta_type =
             (object_number >
-            58) ? H3M_OBJECT_DWELLING_ABSOD : H3M_OBJECT_DWELLING;
+            58) ? META_OBJECT_DWELLING_ABSOD : META_OBJECT_DWELLING;
         break;
-    case H3M_OBJECT_MONSTER:
+    case META_OBJECT_MONSTER:
         // Greatest RoE monster value is Diamond Golem at 117 TODO make define
         meta_type =
             (object_number >
-            117) ? H3M_OBJECT_MONSTER_ABSOD : H3M_OBJECT_MONSTER;
+            117) ? META_OBJECT_MONSTER_ABSOD : META_OBJECT_MONSTER;
         break;
-        //case H3M_OBJECT_MONOLITH_TWO_WAY:
-        //return (H3M_OBJECT_MONOLITH_TWO_WAY == _oa_type_from_def(def)) ? H3M_OBJECT_MONOLITH_TWO_WAY : H3M_OBJECT_MONOLITH_TWO_WAY_ABSOD;
+        //case META_OBJECT_MONOLITH_TWO_WAY:
+        //return (META_OBJECT_MONOLITH_TWO_WAY == _oa_type_from_def(def)) ? META_OBJECT_MONOLITH_TWO_WAY : META_OBJECT_MONOLITH_TWO_WAY_ABSOD;
     default:
         break;
     }
@@ -217,7 +217,7 @@ static int _convert_oa_roe(struct H3MLIB_CTX *ctx_in,
 {
     size_t max_count = ctx_in->h3m.oa.count;
     size_t count = 0;
-    enum H3M_OBJECT oa_type = 0;
+    enum META_OBJECT oa_type = 0;
     struct H3M_OA_ENTRY *entry_in = NULL;
     struct META_OA_ENTRY *meta_in = NULL;
     struct H3M_OA_ENTRY *entry_out = NULL;
@@ -250,28 +250,28 @@ static int _convert_oa_roe(struct H3MLIB_CTX *ctx_in,
 
         switch (oa_type) {
             // ABSOD objects to drop
-        case H3M_OBJECT_PLACEHOLDER_HERO:      // TODO convert to random hero
-        case H3M_OBJECT_ABANDONED_MINE_ABSOD:
-        case H3M_OBJECT_ARTIFACT_AB:
-        case H3M_OBJECT_ARTIFACT_SOD:
-        case H3M_OBJECT_DWELLING_ABSOD:
-        case H3M_OBJECT_GARRISON_ABSOD:
-        case H3M_OBJECT_GENERIC_IMPASSABLE_TERRAIN_ABSOD:      // Not handled here
-        case H3M_OBJECT_GENERIC_PASSABLE_TERRAIN_SOD:
-        case H3M_OBJECT_GENERIC_VISITABLE_ABSOD:
-        case H3M_OBJECT_RANDOM_DWELLING_ABSOD:
-        case H3M_OBJECT_RANDOM_DWELLING_PRESET_LEVEL_ABSOD:
-        case H3M_OBJECT_RANDOM_DWELLING_PRESET_ALIGNMENT_ABSOD:
-        case H3M_OBJECT_QUEST_GUARD:   // Should be renamed with _ABSOD at end
-        case H3M_OBJECT_SEERS_HUT:     // Simply drop for now... Vastly different in RoE with main problem being the other quest types
+        case META_OBJECT_PLACEHOLDER_HERO:      // TODO convert to random hero
+        case META_OBJECT_ABANDONED_MINE_ABSOD:
+        case META_OBJECT_ARTIFACT_AB:
+        case META_OBJECT_ARTIFACT_SOD:
+        case META_OBJECT_DWELLING_ABSOD:
+        case META_OBJECT_GARRISON_ABSOD:
+        case META_OBJECT_GENERIC_IMPASSABLE_TERRAIN_ABSOD:      // Not handled here
+        case META_OBJECT_GENERIC_PASSABLE_TERRAIN_SOD:
+        case META_OBJECT_GENERIC_VISITABLE_ABSOD:
+        case META_OBJECT_RANDOM_DWELLING_ABSOD:
+        case META_OBJECT_RANDOM_DWELLING_PRESET_LEVEL_ABSOD:
+        case META_OBJECT_RANDOM_DWELLING_PRESET_ALIGNMENT_ABSOD:
+        case META_OBJECT_QUEST_GUARD:   // Should be renamed with _ABSOD at end
+        case META_OBJECT_SEERS_HUT:     // Simply drop for now... Vastly different in RoE with main problem being the other quest types
             continue;
-        case H3M_OBJECT_WITCH_HUT:     // No skill customization for RoE Witch Hut
+        case META_OBJECT_WITCH_HUT:     // No skill customization for RoE Witch Hut
             body_size_delta = -4;
             break;
-        case H3M_OBJECT_GARRISON:      // Garrisons are the only binary compatible objects that need conversion
+        case META_OBJECT_GARRISON:      // Garrisons are the only binary compatible objects that need conversion
             convert_binary_compatible = 1;
             break;
-        case H3M_OBJECT_MONSTER_ABSOD:
+        case META_OBJECT_MONSTER_ABSOD:
             if (entry_out->body.object_number >=
                 sizeof(creature_type_conv_table_roe) /
                 sizeof(creature_type_conv_table_roe[0])) {
@@ -300,7 +300,7 @@ static int _convert_oa_roe(struct H3MLIB_CTX *ctx_in,
         }
 #endif
 
-        if (H3M_OBJECT_MONSTER_ABSOD == oa_type) {
+        if (META_OBJECT_MONSTER_ABSOD == oa_type) {
             entry_out->body.object_number =
                 (uint32_t) creature_type_conv_table_roe[entry_out->body.
                 object_number];
@@ -312,14 +312,14 @@ static int _convert_oa_roe(struct H3MLIB_CTX *ctx_in,
                 "%s", "AVWmrnd0.def");
         }
         // Conflux hack, Conflux->Random Town
-        else if (H3M_OBJECT_TOWN_ABSOD == oa_type) {
+        else if (META_OBJECT_TOWN_ABSOD == oa_type) {
             snprintf((char *)entry_out->header.def, entry_out->header.def_size,
                 "%s", "AVCranx0.def");
             entry_out->body.object_class = 0x4D;
             entry_out->body.object_number = 0;
         }
         // Conflux heroes hack, Conflux hero -> castle hero
-        else if (H3M_OBJECT_HERO == oa_type) {
+        else if (META_OBJECT_HERO == oa_type) {
             if (0 == stricmp((char *)entry_out->header.def, "ah16_e.def")) {
                 snprintf((char *)entry_out->header.def, entry_out->header.def_size,
                     "%s", "ah00_e.def");
@@ -555,7 +555,7 @@ static int _od_body_conv(struct H3MLIB_CTX *ctx_in,
     meta_out->has_absod_id = 0;
 
     switch (meta_in->oa_type) {
-    case H3M_OBJECT_GARRISON:
+    case META_OBJECT_GARRISON:
         _inline_conv_army((union H3M_COMMON_ARMY *)&((union
                     H3M_OD_BODY_STATIC_GARRISON *)entry_out->body)->any.
             creatures, MAX_CREATURES);
@@ -565,45 +565,45 @@ static int _od_body_conv(struct H3MLIB_CTX *ctx_in,
             - sizeof(struct H3M_OD_BODY_STATIC_GARRISON_ROE);
         return 0;
 #if 1
-    case H3M_OBJECT_EVENT:
+    case META_OBJECT_EVENT:
         _inline_conv_event(ctx_in->h3m.format,
             (struct H3M_OD_BODY_DYNAMIC_EVENT *)entry_out->body);
         return _reset_meta_push_od(ctx_out->h3m.format, entry_out->body,
             meta_out);
-    case H3M_OBJECT_PANDORAS_BOX:
+    case META_OBJECT_PANDORAS_BOX:
         _inline_conv_pandoras_box(ctx_in->h3m.format,
             (struct H3M_OD_BODY_DYNAMIC_PANDORAS_BOX *)entry_out->body);
         return _reset_meta_push_od(ctx_out->h3m.format, entry_out->body,
             meta_out);
 #endif
 #if 1
-    case H3M_OBJECT_TOWN:
-    case H3M_OBJECT_TOWN_ABSOD:
+    case META_OBJECT_TOWN:
+    case META_OBJECT_TOWN_ABSOD:
         _inline_conv_town(ctx_in->h3m.format,
             (struct H3M_OD_BODY_DYNAMIC_TOWN *)entry_out->body);
         return _reset_meta_push_od(ctx_out->h3m.format, entry_out->body,
             meta_out);
 #endif
 #if 1
-    case H3M_OBJECT_HERO:
-    case H3M_OBJECT_PRISON:
-    case H3M_OBJECT_RANDOM_HERO:
+    case META_OBJECT_HERO:
+    case META_OBJECT_PRISON:
+    case META_OBJECT_RANDOM_HERO:
         _inline_conv_hero(ctx_in->h3m.format,
             (struct H3M_OD_BODY_DYNAMIC_HERO *)entry_out->body, entry_out,
             conv);
         return _reset_meta_push_od(ctx_out->h3m.format, entry_out->body,
             meta_out);
 #endif
-    case H3M_OBJECT_MONSTER:
+    case META_OBJECT_MONSTER:
         if (((struct H3M_OD_BODY_DYNAMIC_MONSTER *)entry_out->body)->
             has_mesg_and_treasure) {
             --meta_out->body_size;      // Treasure artifact: uint16_t->uint8_t
         }
         return 0;
 #if 1
-    case H3M_OBJECT_ARTIFACT:
-    case H3M_OBJECT_RESOURCE:
-    case H3M_OBJECT_SPELL_SCROLL:
+    case META_OBJECT_ARTIFACT:
+    case META_OBJECT_RESOURCE:
+    case META_OBJECT_SPELL_SCROLL:
         // this type cast is fine for resource too
         if (NULL != ((struct H3M_OD_BODY_DYNAMIC_ARTIFACT *)
             entry_out->body)->guardians.creatures) {
@@ -615,8 +615,8 @@ static int _od_body_conv(struct H3MLIB_CTX *ctx_in,
         }
         return 0;
 #endif
-    case H3M_OBJECT_OCEAN_BOTTLE:
-    case H3M_OBJECT_SIGN:
+    case META_OBJECT_OCEAN_BOTTLE:
+    case META_OBJECT_SIGN:
         return 0;
     default: // fail
         break;
@@ -669,7 +669,7 @@ static int _convert_od_roe(struct H3MLIB_CTX *ctx_in,
         HASH_FIND_INT(conv->oa_hash, &entry_in->header.oa_index, entry_conv);
 
         if (NULL == entry_conv) {
-            if (H3M_OBJECT_GENERIC_IMPASSABLE_TERRAIN_ABSOD == meta_in->oa_type) {
+            if (META_OBJECT_GENERIC_IMPASSABLE_TERRAIN_ABSOD == meta_in->oa_type) {
                 oa_in = &ctx_in->h3m.oa.entries[entry_in->header.oa_index];
                 passability = (uint64_t *)oa_in->body.passable;
 
@@ -685,11 +685,11 @@ static int _convert_od_roe(struct H3MLIB_CTX *ctx_in,
             } else {
                 snprintf(log_msg, sizeof(log_msg) - 1,
                     "[!!!] LOST object %s at [%d,%d,%d]\n",
-                    H3M_OBJECT_CATEGORIES[meta_in->oa_type], entry_in->header.x,
+                    META_OBJECT_NAME[meta_in->oa_type], entry_in->header.x,
                     entry_in->header.y, entry_in->header.z);
                 // Loss of SoD passable terrain (fiery clouds etc) is comparatively not that bad, so just log as warning
                 _log_msg(conv,
-                    (H3M_OBJECT_GENERIC_PASSABLE_TERRAIN_SOD !=
+                    (META_OBJECT_GENERIC_PASSABLE_TERRAIN_SOD !=
                         meta_in->oa_type) ? LOG_CRITICAL : LOG_WARNING,
                     log_msg);
             }
@@ -720,7 +720,7 @@ static int _convert_od_roe(struct H3MLIB_CTX *ctx_in,
                     // Getting default version of object failed - object lost
                     snprintf(log_msg, sizeof(log_msg) - 1,
                         "[!!!] LOST object %s at [%d,%d,%d]\n",
-                        H3M_OBJECT_CATEGORIES[meta_in->oa_type],
+                        META_OBJECT_NAME[meta_in->oa_type],
                         entry_in->header.x, entry_in->header.y,
                         entry_in->header.z);
                     // Loss of SoD passable terrain (fiery clouds etc) is comparatively not that bad, so just log as warning
@@ -731,7 +731,7 @@ static int _convert_od_roe(struct H3MLIB_CTX *ctx_in,
                     // Object added with defaults
                     snprintf(log_msg, sizeof(log_msg) - 1,
                         "[!] LOST customization for %s at [%d,%d,%d]\n",
-                        H3M_OBJECT_CATEGORIES[meta_in->oa_type],
+                        META_OBJECT_NAME[meta_in->oa_type],
                         entry_out->header.x,
                         entry_out->header.y, entry_out->header.z);
                     _log_msg(conv, LOG_WARNING, log_msg);

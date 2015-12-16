@@ -1,17 +1,16 @@
 // Created by John Åkerblom 2014-11-18Bla bla standard lib so unsafe
 
-#include "h3mlib.h"
-#include "h3mlib_cleanup.h"
+#include "../h3mlib.h"
+#include "h3mlib_ctx_cleanup.h"
 #include "h3mlib_ctx.h"
-#include "h3m_structures/h3m.h"
-#include "format_select.h"
+#include "../h3m_structures/h3m.h"
+#include "../utils/format_select.h"
 
-#include "../../../3rdparty/uthash/src/uthash.h"
 #include <stdlib.h>
 #include <string.h>
 
 #ifdef _MSC_VER
-#pragma warning(disable:4996)   // M$ standard lib unsafe
+    #pragma warning(disable:4996)   // M$ standard lib unsafe
 #endif
 
 #define SAFE_FREE(P) if(NULL != P) free(P)
@@ -91,7 +90,7 @@ int h3mlib_cleanup(struct H3MLIB_CTX **ctx)
 {
     struct H3M *p = &(*ctx)->h3m;
     struct H3MLIB_META *meta = &(*ctx)->meta;
-    struct H3M_CODE *hc = &(*ctx)->h3m_code;
+    struct H3M_MODEMBED *hm = &(*ctx)->h3m_code;
     unsigned int i = 0;
     unsigned int j = 0;
     const uint32_t fm = p->format;
@@ -156,8 +155,8 @@ int h3mlib_cleanup(struct H3MLIB_CTX **ctx)
     SAFE_FREE(p->od.entries);
     SAFE_FREE(p->event.entries);
 
-    SAFE_FREE(hc->dll);
-    SAFE_FREE(hc->shellcode_oa);
+    SAFE_FREE(hm->dll);
+    SAFE_FREE(hm->shellcode_oa);
 
     SAFE_FREE(meta->oa_entries);
     SAFE_FREE(meta->od_entries);

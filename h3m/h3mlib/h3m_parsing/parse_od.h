@@ -4,7 +4,7 @@
 #define __PARSE_OD_H_DEF__
 
 #include "../h3mlib.h"
-#include "../h3mlib_ctx.h"
+#include "../internal/h3mlib_ctx.h"
 #include "../h3m_structures/object_details/h3m_od_body_ext_contents.h"
 #include "../h3m_structures/object_details/h3m_od_body_ext_guardians.h"
 #include "../h3m_structures/object_details/h3m_od_body_ext_quest.h"

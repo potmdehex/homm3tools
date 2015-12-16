@@ -1,13 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="..\..\default_od_body.c" />
     <ClCompile Include="..\..\h3mlib.c" />
-    <ClCompile Include="..\..\h3mlib_alg_od_text.c" />
-    <ClCompile Include="..\..\h3mlib_cleanup.c" />
-    <ClCompile Include="..\..\h3mlib_impassable.c" />
-    <ClCompile Include="..\..\h3mlib_io.c" />
-    <ClCompile Include="..\..\memmem.c" />
     <ClCompile Include="..\..\meta\meta_push_od.c">
       <Filter>meta</Filter>
     </ClCompile>
@@ -107,9 +101,6 @@
     <ClCompile Include="..\..\h3m_conversion\convert.c">
       <Filter>h3m_conversion</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\gzip_empty\gzip_utils.c">
-      <Filter>gzip_empty</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\gen\creature_names_hash.c">
       <Filter>gen</Filter>
     </ClCompile>
@@ -152,25 +143,33 @@
     <ClCompile Include="..\..\gen\passability\pass_table_WATER.c">
       <Filter>gen\passability</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\h3m_code\h3m_code.c">
-      <Filter>h3m_code</Filter>
+    <ClCompile Include="..\..\utils\memmem.c">
+      <Filter>utils</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\utils\gzip_empty.c">
+      <Filter>utils</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\h3m_modembed\h3m_modembed.c">
+      <Filter>h3m_modembed</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\h3m_editing\h3mlib_impassable.c">
+      <Filter>h3m_editing</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\h3m_editing\h3mlib_alg_od_text.c">
+      <Filter>h3m_editing</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\h3m_editing\default_od_body.c">
+      <Filter>h3m_editing</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\internal\h3mlib_ctx_cleanup.c">
+      <Filter>internal</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\io\h3mlib_io.c">
+      <Filter>io</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\default_od_body.h" />
-    <ClInclude Include="..\..\format_select.h" />
-    <ClInclude Include="..\..\h3m_creature.h" />
-    <ClInclude Include="..\..\h3m_object.h" />
-    <ClInclude Include="..\..\h3m_object_categories.h" />
     <ClInclude Include="..\..\h3mlib.h" />
-    <ClInclude Include="..\..\h3mlib_alg_od_text.h" />
-    <ClInclude Include="..\..\h3mlib_cleanup.h" />
-    <ClInclude Include="..\..\h3mlib_ctx.h" />
-    <ClInclude Include="..\..\h3mlib_io.h" />
-    <ClInclude Include="..\..\memmem.h" />
-    <ClInclude Include="..\..\msvc_comp_stdint.h" />
-    <ClInclude Include="..\..\safe_read.h" />
-    <ClInclude Include="..\..\vcmi_oa_constants.h" />
     <ClInclude Include="..\..\meta\meta_push_od.h">
       <Filter>meta</Filter>
     </ClInclude>
@@ -181,9 +180,6 @@
       <Filter>meta</Filter>
     </ClInclude>
     <ClInclude Include="..\..\h3m_structures\h3m.h">
-      <Filter>h3m_structures</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\h3m_structures\h3m_common.h">
       <Filter>h3m_structures</Filter>
     </ClInclude>
     <ClInclude Include="..\..\h3m_parsing\h3mlib_parsing.h">
@@ -234,9 +230,6 @@
     <ClInclude Include="..\..\h3m_conversion\conv_tables_creatures.h">
       <Filter>h3m_conversion</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\gzip_empty\gzip_utils.h">
-      <Filter>gzip_empty</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\gen\def_bodies_array.h">
       <Filter>gen</Filter>
     </ClInclude>
@@ -245,9 +238,6 @@
     </ClInclude>
     <ClInclude Include="..\..\gen\od_default_bodies.h">
       <Filter>gen</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\h3m_code\h3m_code.h">
-      <Filter>h3m_code</Filter>
     </ClInclude>
     <ClInclude Include="..\..\h3m_structures\additional_info\h3m_ai.h">
       <Filter>h3m_structures\additional_info</Filter>
@@ -321,6 +311,75 @@
     <ClInclude Include="..\..\h3m_structures\object_attributes\h3m_oa_body.h">
       <Filter>h3m_structures\object_attributes</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\h3m_structures\common\h3m_common.h">
+      <Filter>h3m_structures\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\utils\safe_read.h">
+      <Filter>utils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\utils\memmem.h">
+      <Filter>utils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\utils\msvc_comp_stdint.h">
+      <Filter>utils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\utils\gzip_empty.h">
+      <Filter>utils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\utils\format_select.h">
+      <Filter>utils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\internal\h3mlib_ctx.h">
+      <Filter>internal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\h3m_modembed\h3m_modembed.h">
+      <Filter>h3m_modembed</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\meta\meta_object_name.h">
+      <Filter>meta</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\h3m_constants\h3m_creature.h">
+      <Filter>h3m_constants</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\h3m_constants\h3m_hero.h">
+      <Filter>h3m_constants</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\meta\meta_object.h">
+      <Filter>meta</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\h3m_editing\h3mlib_alg_od_text.h">
+      <Filter>h3m_editing</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\h3m_editing\default_od_body.h">
+      <Filter>h3m_editing</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\internal\h3mlib_ctx_cleanup.h">
+      <Filter>internal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\io\h3mlib_io.h">
+      <Filter>io</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\h3m_constants\h3m_disposition.h">
+      <Filter>h3m_constants</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\h3m_constants\h3m_format.h">
+      <Filter>h3m_constants</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\h3m_constants\h3m_terrain.h">
+      <Filter>h3m_constants</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\h3m_constants\h3m_oa_class.h">
+      <Filter>h3m_constants</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\h3m_constants\h3m_constants.h">
+      <Filter>h3m_constants</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\h3m_constants\h3m_skill.h">
+      <Filter>h3m_constants</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\h3m_constants\h3m_artifact.h">
+      <Filter>h3m_constants</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\README" />
@@ -328,9 +387,6 @@
   <ItemGroup>
     <Filter Include="gen">
       <UniqueIdentifier>{e576ebe4-e010-4ab4-b5e7-b14094cf24bd}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="gzip_empty">
-      <UniqueIdentifier>{32ce44cf-f7bf-400b-b490-0436f190908b}</UniqueIdentifier>
     </Filter>
     <Filter Include="h3m_conversion">
       <UniqueIdentifier>{79a37a65-6e41-4c94-8a4a-5a6c9419c886}</UniqueIdentifier>
@@ -349,9 +405,6 @@
     </Filter>
     <Filter Include="gen\passability">
       <UniqueIdentifier>{939b41c6-86a0-4829-901f-02b5b1348199}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="h3m_code">
-      <UniqueIdentifier>{01000df3-55b8-42c5-a0dd-fb6c116d5add}</UniqueIdentifier>
     </Filter>
     <Filter Include="h3m_structures\additional_info">
       <UniqueIdentifier>{e99bf16e-b909-4bb6-95cc-44158a91d351}</UniqueIdentifier>
@@ -373,6 +426,27 @@
     </Filter>
     <Filter Include="h3m_structures\players">
       <UniqueIdentifier>{3322a183-685e-4b20-87b0-b9bf6644ebfd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="h3m_structures\common">
+      <UniqueIdentifier>{91704e15-e7c8-4b55-a69f-62105b104941}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="utils">
+      <UniqueIdentifier>{1f33e3b4-dcae-4d73-afb3-51cd9d32c62f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="io">
+      <UniqueIdentifier>{27b21479-c39a-4e58-b897-05d015e13579}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="h3m_editing">
+      <UniqueIdentifier>{23354a69-d58e-44ba-8481-33fd983c1498}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="h3m_modembed">
+      <UniqueIdentifier>{5995c0ac-2518-4d35-a5ea-113551d00c2b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="internal">
+      <UniqueIdentifier>{9e402e2f-6b2b-40df-aba8-1a8eeddb7a3d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="h3m_constants">
+      <UniqueIdentifier>{944196b9-3647-4e73-9798-d139beb53708}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

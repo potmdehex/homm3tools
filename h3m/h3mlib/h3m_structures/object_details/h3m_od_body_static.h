@@ -5,7 +5,7 @@
 
 // Included by h3m_od.h
 
-#include "../msvc_comp_stdint.h"
+#include "../utils/msvc_comp_stdint.h"
 
 #pragma pack(push, 1)
 

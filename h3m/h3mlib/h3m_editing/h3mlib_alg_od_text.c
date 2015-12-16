@@ -1,9 +1,9 @@
 // Created by John Åkerblom 2014-12-18
 
-#include "h3mlib.h"
-#include "h3mlib_ctx.h"
+#include "../h3mlib.h"
+#include "../internal/h3mlib_ctx.h"
 
-#include <math.h>               // abs()
+#include <math.h> // abs()
 
 struct DOT_CTX {
     struct H3MLIB_CTX *h3mlib_ctx;
