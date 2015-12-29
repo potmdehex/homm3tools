@@ -12,8 +12,8 @@
     #define snprintf _snprintf
 #endif
 
-#define H3COMPLETE_PREFIX "[h3complete]"
-#define HDMOD_PREFIX "[hdmod]"
+#define H3COMPLETE_SUFFIX "[h3complete].h3m"
+#define HDMOD_SUFFIX "[hdmod].h3m"
 
 void _print_usage(void)
 {
@@ -44,7 +44,7 @@ int main(int argc, char **argv)
         return 1;
     }
 
-    len = strlen(argv[1]) + sizeof(H3COMPLETE_PREFIX);
+    len = strlen(argv[1]) + sizeof(H3COMPLETE_SUFFIX);
     output_file = calloc(len, 1);
     if (output_file == NULL) {
         puts("[!] Failed to allocate memory!");
@@ -53,7 +53,7 @@ int main(int argc, char **argv)
     }
 
     // H3Complete
-    snprintf(output_file, len - 1, "%s%s", H3COMPLETE_PREFIX, argv[1]);
+    snprintf(output_file, len - 1, "%s%s", argv[1], H3COMPLETE_SUFFIX);
     h3m_modembed_set_target(h3m, H3M_MODEMBED_TARGET_COMPLETE);
     if (0 != h3m_write(h3m, output_file)) {
         printf("[!] Failed to write %s!", output_file);
@@ -64,7 +64,8 @@ int main(int argc, char **argv)
     printf("[+] Embedded %s into %s\n", argv[2], output_file);
 
     // HD Mod
-    snprintf(output_file, len - 1, "%s%s", HDMOD_PREFIX, argv[1]);
+    // Note same len is used here
+    snprintf(output_file, len - 1, "%s%s", argv[1], HDMOD_SUFFIX);
     h3m_modembed_set_target(h3m, H3M_MODEMBED_TARGET_HDMOD);
     if (0 != h3m_write(h3m, output_file)) {
         printf("[!] Failed to write %s!", output_file);

