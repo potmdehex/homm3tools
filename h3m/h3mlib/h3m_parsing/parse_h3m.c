@@ -1,7 +1,7 @@
 // Created by John Åkerblom 2014-11-21
 
 #include "../h3mlib.h"
-#include "../h3mlib_ctx.h"
+#include "../internal/h3mlib_ctx.h"
 
 #include "parse_ai.h"
 #include "parse_bi.h"

@@ -4,7 +4,7 @@
 #define __PARSE_OA_H_DEF__
 
 #include "../h3mlib.h"
-#include "../h3mlib_ctx.h"
+#include "../internal/h3mlib_ctx.h"
 
 int parse_oa(struct H3MLIB_CTX *ctx);
 

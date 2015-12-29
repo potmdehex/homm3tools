@@ -167,20 +167,20 @@ std::weak_ptr<MapObject> addObject(T& v, int x, int y, int z, const std::string&
 int Hlm::xyzAddObject(int x, int y, int z, const std::string& name)
 {
     std::weak_ptr<MapObject> wp;
-    enum H3M_OBJECT type = h3m_get_object_type(name.c_str());
+    enum META_OBJECT type = h3m_get_object_type(name.c_str());
 
     // Init object and add to corresponding vector, inferring object type from the 
     // vector passed to addObject.
     switch (type)
     {
-    case H3M_OBJECT_RANDOM_HERO:
-    case H3M_OBJECT_HERO:
+    case META_OBJECT_RANDOM_HERO:
+    case META_OBJECT_HERO:
         wp = addObject(m_map_heroes, x, y, z, name);
         break;
-    case H3M_OBJECT_GENERIC_VISITABLE:
+    case META_OBJECT_GENERIC_VISITABLE:
         wp = addObject(m_map_generic, x, y, z, name);
         break;
-    case H3M_OBJECT_MONSTER:
+    case META_OBJECT_MONSTER:
         wp = addObject(m_map_monsters, x, y, z, name);
         break;
     default:

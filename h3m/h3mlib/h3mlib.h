@@ -7,9 +7,10 @@
 extern "C" {
 #endif
 
-#include <stddef.h>             // size_t
-#include "msvc_comp_stdint.h"
-#include "h3m_object.h"
+#include <stddef.h> // size_t
+#include "meta/meta_object.h"
+#include "h3m_constants/h3m_constants.h"
+#include "utils/msvc_comp_stdint.h"
 
 #define H3MLIB_INTERRUPT_CB_NO_CLEANUP 0x13333337
 #define H3MLIB_TERRAIN_NATIVE -1
@@ -22,40 +23,6 @@ extern "C" {
 #define H3M_MAX_PLAYERS 8
 #define H3M_MAX_HERO_NAME 12
 #define H3M_2D_TO_1D(s, x, y, z) (x + (y * s) + (z * s * s))
-
-    enum H3M_FORMAT {
-        H3M_FORMAT_ROE = 0x0000000E,
-        H3M_FORMAT_AB = 0x00000015,
-        H3M_FORMAT_SOD = 0x0000001C,
-        H3M_FORMAT_WOG = 0x00000033
-    };
-
-    enum H3M_TERRAIN {
-        H3M_TERRAIN_DIRT,
-        H3M_TERRAIN_SAND,
-        H3M_TERRAIN_GRASS,
-        H3M_TERRAIN_SNOW,
-        H3M_TERRAIN_SWAMP,
-        H3M_TERRAIN_ROUGH,
-        H3M_TERRAIN_SUBTERRANEAN,
-        H3M_TERRAIN_LAVA,
-        H3M_TERRAIN_WATER,
-        H3M_TERRAIN_ROCK
-    };
-
-    enum H3M_DISPOSITION {
-        H3M_DISPOSITION_COMPLIANT,      // will always join hero
-        H3M_DISPOSITION_FRIENDLY,       // likely to join hero
-        H3M_DISPOSITION_AGGRESSIVE,     // may join hero
-        H3M_DISPOSITION_HOSTILE,        // unlikely to join hero
-        H3M_DISPOSITION_SAVAGE          // will never join hero
-    };
-
-    enum H3M_CODE_TARGET {
-        H3M_CODE_TARGET_COMPLETE,   // Heroes3.exe 78956DFAB3EB8DDF29F6A84CF7AD01EE
-        H3M_CODE_TARGET_HDMOD,      // Heroes3 HD.exe 56614D31CC6F077C2D511E6AF5619280
-        H3M_CODE_TARGET_DEMO        // h3demo.exe 522B6F45F534058D02A561838559B1F4
-    };
 
     struct H3MLIB_CTX;
     typedef struct H3MLIB_CTX *h3mlib_ctx_t;
@@ -124,7 +91,7 @@ extern "C" {
     typedef int (*h3m_parse_cb_t) (uint32_t offset, const char *member, void *p,
         size_t n, void *cb_data);
     typedef int (*h3m_error_cb_t) (const char *error, void *cb_data);
-    typedef enum H3M_OBJECT (*h3m_custom_def_cb_t) (const char *def,
+    typedef enum META_OBJECT (*h3m_custom_def_cb_t) (const char *def,
         void *cb_data);
     int h3m_read_with_cbs(h3mlib_ctx_t *ctx, const char *filename,
         h3m_parse_cb_t cb_parse, h3m_error_cb_t cb_error,
@@ -168,14 +135,14 @@ extern "C" {
         int y_bottom_right, int z, int *x_dim, int *y_dim, passability_cb_t cb,
         void *cb_data);
 
-    enum H3M_OBJECT h3m_get_oa_type(h3mlib_ctx_t ctx, int oa_index);
-    enum H3M_OBJECT h3m_get_object_type(const char *name);
-    enum H3M_OBJECT h3m_object_from_category(const char *object_category);
+    enum META_OBJECT h3m_get_oa_type(h3mlib_ctx_t ctx, int oa_index);
+    enum META_OBJECT h3m_get_object_type(const char *name);
+    enum META_OBJECT h3m_object_from_category(const char *object_category);
 
     // Low-level object functions, see h3m_object_add for easier to user function
     int h3m_add_oa_by_def(h3mlib_ctx_t ctx, const char *def, int *oa_index);
     int h3m_add_oa_by_name(h3mlib_ctx_t ctx, const char *name, int *oa_index);
-	struct H3M_OA_ENTRY; // defined in h3m_structures/h3m_oa.h
+	struct H3M_OA_ENTRY; // defined in h3m_structures/object_attributes/h3m_oa.h
     int h3m_add_oa_entry(h3mlib_ctx_t ctx, struct H3M_OA_ENTRY *oa_entry,
         int *oa_index);
     int h3m_add_od(h3mlib_ctx_t ctx, int oa_index, int x, int y, int z,
@@ -193,9 +160,15 @@ extern "C" {
         uint8_t *terrain_types, uint8_t *road_types, uint8_t *river_types);
 
     // Functions for packing a DLL that is executed when map loads
-    int h3m_code_set_dll(h3mlib_ctx_t ctx, const char *dll);
-    int h3m_code_set_target(h3mlib_ctx_t ctx, enum H3M_CODE_TARGET target);
-    int h3m_code_unset(h3mlib_ctx_t ctx);
+    enum H3M_MODEMBED_TARGET {
+        H3M_MODEMBED_TARGET_COMPLETE,   // Heroes3.exe 78956DFAB3EB8DDF29F6A84CF7AD01EE
+        H3M_MODEMBED_TARGET_HDMOD,      // Heroes3 HD.exe 56614D31CC6F077C2D511E6AF5619280
+        H3M_MODEMBED_TARGET_DEMO        // h3demo.exe 522B6F45F534058D02A561838559B1F4
+    };
+
+    int h3m_modembed_set_dll(h3mlib_ctx_t ctx, const char *dll);
+    int h3m_modembed_set_target(h3mlib_ctx_t ctx, enum H3M_MODEMBED_TARGET target);
+    int h3m_modembed_unset(h3mlib_ctx_t ctx);
 
 /* Unicode API */
 #if defined _WIN32 && defined _MSC_VER

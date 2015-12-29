@@ -4,7 +4,7 @@
 #define __PARSE_OA_TYPE_H_DEF__
 
 #include "../h3mlib.h"
-#include "../h3mlib_ctx.h"
+#include "../internal/h3mlib_ctx.h"
 
 // Determines meta type, i.e h3mlib's internal constant corresponding to the 
 // def/object constants of this OA entry

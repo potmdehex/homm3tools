@@ -14,7 +14,7 @@ int parse_od_monster(struct H3MLIB_CTX *ctx,
 
     if (fm >= H3M_FORMAT_AB) {
         SAFE_READ_SIZEOF(&od_entry->absod_id, parsing)
-            meta_od_entry->has_absod_id = 1;
+        meta_od_entry->has_absod_id = 1;
     }
 
     if (0 == ((struct H3M_OD_BODY_STATIC_MONSTER *)

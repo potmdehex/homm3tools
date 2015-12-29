@@ -112,12 +112,12 @@ static DWORD WINAPI _ConvertThreadProc(LPVOID lpParameter)
 // TODO: More details. Perhaps a list view with information about each map.
 static VOID _ShowDetails(struct CONVERT_CB_DATA *conv, LPCWSTR lpDest)
 {
-    WCHAR szwCompleteTitle[MAX_PATH * 4] = { 0 };
     WCHAR szwCompleteMsg[MAX_PATH * 4] = { 0 };
+    /*WCHAR szwCompleteTitle[MAX_PATH * 4] = { 0 };
 
     _snwprintf(szwCompleteTitle, (sizeof(szwCompleteTitle) / sizeof(szwCompleteTitle[0])) - 1,
         TITLE_COMPLETE,
-        conv->converted_ab + conv->converted_sod + conv->converted_wog);
+        conv->converted_ab + conv->converted_sod + conv->converted_wog);*/
     _snwprintf(szwCompleteMsg, (sizeof(szwCompleteMsg) / sizeof(szwCompleteMsg[0])) - 1,
         MSG_COMPLETE,
         conv->skipped,
@@ -127,7 +127,7 @@ static VOID _ShowDetails(struct CONVERT_CB_DATA *conv, LPCWSTR lpDest)
         conv->skipped + conv->converted_ab + conv->converted_sod + conv->converted_wog,
         conv->failed);
 
-    if (IDYES == MessageBoxW(NULL, szwCompleteMsg, szwCompleteTitle, MB_ICONINFORMATION | MB_YESNO))
+    if (IDYES == MessageBoxW(NULL, szwCompleteMsg, TITLE_COMPLETE, MB_ICONINFORMATION | MB_YESNO))
     {
         ShellExecuteW(NULL, L"open", lpDest, NULL, NULL, SW_SHOWDEFAULT);
     }

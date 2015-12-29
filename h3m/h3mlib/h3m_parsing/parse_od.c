@@ -21,7 +21,7 @@ static int _parse_body(struct H3MLIB_CTX *ctx,
     meta_od_entry->binary_compatible = 1;
 
     switch (meta_od_entry->oa_type) {
-    case H3M_OBJECT_PLACEHOLDER_HERO:
+    case META_OBJECT_PLACEHOLDER_HERO:
         // If hero type is not specified, one extra byte for power rating exists
         meta_od_entry->body_size
             =
@@ -31,92 +31,92 @@ static int _parse_body(struct H3MLIB_CTX *ctx,
             type) ? sizeof(struct H3M_OD_BODY_STATIC_PLACEHOLDER_HERO_ANY)
             : sizeof(struct H3M_OD_BODY_STATIC_PLACEHOLDER_HERO_SPECIFIC);
         break;
-    case H3M_OBJECT_QUEST_GUARD:
+    case META_OBJECT_QUEST_GUARD:
         ret = parse_od_quest_guard(ctx, od_entry, meta_od_entry);
         break;
-    case H3M_OBJECT_PANDORAS_BOX:
+    case META_OBJECT_PANDORAS_BOX:
         ret = parse_od_pandoras_box(ctx, od_entry, meta_od_entry);
         break;
-    case H3M_OBJECT_SIGN:
-    case H3M_OBJECT_OCEAN_BOTTLE:
+    case META_OBJECT_SIGN:
+    case META_OBJECT_OCEAN_BOTTLE:
         ret = parse_od_message_bearer(ctx, od_entry, meta_od_entry);
         break;
-    case H3M_OBJECT_GARRISON:
-    case H3M_OBJECT_GARRISON_ABSOD:
+    case META_OBJECT_GARRISON:
+    case META_OBJECT_GARRISON_ABSOD:
         meta_od_entry->body_size =
             (H3M_FORMAT_ROE ==
             fm) ? sizeof(struct H3M_OD_BODY_STATIC_GARRISON_ROE)
             : sizeof(struct H3M_OD_BODY_STATIC_GARRISON_ABSOD);
         break;
-    case H3M_OBJECT_EVENT:
+    case META_OBJECT_EVENT:
         ret = parse_od_event(ctx, od_entry, meta_od_entry);
         break;
-    case H3M_OBJECT_GRAIL:
+    case META_OBJECT_GRAIL:
         meta_od_entry->body_size = sizeof(struct H3M_OD_BODY_STATIC_GRAIL);
         break;
-    case H3M_OBJECT_DWELLING:
-    case H3M_OBJECT_DWELLING_ABSOD:
-    case H3M_OBJECT_LIGHTHOUSE:
-    case H3M_OBJECT_RESOURCE_GENERATOR:
-    case H3M_OBJECT_SHIPYARD:
-    case H3M_OBJECT_ABANDONED_MINE_ABSOD:
+    case META_OBJECT_DWELLING:
+    case META_OBJECT_DWELLING_ABSOD:
+    case META_OBJECT_LIGHTHOUSE:
+    case META_OBJECT_RESOURCE_GENERATOR:
+    case META_OBJECT_SHIPYARD:
+    case META_OBJECT_ABANDONED_MINE_ABSOD:
         meta_od_entry->body_size = sizeof(struct H3M_OD_BODY_STATIC_FLAGGED);
         break;
-    case H3M_OBJECT_GENERIC_BOAT:
-    case H3M_OBJECT_GENERIC_PASSABLE_TERRAIN:
-    case H3M_OBJECT_GENERIC_PASSABLE_TERRAIN_SOD:
-    case H3M_OBJECT_GENERIC_IMPASSABLE_TERRAIN:
-    case H3M_OBJECT_GENERIC_IMPASSABLE_TERRAIN_ABSOD:
-    case H3M_OBJECT_GENERIC_VISITABLE:
-    case H3M_OBJECT_GENERIC_VISITABLE_ABSOD:
-    case H3M_OBJECT_GENERIC_TREASURE:
-    case H3M_OBJECT_MONOLITH_TWO_WAY:
-    case H3M_OBJECT_SUBTERRANEAN_GATE:
+    case META_OBJECT_GENERIC_BOAT:
+    case META_OBJECT_GENERIC_PASSABLE_TERRAIN:
+    case META_OBJECT_GENERIC_PASSABLE_TERRAIN_SOD:
+    case META_OBJECT_GENERIC_IMPASSABLE_TERRAIN:
+    case META_OBJECT_GENERIC_IMPASSABLE_TERRAIN_ABSOD:
+    case META_OBJECT_GENERIC_VISITABLE:
+    case META_OBJECT_GENERIC_VISITABLE_ABSOD:
+    case META_OBJECT_GENERIC_TREASURE:
+    case META_OBJECT_MONOLITH_TWO_WAY:
+    case META_OBJECT_SUBTERRANEAN_GATE:
         // Generic objects have no body
         break;
-    case H3M_OBJECT_TOWN:
-    case H3M_OBJECT_TOWN_ABSOD:
+    case META_OBJECT_TOWN:
+    case META_OBJECT_TOWN_ABSOD:
         ret = parse_od_town(ctx, od_entry, meta_od_entry);
         break;
-    case H3M_OBJECT_RANDOM_DWELLING_ABSOD:
-    case H3M_OBJECT_RANDOM_DWELLING_PRESET_ALIGNMENT_ABSOD:
-    case H3M_OBJECT_RANDOM_DWELLING_PRESET_LEVEL_ABSOD:
+    case META_OBJECT_RANDOM_DWELLING_ABSOD:
+    case META_OBJECT_RANDOM_DWELLING_PRESET_ALIGNMENT_ABSOD:
+    case META_OBJECT_RANDOM_DWELLING_PRESET_LEVEL_ABSOD:
         ret = parse_od_random_dwelling(ctx, od_entry, meta_od_entry);
         break;
-    case H3M_OBJECT_HERO:
-    case H3M_OBJECT_RANDOM_HERO:
-    case H3M_OBJECT_PRISON:
+    case META_OBJECT_HERO:
+    case META_OBJECT_RANDOM_HERO:
+    case META_OBJECT_PRISON:
         ret = parse_od_hero(ctx, od_entry, meta_od_entry);
         break;
-    case H3M_OBJECT_MONSTER:
-    case H3M_OBJECT_MONSTER_ABSOD:
+    case META_OBJECT_MONSTER:
+    case META_OBJECT_MONSTER_ABSOD:
         ret = parse_od_monster(ctx, od_entry, meta_od_entry);
         break;
-    case H3M_OBJECT_ARTIFACT:
-    case H3M_OBJECT_ARTIFACT_AB:
-    case H3M_OBJECT_ARTIFACT_SOD:
+    case META_OBJECT_ARTIFACT:
+    case META_OBJECT_ARTIFACT_AB:
+    case META_OBJECT_ARTIFACT_SOD:
         ret = parse_od_artifact(ctx, od_entry, meta_od_entry);
         break;
-    case H3M_OBJECT_SHRINE:
+    case META_OBJECT_SHRINE:
         meta_od_entry->body_size = sizeof(struct H3M_OD_BODY_STATIC_SHRINE);
         break;
-    case H3M_OBJECT_SPELL_SCROLL:
+    case META_OBJECT_SPELL_SCROLL:
         ret = parse_od_spell_scroll(ctx, od_entry, meta_od_entry);
         break;
-    case H3M_OBJECT_RESOURCE:
+    case META_OBJECT_RESOURCE:
         ret = parse_od_resource(ctx, od_entry, meta_od_entry);
         break;
-    case H3M_OBJECT_WITCH_HUT:
+    case META_OBJECT_WITCH_HUT:
         if (fm >= H3M_FORMAT_AB)        // Witch Hut has body only in AB+
         {
             meta_od_entry->body_size =
                 sizeof(struct H3M_OD_BODY_STATIC_WITCH_HUT_ABSOD);
         }
         break;
-    case H3M_OBJECT_SEERS_HUT:
+    case META_OBJECT_SEERS_HUT:
         ret = parse_od_seers_hut(ctx, od_entry, meta_od_entry);
         break;
-    case H3M_OBJECT_SCHOLAR:
+    case META_OBJECT_SCHOLAR:
         meta_od_entry->body_size = sizeof(struct H3M_OD_BODY_STATIC_SCHOLAR);
         break;
     default:
@@ -172,9 +172,7 @@ int parse_od(struct H3MLIB_CTX *ctx)
             meta_oa_entry = &meta->oa_entries[od_entry->header.oa_index];
             meta_od_entry->oa_type = meta_oa_entry->type;
 
-            // TODO this define should be autogenerated in h3m_object.h
-#define H3M_OBJECT_GREATEST H3M_OBJECT_WITCH_HUT
-            //if (meta_od_entry->oa_type >= H3M_OBJECT_GREATEST)
+            //if (meta_od_entry->oa_type >= META_GREATEST)
             if (0xFF == meta_od_entry->oa_type) {
                 if (NULL != ctx->callbacks.cb_error) {
                     snprintf(error, sizeof(error) - 1,

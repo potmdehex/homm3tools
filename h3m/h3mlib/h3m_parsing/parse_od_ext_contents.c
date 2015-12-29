@@ -54,5 +54,5 @@ int parse_od_ext_contents(struct H3MLIB_CTX *ctx,
 
     SAFE_READ_SIZEOF_BUF(contents->unknown1, parsing)
 
-        return 0;
+    return 0;
 }

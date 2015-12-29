@@ -1,31 +1,28 @@
 // Created by John Åkerblom 2014-11-18 
 
 #include "h3mlib.h"
-#include "h3mlib_ctx.h"
-#include "h3mlib_alg_od_text.h"
-#include "h3mlib_cleanup.h"
-#include "h3mlib_io.h"
-#include "format_select.h"
-#include "h3m_parsing/parse_h3m.h"
-#include "default_od_body.h"
 
-#include "gen/def_bodies_hex.h"
 #include "gen/def_bodies_array.h"
-
+#include "gen/def_bodies_hex.h"
+#include "h3m_editing/default_od_body.h"
+#include "h3m_editing/h3mlib_alg_od_text.h"
 #include "h3m_min_maps/min_roe.h"
 #include "h3m_min_maps/min_ab.h"
 #include "h3m_min_maps/min_sod.h"
-
-#include "memmem.h"
-
-#include "h3m_object_categories.h"
+#include "h3m_parsing/parse_h3m.h"
+#include "internal/h3mlib_ctx.h"
+#include "internal/h3mlib_ctx_cleanup.h"
+#include "io/h3mlib_io.h"
+#include "meta/meta_object_name.h"
+#include "utils/format_select.h"
+#include "utils/memmem.h"
 
 #include <gen_tile_sprites.h>
 
 #ifndef NO_ZLIB
 #include <gzip_utils.h>
 #else
-#include "gzip_empty/gzip_utils.h"
+#include "utils/gzip_empty.h"
 #endif
 
 #include <ctype.h>
@@ -493,7 +490,7 @@ int h3m_object_add(h3mlib_ctx_t ctx, const char *name, int x, int y, int z,
         od_index);
 }
 
-int h3m_object_text(h3mlib_ctx_t ctx, const char *name, int x, int y, int z,
+int META_text(h3mlib_ctx_t ctx, const char *name, int x, int y, int z,
     const char *text)
 {
     const char *def = _name_to_def(name);
@@ -524,6 +521,9 @@ int h3m_add_od(h3mlib_ctx_t ctx, int oa_index, int x, int y, int z,
     size_t n = 0;
     int binary_compatible = 0;
     int idx = 0;
+    const char *def = NULL;
+    char def_lower[16] = { 0 };
+    char *cp = NULL;
 
     idx = ctx->h3m.od.count++;
     ctx->h3m.od.entries = realloc(ctx->h3m.od.entries,
@@ -543,8 +543,20 @@ int h3m_add_od(h3mlib_ctx_t ctx, int oa_index, int x, int y, int z,
         : calloc(1, n);
     meta_od_entry = &ctx->meta.od_entries[meta_od_index];
 
-    oa_type = def_types_hash((char *)ctx->h3m.oa.entries[oa_index].header.def);
-    get_default_od_body(oa_type, &body, &binary_compatible, &body_size);
+    // Add default OD body, looking it up in hash by lowercase def name
+
+    def = (char *)ctx->h3m.oa.entries[oa_index].header.def;
+
+    // TODO reused downcasing function
+    strncpy(def_lower, def, sizeof(def_lower)-1);
+    cp = def_lower;
+    for (; *cp; ++cp)
+        *cp = (char)tolower((int)*cp);
+    def = def_lower;
+
+    oa_type = def_types_hash(def);
+    get_default_od_body(ctx->h3m.format, oa_type, &body, &binary_compatible,
+        &body_size);
 
     od_entry->body = body;
     memset(meta_od_entry, 0, sizeof(*(meta_od_entry)));
@@ -552,6 +564,18 @@ int h3m_add_od(h3mlib_ctx_t ctx, int oa_index, int x, int y, int z,
     meta_od_entry->body_size = body_size;
     meta_od_entry->oa_type = oa_type;
     meta_od_entry->dyn_pointers = NULL;
+
+    // Only towns, heroes and monsters have the absod id 
+    // (used for win cond/defeat x quests)
+    if (META_OBJECT_TOWN == oa_type || META_OBJECT_MONSTER == oa_type 
+            || META_OBJECT_HERO == oa_type) {
+        // TODO throughout h3mlib absod id support needs to be improved,
+        // so e.g several objects with their own ids can be added
+        meta_od_entry->has_absod_id = 1; 
+        od_entry->absod_id = 0x13333337;
+    } else {
+        meta_od_entry->has_absod_id = 0;
+    }
 
     if (NULL != od_index) {
         *od_index = idx;
@@ -579,11 +603,11 @@ int h3m_object_set_owner(h3mlib_ctx_t ctx, int od_index, int owner)
     // of objects, e.g if a town has been customized with name, use
     // correct struct/offset
     switch (meta_od_entry->oa_type) {
-    case H3M_OBJECT_RANDOM_HERO:
-    case H3M_OBJECT_HERO:
+    case META_OBJECT_RANDOM_HERO:
+    case META_OBJECT_HERO:
         ((struct H3M_OD_BODY_DYNAMIC_HERO *)body)->owner = owner;       // Owner is first element - no worries about offset
         break;
-    case H3M_OBJECT_TOWN:
+    case META_OBJECT_TOWN:
         ((struct H3M_OD_BODY_DYNAMIC_TOWN *)body)->owner = owner;       // Owner is first element - no worries about offset
         break;
     default:
@@ -603,10 +627,10 @@ int h3m_object_set_subtype(h3mlib_ctx_t ctx, int od_index, int subtype)
     // of objects, e.g if a town has been customized with name, use
     // correct struct/offset
     switch (meta_od_entry->oa_type) {
-    case H3M_OBJECT_HERO:
+    case META_OBJECT_HERO:
         ((struct H3M_OD_BODY_DYNAMIC_HERO *)body)->type = subtype;
         break;
-    case H3M_OBJECT_SPELL_SCROLL:
+    case META_OBJECT_SPELL_SCROLL:
         ((struct H3M_OD_BODY_STATIC_SPELL_SCROLL *)body)->spell = subtype;
         break;
     default:
@@ -626,10 +650,10 @@ int h3m_object_set_quantitiy(h3mlib_ctx_t ctx, int od_index, int quantity)
     // of objects, e.g if a town has been customized with name, use
     // correct struct/offset
     switch (meta_od_entry->oa_type) {
-    case H3M_OBJECT_RESOURCE:
+    case META_OBJECT_RESOURCE:
         ((struct H3M_OD_BODY_STATIC_RESOURCE *)body)->quantity = quantity;
         break;
-    case H3M_OBJECT_MONSTER:
+    case META_OBJECT_MONSTER:
         ((struct H3M_OD_BODY_STATIC_MONSTER *)body)->quantity = quantity;
         break;
     default:
@@ -646,7 +670,7 @@ int h3m_object_set_disposition(h3mlib_ctx_t ctx, int od_index,
     struct META_OD_ENTRY *meta_od_entry = &ctx->meta.od_entries[od_index];
     uint8_t *body = od_entry->body;
 
-    if (H3M_OBJECT_MONSTER != meta_od_entry->oa_type) {
+    if (META_OBJECT_MONSTER != meta_od_entry->oa_type) {
         return 1;
     }
 
@@ -669,17 +693,23 @@ static int _set_creatures(h3mlib_ctx_t ctx, int od_index, int *types,
     int i = 0;
 
     switch (meta_od_entry->oa_type) {
-    case H3M_OBJECT_HERO:
-        hero_body->owner = ((struct H3M_OD_BODY_DYNAMIC_HERO *)body)->owner;
-        hero_body->type = ((struct H3M_OD_BODY_DYNAMIC_HERO *)body)->type;
-        hero_body->has_creatures = 1;
-        hero_body->patrol_radius = 0xFF;
-        creatures = hero_body->creatures;
-        body = (uint8_t *)hero_body;
-        //body_size = sizeof(*hero_body);
+    //case META_OBJECT_HERO:
+    //    hero_body->owner = calloc
+    //    hero_body->owner = ((struct H3M_OD_BODY_DYNAMIC_HERO *)body)->owner;
+    //    hero_body->type = ((struct H3M_OD_BODY_DYNAMIC_HERO *)body)->type;
+    //    hero_body->has_creatures = 1;
+    //    hero_body->patrol_radius = 0xFF;
+    //    creatures = hero_body->creatures;
+    //    body = (uint8_t *)hero_body;
+    //    //body_size = sizeof(*hero_body);
+    //    break;
+    //    //case META_OBJECT_TOWN:
+    //    //    break;
+    case META_OBJECT_GARRISON:
+    case META_OBJECT_GARRISON_ABSOD:
+        creatures = (union H3M_COMMON_ARMY *)
+            (&((union H3M_OD_BODY_STATIC_GARRISON *)body)->any.creatures);
         break;
-        //case H3M_OBJECT_TOWN:
-        //    break;
     default:
         return 1;
     }
@@ -692,7 +722,7 @@ static int _set_creatures(h3mlib_ctx_t ctx, int od_index, int *types,
     } else {
         for (i = 0; i < 7; ++i) {
             creatures->absod.slots[i].type = types[i];
-            creatures->absod.slots[i].type = types[i];
+            creatures->absod.slots[i].quantity = types[i];
         }
     }
 
@@ -710,7 +740,7 @@ int h3m_object_fill_random_creatures(h3mlib_ctx_t ctx, int od_index)
     int quantities[7];
 
     for (i = 0; i < 7; ++i) {
-        types[i] = (rand() + 1) % 117;
+        types[i] = (rand() + 1) % 117; // TODO better way of randoming creatures
         quantities[i] = (rand() + 1) % 1000;
     }
 
@@ -809,12 +839,12 @@ int h3m_enum_defs(h3mlib_ctx_t ctx, h3m_enum_def_cb_t cb, void *cb_data)
     return 0;
 }
 
-enum H3M_OBJECT h3m_get_oa_type(h3mlib_ctx_t ctx, int oa_index)
+enum META_OBJECT h3m_get_oa_type(h3mlib_ctx_t ctx, int oa_index)
 {
     return ctx->meta.oa_entries[oa_index].type;
 }
 
-enum H3M_OBJECT h3m_get_object_type(const char *name)
+enum META_OBJECT h3m_get_object_type(const char *name)
 {
     extern int def_types_hash(const char *);
     const char *def = _name_to_def(name);
@@ -1070,16 +1100,14 @@ int h3m_get_filename_from_gm1(const char *filename_gm1, char *filename_h3m,
     return 0;
 }
 
-enum H3M_OBJECT h3m_object_from_category(const char *object_category)
+enum META_OBJECT h3m_object_from_category(const char *object_category)
 {
     extern int h3m_object_hash(const char *);
     int type = h3m_object_hash(object_category);
 
-    // TODO this define should be autogenerated in h3m_object.h
-#define H3M_OBJECT_GREATEST H3M_OBJECT_WITCH_HUT
-    if (type > H3M_OBJECT_GREATEST) {
+    if (type > META_GREATEST) {
         return -1;
-    } else if (0 != strcmp(H3M_OBJECT_CATEGORIES[type], object_category)) {
+    } else if (0 != strcmp(META_OBJECT_NAME[type], object_category)) {
         return -1;
     }
 

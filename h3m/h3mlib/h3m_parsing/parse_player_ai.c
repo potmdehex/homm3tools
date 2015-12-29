@@ -4,7 +4,7 @@
 
 #include "../h3mlib.h"
 #include "../h3m_structures/h3m.h"
-#include "../safe_read.h"
+#include "../utils/safe_read.h"
 
 #include <stdlib.h>
 

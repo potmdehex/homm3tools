@@ -38,7 +38,7 @@ int main(int argc, char **argv)
         return 1;
     }
     
-    if (0 != h3m_code_set_dll(h3m, argv[2])) {
+    if (0 != h3m_modembed_set_dll(h3m, argv[2])) {
         printf("[!] Failed to embed DLL %s!", argv[2]);
         h3m_exit(&h3m);
         return 1;
@@ -54,7 +54,7 @@ int main(int argc, char **argv)
 
     // H3Complete
     snprintf(output_file, len - 1, "%s%s", H3COMPLETE_PREFIX, argv[1]);
-    h3m_code_set_target(h3m, H3M_CODE_TARGET_COMPLETE);
+    h3m_modembed_set_target(h3m, H3M_MODEMBED_TARGET_COMPLETE);
     if (0 != h3m_write(h3m, output_file)) {
         printf("[!] Failed to write %s!", output_file);
         free(output_file);
@@ -65,7 +65,7 @@ int main(int argc, char **argv)
 
     // HD Mod
     snprintf(output_file, len - 1, "%s%s", HDMOD_PREFIX, argv[1]);
-    h3m_code_set_target(h3m, H3M_CODE_TARGET_HDMOD);
+    h3m_modembed_set_target(h3m, H3M_MODEMBED_TARGET_HDMOD);
     if (0 != h3m_write(h3m, output_file)) {
         printf("[!] Failed to write %s!", output_file);
         free(output_file);

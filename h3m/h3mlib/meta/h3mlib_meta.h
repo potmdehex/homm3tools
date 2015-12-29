@@ -9,7 +9,7 @@
 #ifndef __H3MLIB_META_H_DEF__
 #define __H3MLIB_META_H_DEF__
 
-#include "../msvc_comp_stdint.h"
+#include "../utils/msvc_comp_stdint.h"
 #include "../h3m_structures/h3m.h"
 
 #ifdef _MSC_VER
@@ -18,8 +18,8 @@
 extern char *strdup(const char *);      // utarray.h references strdup, not used
 #endif
 
-#include <utarray.h>
-#include <uthash.h>
+#include "../../../3rdparty/uthash/src/utarray.h"
+#include "../../../3rdparty/uthash/src/uthash.h"
 
 struct META_OA_HASH_ENTRY {
     int oa_body_index;          // key

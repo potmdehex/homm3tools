@@ -18,7 +18,7 @@ int parse_od_random_dwelling(struct H3MLIB_CTX *ctx,
     meta_od_entry->body_size = sizeof(*body);
 
     SAFE_READ_SIZEOF(&body->owner, parsing)
-    if (H3M_OBJECT_RANDOM_DWELLING_PRESET_ALIGNMENT_ABSOD !=
+    if (META_OBJECT_RANDOM_DWELLING_PRESET_ALIGNMENT_ABSOD !=
         meta_od_entry->oa_type) {
         SAFE_READ_SIZEOF(&body->castle_absod_id, parsing)
         if (0 == body->castle_absod_id) {
@@ -26,7 +26,7 @@ int parse_od_random_dwelling(struct H3MLIB_CTX *ctx,
         }
     }
 
-    if (H3M_OBJECT_RANDOM_DWELLING_PRESET_LEVEL_ABSOD != meta_od_entry->oa_type) {
+    if (META_OBJECT_RANDOM_DWELLING_PRESET_LEVEL_ABSOD != meta_od_entry->oa_type) {
         SAFE_READ_SIZEOF(&body->min_level, parsing)
         SAFE_READ_SIZEOF(&body->max_level, parsing)
     }

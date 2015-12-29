@@ -110,10 +110,11 @@ int _inflate(const void *src, int srcLen, void *dst, int dstLen) {
 int gu_decompress_mem(const void *src, long src_size, void **dst, long *dst_size)
 {
     /* Retrieve uncompressed size from the last 4 bytes of the file where it is
-     * stored in the gzip format */
+    * stored in the gzip format */
     *dst_size = *(long *)&((unsigned char *)src)[src_size - 4];
 
     *dst = malloc(*dst_size);
+
     /* If decrompession with Z_DATA ERROR src is likely not compressed,
      * so simply return src buffer */
     if (Z_DATA_ERROR == _inflate(src, src_size, *dst, *dst_size)) {
@@ -128,35 +129,22 @@ int gu_decompress_mem(const void *src, long src_size, void **dst, long *dst_size
 int gu_decompress_file_to_mem(const char *filename, void **dst, long *dst_size)
 {
     FILE *f = NULL;
-    int ret = 0;
-    gzFile gzf = NULL;
-    long size = 0; 
-    void *buf = NULL;
-
-    // Open and read file contents
+    void *src = NULL;
+    long src_size = 0;
 
     if (NULL == (f = fopen(filename, "rb"))) {
         return 1;
     }
 
     fseek(f, 0, SEEK_END);
-    size = ftell(f);
+    src_size = ftell(f);
     rewind(f);
 
-    buf = malloc(size);
-    if (NULL == buf) {
-        return 1;
-    }
-    fread(buf, 1, size, f);
+    src = malloc(src_size);
+    fread(src, 1, src_size, f);
     fclose(f);
 
-    // Attempt decompress of file, returning a copy of buf in dst if
-    // decompression fails (ofc a bit unoptimized to not just use same pointer)
-    ret = gu_decompress_mem(buf, size, dst, dst_size);
-
-    free(buf);
-
-    return ret;
+    return gu_decompress_mem(src, src_size, dst, dst_size);
 }
 
 #ifdef _WIN32
@@ -166,8 +154,7 @@ int gu_decompress_file_to_mem_u(const wchar_t *filename, void **dst, long *dst_s
     void *src = NULL;
     long src_size = 0;
     
-    if (NULL == (f = _wfopen(filename, L"rb")))
-    {
+    if (NULL == (f = _wfopen(filename, L"rb"))) {
         return 1;
     }
     
