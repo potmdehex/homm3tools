@@ -323,6 +323,17 @@ void _object_conv(const Hlm *hlm, h3mlib_ctx_t h3m)
         h3m_object_set_quantitiy(h3m, od_index, monster->m_quantity);
         h3m_object_set_disposition(h3m, od_index, (enum H3M_DISPOSITION)monster->m_disposition);
     }
+
+    for (auto o : hlm->m_map_generic) {
+        const auto object = o.get();
+
+        h3m_object_add(h3m,
+            o.get()->m_name.c_str(),
+            o.get()->m_x,
+            o.get()->m_y,
+            o.get()->m_z,
+            NULL);
+    }
 }
 
 h3mlib_ctx_t HlmToH3M(const Hlm *hlm)

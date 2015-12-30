@@ -184,7 +184,9 @@ int Hlm::xyzAddObject(int x, int y, int z, const std::string& name)
         wp = addObject(m_map_monsters, x, y, z, name);
         break;
     default:
-        return 1;
+        // Default to generic object for now
+        wp = addObject(m_map_generic, x, y, z, name);
+        break;
     }
 
     m_map_objects.push_back(wp);
