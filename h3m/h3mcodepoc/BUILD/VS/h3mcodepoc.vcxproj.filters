@@ -21,6 +21,7 @@
     <ClCompile Include="..\..\poc\poc.c">
       <Filter>poc</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\dllmain.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\generic\h3api.h">
