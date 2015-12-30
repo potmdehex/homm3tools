@@ -76,7 +76,7 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>../../../../OUTPUT/$(Configuration)/;</AdditionalLibraryDirectories>
-      <AdditionalDependencies>libudis86.lib;psapi.lib;win_utils.lib;gzip_utils.lib;h3mlib.lib;h3mtilespritegen_static.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>psapi.lib;win_utils.lib;gzip_utils.lib;h3mlib.lib;h3mtilespritegen_static.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -97,7 +97,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalLibraryDirectories>../../../../OUTPUT/$(Configuration)/;../../../../3rdparty/libudis86/$(Configuration);</AdditionalLibraryDirectories>
-      <AdditionalDependencies>psapi.lib;libudis86.lib;win_utils.lib;kernel32.lib;user32.lib;gdi32.lib;;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>psapi.lib;win_utils.lib;kernel32.lib;user32.lib;gdi32.lib;;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>
