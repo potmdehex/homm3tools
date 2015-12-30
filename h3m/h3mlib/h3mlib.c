@@ -490,7 +490,7 @@ int h3m_object_add(h3mlib_ctx_t ctx, const char *name, int x, int y, int z,
         od_index);
 }
 
-int META_text(h3mlib_ctx_t ctx, const char *name, int x, int y, int z,
+int h3m_object_text(h3mlib_ctx_t ctx, const char *name, int x, int y, int z,
     const char *text)
 {
     const char *def = _name_to_def(name);
