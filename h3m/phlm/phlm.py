@@ -52,9 +52,9 @@ class HeroesMap(object):
 	"""
 	dll = None
 
-	def __init__(self, size, underground):
+	def __init__(self, size = 36, underground = 0):
 		#os.chdir("..\h3mtools\Debug") # Debug hack
-		os.chdir("..\h3mtools\Release") # Debug hack
+		os.chdir("..\..\OUTPUT\Release") # Debug hack
 		self.dll = CDLL("hlm.dll")
 		#self.dll = CDLL("hlm.so")
 
