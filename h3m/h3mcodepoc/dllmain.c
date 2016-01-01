@@ -6,6 +6,7 @@
 BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpReserved)
 {
     if (DLL_PROCESS_ATTACH == fdwReason) {
+        h3api_init();
         hooks_init();
         poc_init();
     }

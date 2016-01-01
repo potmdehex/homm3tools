@@ -28,7 +28,7 @@ int __declspec(naked) hooked_object_visit(void) //(struct H3STRUCT_HERO *hero, a
     __asm MOV EAX, [ESP + 4 +0x20] // +0x20 because of __ASM PUSHAD
     __asm MOV hero, EAX
 
-	coords = H3API_FORMAT_COORDS(hero->x, hero->y, hero->z);
+	coords = H3API_XYZ(hero->x, hero->y, hero->z);
 	pass = 0;
 	ret = 0;
 	res = 0;
@@ -39,7 +39,6 @@ int __declspec(naked) hooked_object_visit(void) //(struct H3STRUCT_HERO *hero, a
 		__asm JMP orig_object_visit
 	}
 
-    __asm int 3
     __asm POPAD
     __asm RETN 0x10
 }
@@ -61,7 +60,6 @@ int __declspec(naked) hooked_object_remove(void) //(void *a1, uint32_t coords, i
 		__asm JMP orig_object_remove
 	}
 
-    __asm int 3
     __asm POPAD
     __asm RETN 0x0C
 }
@@ -74,7 +72,7 @@ int __stdcall hooked_seers_hut_visit(void)
 
 	//res = trigger_dispatch(EVENT_OBJECT_VISIT, coords, NULL, &pass, &ret);
 	//if (res == -1 || pass != 0) {
-	//	return orig_object_remove();
+	//	return orig_seers_hut_visit();
 	//}
 
 	//return ret;
@@ -137,9 +135,8 @@ void hooks_init(void)
     int off_quest_is_hero_defeated = 0;
 #endif
 
-
     HOOK_NEEDLE_FAIL_MSG(NULL, object_visit);
     HOOK_NEEDLE_FAIL_MSG(NULL, object_remove);
-    //HOOK_NEEDLE_FAIL_MSG(NULL, seers_hut_visit);
-    //HOOK_NEEDLE_FAIL_MSG(NULL, quest_is_monster_defeated);
+    HOOK_NEEDLE_FAIL_MSG(NULL, seers_hut_visit);
+    HOOK_NEEDLE_FAIL_MSG(NULL, quest_is_monster_defeated);
 }

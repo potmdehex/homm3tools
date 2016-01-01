@@ -2,13 +2,13 @@
 #include "../generic/h3struct.h"
 #include "../generic/trigger.h"
 
-#define COORDS_QUESTGIVER H3API_FORMAT_COORDS(5, 5, 0)
+#define COORDS_QUESTGIVER H3API_XYZ(5, 5, 0)
 
-#define COORDS_QUESTTARGET1 H3API_FORMAT_COORDS(6, 20, 0)
-#define COORDS_QUESTTARGET2 H3API_FORMAT_COORDS(10, 20, 0)
-#define COORDS_QUESTTARGET3 H3API_FORMAT_COORDS(14, 20, 0)
+#define COORDS_QUESTTARGET1 H3API_XYZ(6, 20, 0)
+#define COORDS_QUESTTARGET2 H3API_XYZ(10, 20, 0)
+#define COORDS_QUESTTARGET3 H3API_XYZ(14, 20, 0)
 
-#define COORDS_STABLE H3API_FORMAT_COORDS(3, 4, 0)
+#define COORDS_STABLE H3API_XYZ(3, 4, 0)
 
 static void _visit_questgiver(uint32_t coords, void *edata, int *pass, int *ret)
 {
@@ -26,6 +26,8 @@ static void _visit_stable(uint32_t coords, void *edata, int *pass, int *ret)
 		struct H3STRUCT_HERO *hero = (struct H3STRUCT_HERO *)edata;
 		hero->movement_pts = 0x13333337;
 		*pass = 0;
+
+        h3api_fog_reveal(H3API_XYZ(36, 36, 0));
 	}
 }
 

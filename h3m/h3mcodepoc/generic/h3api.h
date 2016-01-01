@@ -3,7 +3,7 @@
 
 #include <stdint.h>
 
-#define H3API_FORMAT_COORDS(x, y, z) ( \
+#define H3API_XYZ(x, y, z) ( \
 	x + \
 	(y << 16) + \
 	(((0 == z) ? 0 : 0x04) << 24) \
@@ -16,5 +16,7 @@
 #define H3API_COMPARE_COORDS(a, b) ((a & ~0x0000FF00) == (b & ~0x0000FF00))
 
 void h3api_fog_reveal(uint32_t coords);
+
+void h3api_init();
 
 #endif
