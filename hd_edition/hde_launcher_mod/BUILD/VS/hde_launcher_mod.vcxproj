@@ -60,6 +60,7 @@
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\credits.h" />
     <ClInclude Include="..\..\hook.h" />
     <ClInclude Include="..\..\stylesheets.h" />
     <ClInclude Include="..\..\version.h" />

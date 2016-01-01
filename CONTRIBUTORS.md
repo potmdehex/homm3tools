@@ -30,6 +30,7 @@ homm3tools contributors
 * Mert
 * NecroSando
 * primeval1
+* Rai-Zen
 * Reset.
 * Schnixxor
 * SelvesteSigurd

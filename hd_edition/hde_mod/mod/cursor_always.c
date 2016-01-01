@@ -11,8 +11,12 @@ SetCursor_t orig_SetCursor = (SetCursor_t)NULL;
 
 HCURSOR WINAPI hooked_SetCursor(HCURSOR hCursor)
 {
-    // Prevent call if setting NULL cursor
-    if (NULL == hCursor)
+    extern BOOL g_disable_trade_refresh;
+
+    // Prevent call if setting NULL cursor (happens when hero is moving) or
+    // when setting the mouse icon in trade screen when hotkey is pressed to
+    // move all artifacts
+    if (NULL == hCursor || FALSE != g_disable_trade_refresh)
     {
         return NULL;
     }

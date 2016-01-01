@@ -1,4 +1,5 @@
 #include "guimod.h"
+#include "credits.h"
 #include "clickablelabel.h"
 #include "qtu.cpp" // contains template function(s) so can't have normal header
 #include "stylesheets.h"
@@ -209,38 +210,7 @@ void GuiMod::creditsBtnClicked()
 {
     // TODO: more fancy credits display
     QMessageBox *msg = new QMessageBox();
-    msg->setText(
-        "Reverse Engineering and Programming:\n"
-        "potmdehex\n"
-        "\nBug Reports, Localization Support and Testing:\n"
-        "000, "
-        "Above The Clouds, "
-        "AL-KASAB, "
-        "Avroveks, "
-        "Chirno, "
-        "Dahan, "
-        "damoaraimbo, "
-        "Daninja, "
-        "DataPack, "
-        "Evilnapkin, "
-        "Fastmancz, "
-        "Heisenberg, "
-        "Hightower, "
-        "JakeMunsie, "
-        "Merkuri, "
-        "Mert, "
-        "NecroSando, "
-        "primeval1, "
-        "Reset., "
-        "Schnixxor, "
-        "SelvesteSigurd, "
-        "simonizer, "
-        "Solipso, "
-        "Urz, "
-        "Vampire_Rush"
-        " and "
-        "wikidfps"
-        );
+    msg->setText(CREDITS);
     msg->setIcon(QMessageBox::Warning); // It's pretty
     msg->show();
 }

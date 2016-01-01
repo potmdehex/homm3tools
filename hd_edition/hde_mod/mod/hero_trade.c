@@ -46,6 +46,11 @@ static BOOL f_disable_backpack_select;
 BOOL g_disable_trade_refresh;
 uint32_t *var_artifact_dragging = NULL; // Artifact currently dragged. Compared to -1 in swapmgr_backpack_action
 
+// TODO fix artifact swapping bugs:
+// 1. Sometimes the spellbook can stil be seen in backpack after the hacky refresh (but not used)
+// 2. Backpack is not always refreshed. Ideally the spellbook hack should be trashed, it is 0/10
+// 3. Pressing for example 1 two times leads to some artifacts being swapped back to hero 2
+
 int swap_move_stack(struct HDE_HERO *src, struct HDE_HERO *dest, int src_slot, int dest_slot)
 {
     // Try to do a last stack move, leaving only 1 creature behind.
@@ -145,23 +150,24 @@ FORCEINLINE void move_artifacts(struct HDE_SWAPMGR *swapmgr, struct HDE_SWAPMGR_
         if (-1 == src_hero->artifacts.worn[i])
             continue;
         
+        // Pick up artifact
         action->slot_id = src_worn_slot_0 + i;
-
         __asm POPAD
         __asm MOV ECX, swapmgr
         orig_swapmgr_update(update_arg);
         __asm PUSHAD
-
+        
+        // Drop into same worn slot if possible, otherwise drop into backpack
         if (-1 == dst_hero->artifacts.worn[i])
         {
             action->slot_id = dst_worn_slot_0 + i;
         }
         else
         {
-            if (dst_hero->artifacts.backpack_count >= BACKPACK_MAX)
-            {
-                continue;
-            }
+            //if (dst_hero->artifacts.backpack_count >= BACKPACK_MAX)
+            //{
+            //    continue;
+            //}
 
             action->slot_id = dst_backpack_slot_0;
         }
@@ -170,13 +176,12 @@ FORCEINLINE void move_artifacts(struct HDE_SWAPMGR *swapmgr, struct HDE_SWAPMGR_
         __asm MOV ECX, swapmgr
         orig_swapmgr_update(update_arg);
         __asm PUSHAD
+
+        src_hero->artifacts.worn[i] = -1;
     }
 
     for (int i = 0; i < BACKPACK_MAX; ++i)
     {
-        if (dst_hero->artifacts.backpack_count >= BACKPACK_MAX)
-            break;
-
         if (-1 == src_hero->artifacts.backpack[i])
             continue;
 
@@ -185,7 +190,6 @@ FORCEINLINE void move_artifacts(struct HDE_SWAPMGR *swapmgr, struct HDE_SWAPMGR_
         {
             if (-1 == dst_hero->artifacts.backpack[j])
             {
-
                 dst_hero->artifacts.backpack[j] = src_hero->artifacts.backpack[i];
                 src_hero->artifacts.backpack[i] = -1;
                 ++dst_hero->artifacts.backpack_count;
@@ -267,13 +271,48 @@ void swapmgr_reset_state(struct HDE_SWAPMGR *swapmgr)
     *var_artifact_dragging = -1;
 }
 
+
+static void _spellbook_hack_add(struct HDE_SWAPMGR *swapmgr)
+{
+    // Terrible hack here...
+    // Need an artifact in slot 0 for backpack redraw to work,
+    // temporarily put a spellbook (0x00000000) there if nothing is there
+    if (-1 == swapmgr->hero_left->artifacts.backpack[0])
+    {
+        swapmgr->hero_left->artifacts.backpack[0] = 0x00000000;
+        ++swapmgr->hero_left->artifacts.backpack_count;
+    }
+    if (-1 == swapmgr->hero_right->artifacts.backpack[0])
+    {
+        swapmgr->hero_right->artifacts.backpack[0] = 0x00000000;
+        ++swapmgr->hero_right->artifacts.backpack_count;
+    }
+}
+
+static void _spellbook_hack_remove(struct HDE_SWAPMGR *swapmgr)
+{
+    // Terrible hack here...
+    // Remove any spellbooks from backpack that are still there as the 
+    // result of the refresh hack
+    for (int i = 0; i < BACKPACK_MAX; ++i)
+    {
+        if (0x00000000 == swapmgr->hero_right->artifacts.backpack[i])
+        {
+            swapmgr->hero_right->artifacts.backpack[i] = 0xFFFFFFFF;
+        }
+        if (0x00000000 == swapmgr->hero_left->artifacts.backpack[0])
+        {
+            swapmgr->hero_left->artifacts.backpack[i] = 0xFFFFFFFF;
+        }
+    }
+}
+
 int __stdcall hooked_swapmgr_update(int a1)
 {
     struct HDE_SWAPMGR *swapmgr;
     struct HDE_SWAPMGR_ACTION *action;
     static BOOL press_handled;
     BOOL do_refresh = FALSE;
-    //static struct LOLSTRUCT lolstructs[256];
 
     __asm PUSHAD
 
@@ -301,7 +340,7 @@ int __stdcall hooked_swapmgr_update(int a1)
                 do_refresh = TRUE;
             }
         }
-        else if (GetAsyncKeyState(0x32) & 0x8000) // 0 key
+        else if (GetAsyncKeyState(0x32) & 0x8000) // 2 key
         {
             if (FALSE == press_handled)
             {
@@ -337,25 +376,23 @@ int __stdcall hooked_swapmgr_update(int a1)
             action->action_id1 = 0x200;
             action->action_id2 = 0x0C;
             action->slot_id = 0x57;
+
+            // Terrible hack here...
             // Need an artifact in slot 0 for backpack redraw to work,
             // temporarily put a spellbook (0x00000000) there if nothing is there
-            if (-1 == swapmgr->hero_left->artifacts.backpack[0])
-            {
-                swapmgr->hero_left->artifacts.backpack[0] = 0x00000000;
-                ++swapmgr->hero_left->artifacts.backpack_count;
-            }
-            if (-1 == swapmgr->hero_right->artifacts.backpack[0])
-            {
-                swapmgr->hero_right->artifacts.backpack[0] = 0x00000000;
-                ++swapmgr->hero_right->artifacts.backpack_count;
-            }
+            _spellbook_hack_add(swapmgr);
+
             // Now fall out to to this hook's final line where a normal update is called, causing refresh
         }
     }
     
     __asm POPAD
     __asm MOV ECX, swapmgr
-    return orig_swapmgr_update(a1);
+    orig_swapmgr_update(a1);
+
+    __asm PUSHAD
+    _spellbook_hack_remove(swapmgr);
+    __asm POPAD
 }
 
 void __stdcall hooked_swapmgr_backpack_action(int hero_idx, int slot_idx, int a3)
@@ -397,6 +434,7 @@ void __stdcall hooked_swapmgr_backpack_select(int a1)
     orig_swapmgr_backpack_select(a1);
 }
 
+#if 0
 void __declspec(naked) hooked_swapmgr_artifact_stats_update(void)
 {
     if (g_disable_trade_refresh)
@@ -404,12 +442,16 @@ void __declspec(naked) hooked_swapmgr_artifact_stats_update(void)
         // Change return address to return directly to epilogue of calling function,
         // skipping mouse icon change code
         __asm MOV EAX, [ESP]
+        __asm CMP AX, 0x33A0 // Hacky return address check. If it does not end with 33A0, then
+        // we were called from somewhere else than the ESP we can add 0x167 to.
+        __asm JNE skip
         __asm ADD EAX, 0x167
         __asm MOV [ESP], EAX
     }
-
+skip:
     __asm JMP orig_swapmgr_artifact_stats_update
 }
+#endif
 
 void hero_trade_init(void)
 {
@@ -451,7 +493,7 @@ void hero_trade_init(void)
     HOOK_NEEDLE_FAIL_MSG(NULL, swapmgr_update);
     HOOK_NEEDLE_FAIL_MSG(NULL, swapmgr_backpack_action);
     HOOK_NEEDLE_FAIL_MSG(NULL, swapmgr_backpack_select);
-    HOOK_NEEDLE_FAIL_MSG(NULL, swapmgr_artifact_stats_update);
+    //HOOK_NEEDLE_FAIL_MSG(NULL, swapmgr_artifact_stats_update);
 
     // var_artifact_dragging: This var is compared against -1 in backpack_action. It is the artifact currently being dragged.
     // Obtain from this instruction: CMP DWORD PTR DS : [XXXXXXXX], -1
