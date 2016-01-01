@@ -117,7 +117,7 @@ void GuiMod::extendGui()
     versionLbl->setText(versionLbl->text() + QString(", HDE Mod " VERSION));
     versionLbl->setParent(centralWidget);
     versionLbl->setStyleSheet(VERSIONLABEL_NEW_STYLESHEET);
-    versionLbl->setGeometry(versionLbl->x() - 36, versionLbl->y(), 150, 21);
+    versionLbl->setGeometry(versionLbl->x() - 36, versionLbl->y(), 170, 21);
     m_groupBox->setGeometry(0x1F, 0x20, 0x1A2, 0x142);
     m_groupBox->setStyleSheet(GROUPBOX_NEW_STYLESHEET);
 
