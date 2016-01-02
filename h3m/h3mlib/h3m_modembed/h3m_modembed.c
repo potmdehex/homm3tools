@@ -352,7 +352,7 @@ static const uint8_t TARGET_FIX_H3COMPLETE[] = {
     0xC6, 0x03, 0xC3,                               // MOV BYTE PTR DS: [EBX], <code>
     
     // Done
-    0xC3,                                           // RETN
+    0xC3                                            // RETN
 };
 
 static const uint8_t TARGET_FIX_HDMOD[] = {

@@ -1,6 +1,7 @@
 #include <windows.h>
 
 #include "generic/hooks.h"
+#include "generic/h3api.h"
 #include "poc/poc.h"
 
 BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpReserved)

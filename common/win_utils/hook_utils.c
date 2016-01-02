@@ -182,6 +182,46 @@ BOOL hook_trampoline_dis_x86_by_needle(HANDLE module, BYTE *needle, DWORD nsize,
     return hook_trampoline_dis_x86(old_proc, new_proc);;
 }
 
+BOOL hook_trampoline_dis_x86_by_needle_preserve(HANDLE module, BYTE *needle, DWORD nsize, int offset_from_needle, void **old_proc, const void *new_proc, void **preserved_old_proc)
+{
+    *old_proc = (void *)hook_find_by_needle(module, needle, nsize);
+
+    if (NULL == *old_proc)
+    {
+        return FALSE;
+    }
+
+    *old_proc = ((BYTE *)*old_proc) + offset_from_needle;
+    *preserved_old_proc = *old_proc;
+
+    return hook_trampoline_dis_x86(old_proc, new_proc);;
+}
+
+BOOL unhook_trampoline_dis_x86_preserved(const void *old_proc, void *preserved_old_proc)
+{
+    // TODO more sophisticated approach using atomic exchange / similar to avoid races
+    DWORD old_protect = 0;
+    BYTE *jmp_operand = NULL;
+    uint32_t dest = 0;
+
+    // if function was hooked with a trampoline hook there should be a jump (E9) at
+    // the start, replace its destination with the old_proc trampoline which effectively
+    // restores the function
+    if (0xE9 != *(BYTE *)preserved_old_proc) 
+    {
+        return FALSE;
+    }
+    
+    jmp_operand = (BYTE *)preserved_old_proc + 1;
+    dest = (uint32_t)old_proc - (uint32_t)preserved_old_proc - sizeof(uint32_t) - sizeof(uint8_t);
+
+    VirtualProtect(jmp_operand, sizeof(uint32_t), PAGE_EXECUTE_READWRITE, &old_protect);
+    *(uint32_t *)jmp_operand = dest;
+    VirtualProtect(jmp_operand, sizeof(uint32_t), old_protect, &old_protect);
+
+    return TRUE;
+}
+
 #endif
 
 /*
