@@ -43,7 +43,7 @@ struct H3M_PLAYER_EXT_WITH_HERO_ROE     // Seen in The Mandate of Heaven (ROE)
     uint8_t starting_hero_face;
     uint32_t starting_hero_name_size;
     uint8_t starting_hero_name[];       // <starting_hero_name_size>
-};                              // Total size 14+?(6+8+?), ? = <starting_hero_name_size>
+};                              // Total size 13+?(6+7+?), ? = <starting_hero_name_size>
 
 // BINARY COMPATIBLE, LAST ELEMENT DYNAMIC - SIZE NOT CONSTANT
 struct H3M_PLAYER_EXT_WITH_TOWN_AND_HERO_ROE    // Never seen, merely predicted
@@ -60,7 +60,7 @@ struct H3M_PLAYER_EXT_WITH_TOWN_AND_HERO_ROE    // Never seen, merely predicted
     uint8_t starting_hero_face;
     uint32_t starting_hero_name_size;
     uint8_t starting_hero_name[];       // <starting_hero_name_size
-};                              // Total size 17+?(6+11+?), ? = <starting_hero_name_size>
+};                              // Total size 16+?(6+10+?), ? = <starting_hero_name_size>
 
 union H3M_PLAYER_EXT_ROE {
     struct H3M_PLAYER_EXT_ROE_DEFAULT e0;
@@ -111,7 +111,7 @@ struct H3M_PLAYER_EXT_WITH_HERO_ABSOD   // Seen in Pandora's Box (SOD)
     uint32_t starting_hero_name_size;
     uint8_t starting_hero_name[];       // <starting_hero_name_size>
 
-};                              // Total size AB/SOD 15+?(7+8+?)/16+?(8+8+?), ? = starting_hero_name_size
+};                              // Total size AB/SOD 14+?(7+7+?)/15+?(8+7+?), ? = starting_hero_name_size
 
 // BINARY COMPATIBLE, LAST ELEMENT DYNAMIC - SIZE NOT CONSTANT
 struct H3M_PLAYER_EXT_WITH_TOWN_AND_HERO_ABSOD {
