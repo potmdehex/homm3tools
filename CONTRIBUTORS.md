@@ -11,6 +11,9 @@ homm3tools contributors
 * Axel Wik
 * Oskar Sundborg
 
+##### Documentation corrections
+* **[Dergash](https://github.com/Dergash)**
+
 ##### Bug reports, localization support and testing
 * 000
 * Above The Clouds
