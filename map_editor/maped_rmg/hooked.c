@@ -207,7 +207,8 @@ void __declspec(naked) hooked_get_terrain_type_for_new_zone(void)
     static int town;
 
     __asm PUSHAD
-    if (-1 == g_selected_towns[f_player_current] || f_player_current > f_player_count)
+    if (-1 == g_selected_towns[f_player_current] || f_player_current > f_player_count
+        || 0 != g_selectable_towns)
     {
         ++f_player_current;
         __asm POPAD
