@@ -14,11 +14,40 @@
 
 static HWND f_hwnd_templates;
 static HWND f_hwnd_rmg_dialog;
+static HWND f_hwnd_selectable_towns;
+static HWND f_hwnd_town_comboboxes[8];
 static LONG f_orig_rmg_dialog_proc = 0;
+static HWND f_hwnd_human_players_combobox;
+static HWND f_hwnd_computer_players_combobox;
 static int f_id_ok;
+
 
 static char *f_templates_path;
 static WCHAR *f_last_template;
+
+static const WCHAR * const town_names[] = { 
+    L"Random",
+    L"Castle",
+    L"Rampart",
+    L"Tower",
+    L"Inferno",
+    L"Necropolis",
+    L"Dungeon",
+    L"Stronghold",
+    L"Fortress"
+    // RoE - no Conflux
+};
+
+static const WCHAR * const player_names[] = {
+    L"Red",
+    L"Blue",
+    L"Tan",
+    L"Green",
+    L"Orange",
+    L"Purple",
+    L"Teal",
+    L"Pink"
+};
 
 static BOOL _get_reg_value_a(const char *value_name, char **pointer)
 {
@@ -77,8 +106,34 @@ LRESULT CALLBACK new_rmg_dialog_WndProc(HWND hwnd, UINT Message, WPARAM wParam, 
 {
     switch (Message)
     {
+
     case WM_COMMAND:
-        if (BN_CLICKED == HIWORD(wParam) && f_id_ok == LOWORD(wParam))
+        if (CBN_SELCHANGE == HIWORD(wParam))
+        {
+            int humans = SendMessage(f_hwnd_human_players_combobox, CB_GETCURSEL, 0, 0);
+            int computers = SendMessage(f_hwnd_computer_players_combobox, CB_GETCURSEL, 0, 0);
+            if (0 != humans && 0 != computers) // If neither humans nor computers is random number, disable town selection for unused players
+            {
+                // Humans combobox starts with Random, 1, 2 ...
+                // But Computers starts with Random, 0, 1, ...
+                // Adjust for this
+                computers -= 1;
+
+                for (int i = 0; i < 8; ++i)
+                {
+                    BOOL bEnable = i < (humans + computers);
+                    EnableWindow(f_hwnd_town_comboboxes[i], bEnable);
+                }
+            }
+            else // At least one combobox is random, enable all town selections
+            {
+                for (int i = 0; i < 8; ++i)
+                {
+                    EnableWindow(f_hwnd_town_comboboxes[i], TRUE);
+                }
+            }
+        }
+        else if (BN_CLICKED == HIWORD(wParam) && f_id_ok == LOWORD(wParam))
         {
             f_ok_was_clicked = TRUE;
             if (NULL != f_templates_path)
@@ -111,6 +166,19 @@ LRESULT CALLBACK new_rmg_dialog_WndProc(HWND hwnd, UINT Message, WPARAM wParam, 
                 free(f_templates_path);
 				f_templates_path = NULL;
             }
+            for (int i = 0; i < 8; ++i)
+            {
+                g_selected_towns[i] = SendMessageA(f_hwnd_town_comboboxes[i], CB_GETCURSEL, 0, 0) - 1; // - 1 so Random becomes -1, Castle becomes 0 etc
+            }
+        }
+        else if (BN_CLICKED == HIWORD(wParam) && ID_SELECTABLE_TOWNS == LOWORD(wParam))
+        {
+            static BOOL bEnable;
+            for (int i = 0; i < 8; ++i)
+            {
+                EnableWindow(f_hwnd_town_comboboxes[i], bEnable);
+            }
+            bEnable = !bEnable;
         }
         break;
     case WM_DESTROY:
@@ -214,7 +282,6 @@ VOID FixRMGDialog(HWND hwnd)
     //const wchar_t *str_random = NULL;
     //const wchar_t *str_random2 = NULL;
 
-	HWND hwnd_selectable_towns = NULL;
 	RECT rc;
 	POINT pt;
 	int main_w;
@@ -228,6 +295,7 @@ VOID FixRMGDialog(HWND hwnd)
 	int mapversion_x;
 	int mapversion_y;
 	int element_count = 0;
+    HWND child = NULL;
 	//    HWND hwnd_random = FindWindowExW(hwnd, NULL, NULL, str_random);
 
 #if 1
@@ -276,30 +344,29 @@ VOID FixRMGDialog(HWND hwnd)
 
 	// Need to manually set RMG options to show and set the default settings (normally done when
 	// the Generate checkbox is checked)
-	HWND child = NULL;
 	element_count = 0;
-	for (; NULL != (child = FindWindowExA(hwnd, child, NULL, NULL)); ++element_count)
+	for (child = NULL; NULL != (child = FindWindowExA(hwnd, child, NULL, NULL)); ++element_count)
 	{
 		WCHAR text[256] = { 0 };
 		char classname[256] = { 0 }; 
 		LONG style = GetWindowLong(child, GWL_STYLE);
+        int w;
+        int h;
 		GetWindowTextW(child, text, sizeof(text) / sizeof(text[0]) - 1);
 		GetWindowTextA(child, classname, sizeof(classname)-1);
 		GetWindowRect(child, &rc);
 		pt.x = rc.left;
 		pt.y = rc.top;
+        w = rc.right - rc.left;
+        h = rc.bottom - rc.top;
 		ScreenToClient(hwnd, &pt);
 
 		OutputDebugStringW(text);
+        char s[256] = { 0 };
+        sprintf(s, "element :%d", element_count);
+        OutputDebugStringA(s);
 
-		if (2 == wcslen(text))
-		{
-			f_id_ok = GetWindowLong(child, GWL_ID);
-			ok_x = pt.x;
-			ok_y = pt.y;
-			continue;
-		}
-		else if (pt.x == roe_x && pt.y > gen_y) // Detect default radio button for Water content and Monster strength
+		if (pt.x == roe_x && pt.y > gen_y) // Detect default radio button for Water content and Monster strength
 		{
 			CheckRadioButton(hwnd, GetWindowLong(child, GWL_ID), GetWindowLong(child, GWL_ID), GetWindowLong(child, GWL_ID));
 		}
@@ -316,8 +383,33 @@ VOID FixRMGDialog(HWND hwnd)
 				mapversion_y = pt.y;
 			}
 			MoveWindow(child, -50, -50, 0, 0, TRUE);
-			continue;
 		}
+        else if (element_count == 9) // Two level map checkbox, make it shorter in width so it does not interfere with extra GUI elements
+        {
+            MoveWindow(child, pt.x, pt.y, 200, h, TRUE);
+        }
+        else if (element_count == 14)
+        {
+            //f_id_human_players_combobox = GetDlgCtrlID(child);
+            f_hwnd_human_players_combobox = child;
+        }
+        else if (element_count == 16)
+        {
+            //f_id_computer_players_combobox = GetDlgCtrlID(child);
+            f_hwnd_computer_players_combobox = child;
+        }
+        else if (element_count >= 32) // Elements 32-34 are OK, Cancel and Help buttons, move them to make space for more GUI elements
+        {
+            if (32 == element_count) // Save OK button position
+            {
+                f_id_ok = GetWindowLong(child, GWL_ID);
+                ok_x = pt.x;
+                ok_y = pt.y;
+            }
+            
+            MoveWindow(child, pt.x + (w * 4 / 3), pt.y, w, h, TRUE);
+        }
+        
 
 		// Set window to be shown, revealing the RMG options
 		ShowWindow(child, SW_SHOW);
@@ -326,18 +418,35 @@ VOID FixRMGDialog(HWND hwnd)
     // Extra content here
     f_hwnd_templates = CreateWindowW(WC_COMBOBOX, TEXT(""),
         WS_VSCROLL | CBS_DROPDOWNLIST | CBS_HASSTRINGS | WS_CHILD | WS_OVERLAPPED | WS_VISIBLE,
-		gen_x, mapversion_y, 150, 330, hwnd, (HMENU)ID_TEMPLATES, NULL, NULL);
-	hwnd_selectable_towns = CreateWindowA("Button", "Selectable player towns",
-		WS_VISIBLE | WS_CHILD | BS_AUTOCHECKBOX, gen_x, mapversion_y + 50, 170, 21, hwnd, (HMENU)ID_SELECTABLE_TOWNS, NULL, 0);
+		gen_x, ok_y, 150, 330, hwnd, (HMENU)ID_TEMPLATES, NULL, NULL);
+	f_hwnd_selectable_towns = CreateWindowA("Button", "Selectable Player Towns",
+		WS_VISIBLE | WS_CHILD | BS_AUTOCHECKBOX, ok_x, ok_y + (181), 200, 21, hwnd, (HMENU)ID_SELECTABLE_TOWNS, NULL, 0);
     
-	HFONT font = (HFONT)SendMessage(hwnd_roe, WM_GETFONT, 0, 0);
-	if (NULL == font)
-	{
-		font = GetStockObject(DEFAULT_GUI_FONT);
-	}
+    HFONT font = (HFONT)SendMessage(hwnd_roe, WM_GETFONT, 0, 0);
+    if (NULL == font)
+    {
+        font = GetStockObject(DEFAULT_GUI_FONT);
+    }
 
-	SendMessage(hwnd_selectable_towns, WM_SETFONT, (WPARAM)font, TRUE);
-	SendMessage(f_hwnd_templates, WM_SETFONT, (WPARAM)font, TRUE);
+    SendMessage(f_hwnd_selectable_towns, WM_SETFONT, (WPARAM)font, TRUE);
+    SendMessage(f_hwnd_templates, WM_SETFONT, (WPARAM)font, TRUE);
+
+    for (int i = 0; i < 8; ++i)
+    {
+        f_hwnd_town_comboboxes[i] = CreateWindowW(WC_COMBOBOX, TEXT(""),
+            WS_VSCROLL | CBS_DROPDOWNLIST | CBS_HASSTRINGS | WS_CHILD | WS_OVERLAPPED | WS_VISIBLE,
+            ok_x, ok_y + (23 * i), 120, 330, hwnd, (HMENU)NULL, NULL, NULL);
+
+        SendMessage(f_hwnd_town_comboboxes[i], WM_SETFONT, (WPARAM)font, TRUE);
+        for (int j = 0; j < sizeof(town_names) / sizeof(town_names[0]); ++j)
+        {
+            WCHAR str[256]; 
+            _snwprintf(str, sizeof(str) / sizeof(str[0]) - 1, L"%s (%s)", town_names[j], player_names[i]);
+            SendMessageW(f_hwnd_town_comboboxes[i], CB_ADDSTRING, 0, (LPARAM)str);
+        }
+        SendMessageW(f_hwnd_town_comboboxes[i], CB_SETCURSEL, 0, 0);
+    }
+
 
 	if (NULL != f_templates_path)
 	{
@@ -379,3 +488,7 @@ VOID FixRMGDialog(HWND hwnd)
 
     g_hwnd_rmg_dialog = hwnd;
 }
+
+// TODO:
+// * if selectable player towns is selected, disable all the town comboboxes
+// * if player amount is selected (not random), disable all extraneous players

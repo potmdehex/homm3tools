@@ -9,3 +9,5 @@ int g_selectable_towns = 0;
 
 HWND g_hwnd_main = NULL;
 HWND g_hwnd_rmg_dialog = NULL;
+
+int g_selected_towns[256];

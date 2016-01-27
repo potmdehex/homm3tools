@@ -11,5 +11,6 @@ extern HWND g_hwnd_main;
 extern HWND g_hwnd_rmg_dialog;
 
 extern int g_selectable_towns;
+extern int g_selected_towns[256];
 
 #endif
