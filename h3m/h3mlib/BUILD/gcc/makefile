@@ -47,7 +47,22 @@ obj/%.o: ../../h3m_code/%.c | obj
     
 obj/%.o: ../../h3m_conversion/%.c | obj
 	$(CC) $< -c $(CFLAGS) -o $@
-    
+	
+obj/%.o: ../../h3m_editing/%.c | obj
+	$(CC) $< -c $(CFLAGS) -o $@
+	
+obj/%.o: ../../h3m_modembed/%.c | obj
+	$(CC) $< -c $(CFLAGS) -o $@
+	
+obj/%.o: ../../internal/%.c | obj
+	$(CC) $< -c $(CFLAGS) -o $@
+	
+obj/%.o: ../../io/%.c | obj
+	$(CC) $< -c $(CFLAGS) -o $@
+	
+obj/%.o: ../../utils/%.c | obj
+	$(CC) $< -c $(CFLAGS) -o $@
+	
 obj/%.o: ../../gen/%.c | obj
 	$(CC) $< -c $(CFLAGS) -o $@
 	

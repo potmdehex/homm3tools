@@ -1,11 +1,11 @@
-// Created by John Åkerblom 2014-12-15
+// Created by John Ã…kerblom 2014-12-15
 
 #ifndef __H3M_EVENT_BODY_H_DEF__
 #define __H3M_EVENT_BODY_H_DEF__
 
 // Included by h3m.h
 
-#include "../utils/msvc_comp_stdint.h"
+#include "../../utils/msvc_comp_stdint.h"
 
 #pragma pack(push, 1)
 

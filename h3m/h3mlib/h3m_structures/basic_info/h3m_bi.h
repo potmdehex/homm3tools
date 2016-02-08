@@ -1,11 +1,11 @@
-// Created by John Åkerblom 2014-11-22
+// Created by John Ã…kerblom 2014-11-22
 
 #ifndef __H3M_BI_H_DEF__
 #define __H3M_BI_H_DEF__
 
 // Included by h3m.h
 
-#include "../utils/msvc_comp_stdint.h"
+#include "../../utils/msvc_comp_stdint.h"
 
 #pragma pack(push, 1)
 
