@@ -1,11 +1,11 @@
-// Created by John Åkerblom 2014-11-22
+// Created by John Ã…kerblom 2014-11-22
 
 #ifndef __H3M_AI_H_DEF__
 #define __H3M_AI_H_DEF__
 
 // Included by h3m.h
 
-#include "../utils/msvc_comp_stdint.h"
+#include "../../utils/msvc_comp_stdint.h"
 #include "h3m_ai_custom_hero.h"
 #include "h3m_ai_hero_settings.h"
 #include "h3m_ai_lose_cond.h"

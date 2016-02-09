@@ -1,11 +1,11 @@
-// Created by John Åkerblom 2014-10-12
+// Created by John Ã…kerblom 2014-10-12
 
 #ifndef __H3M_AI_HERO_SETTINGS_H_DEF__
 #define __H3M_AI_HERO_SETTINGS_H_DEF__
 
 // Included by h3m_ai.h
 
-#include "../utils/msvc_comp_stdint.h"
+#include "../../utils/msvc_comp_stdint.h"
 #include "../common/h3m_common.h"
 
 #pragma pack(push, 1)

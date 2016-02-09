@@ -1,11 +1,11 @@
-// Created by John Åkerblom 2014-11-20
+// Created by John Ã…kerblom 2014-11-20
 
 #ifndef __H3M_PLAYER_H_DEF__
 #define __H3M_PLAYER_H_DEF__
 
 // Included by h3m.h
 
-#include "../utils/msvc_comp_stdint.h"
+#include "../../utils/msvc_comp_stdint.h"
 #include "h3m_player_ai.h"
 
 #pragma pack(push, 1)

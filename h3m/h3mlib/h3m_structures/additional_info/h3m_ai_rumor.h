@@ -1,12 +1,12 @@
-// Created by John Åkerblom 2014-11-22
+// Created by John Ã…kerblom 2014-11-22
 
 #ifndef __H3M_AI_RUMOR_H_DEF__
 #define __H3M_AI_RUMOR_H_DEF__
 
 // Included by h3m_ai.h
 
-#include "../utils/msvc_comp_stdint.h"
-#include "../h3mlib.h"
+#include "../../utils/msvc_comp_stdint.h"
+#include "../../h3mlib.h"
 
 #pragma pack(push, 1)
 
