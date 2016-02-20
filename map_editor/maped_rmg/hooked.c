@@ -44,7 +44,6 @@ NtClose_t				     orig_NtClose				= (NtClose_t)NULL;
 GetSaveFileNameA_t           orig_GetSaveFileNameA = (GetSaveFileNameA_t)NULL;
 MessageBoxA_t                orig_MessageBoxA    = (MessageBoxA_t)NULL;
 CreateDialogIndirectParamA_t orig_CreateDialogIndirectParamA = (CreateDialogIndirectParamA_t)NULL;
-
 orig_get_terrain_type_for_new_zone_t orig_get_terrain_type_for_new_zone = (orig_get_terrain_type_for_new_zone_t)0x0049B3C1;
 orig_early_gen_func_t orig_early_gen_func = (orig_early_gen_func_t)0x004A218C;
 
@@ -202,11 +201,17 @@ NTSTATUS NTAPI hooked_NtClose(
     return ret;
 }
 
+static char dbgdbg[256];
+
 void __declspec(naked) hooked_get_terrain_type_for_new_zone(void)
 {
     static int town;
 
     __asm PUSHAD
+
+    sprintf(dbgdbg, "cur %d vs total %d", f_player_current, f_player_count);
+    OutputDebugStringA(dbgdbg);
+
     if (-1 == g_selected_towns[f_player_current] || f_player_current > f_player_count
         || 0 != g_selectable_towns)
     {
@@ -230,28 +235,14 @@ void __declspec(naked) hooked_get_terrain_type_for_new_zone(void)
 // and to reset current player to 0
 void __declspec(naked) hooked_early_gen_func(void)
 {
-    static uint32_t _esp;
-    
-    // Call original function, preserving args and stack
-    __asm MOV EAX, [ESP]
-    __asm MOV _esp, EAX
-    // eip -> eax
-    __asm CALL get_eip
-get_eip:
-    __asm POP EAX
-    __asm ADD EAX, 0x0D
-    __asm MOV [ESP], EAX
-    __asm JMP orig_early_gen_func
-
     // Save player count, set current player t o0
-    __asm MOV EAX, [ESP - 0x40];
+    __asm MOV EAX, [ESI + 0x0F48] // struct->human/computer players
+    __asm MOV EDX, [ESI + 0x0F50] // struct->computer only players
+    __asm ADD EAX, EDX
     __asm MOV f_player_count, EAX
     __asm MOV f_player_current, 0
 
-    // Return to original caller
-    __asm MOV EAX, _esp
-    __asm PUSH EAX
-    __asm RETN
+    __asm JMP orig_early_gen_func
 }
 
 static BOOL _inline_hook_function(const char *dll_name,

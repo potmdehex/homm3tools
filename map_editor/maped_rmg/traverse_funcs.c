@@ -26,10 +26,10 @@ int traverse_templates(const char *path, const char *search, HWND combobox)
 
     if (INVALID_HANDLE_VALUE == (hFind = FindFirstFileW(searchpath, &wfd)))
     {
-        char error[256];
-        OutputDebugStringA("QQ FindFirstFileW fail:");
-        sprintf(error, "%d", GetLastError());
-        OutputDebugStringA(error);
+        //char error[256];
+        //OutputDebugStringA("QQ FindFirstFileW fail:");
+        //sprintf(error, "%d", GetLastError());
+        //OutputDebugStringA(error);
         return 1;
     }
 
@@ -79,19 +79,19 @@ int traverse_deleteold(const char *path, const char *search)
 
     if (INVALID_HANDLE_VALUE == (hFind = FindFirstFileW(searchpath, &wfd)))
     {
-        char error[256];
-        OutputDebugStringA("QQ FindFirstFileW fail:");
-        sprintf(error, "%d", GetLastError());
-        OutputDebugStringA(error);
+        //char error[256];
+        //OutputDebugStringA("QQ FindFirstFileW fail:");
+        //sprintf(error, "%d", GetLastError());
+        //OutputDebugStringA(error);
         return 1;
     }
 
     do
     {
-        OutputDebugStringW(L"delete");
+        //OutputDebugStringW(L"delete");
 
         _snwprintf(target, sizeof(target) / sizeof(target[0]) - 1, L"%S\\%s", path, wfd.cFileName);
-        OutputDebugStringW(target);
+        //OutputDebugStringW(target);
         DeleteFileW(target);
     } while (FALSE != FindNextFileW(hFind, &wfd));
 
@@ -137,25 +137,25 @@ int traverse_copy_map(const char *path, const char *search, const char *src_map)
             || 2 != wcslen(wfd.cFileName)
             || !(FILE_ATTRIBUTE_DIRECTORY & wfd.dwFileAttributes))
         {
-            OutputDebugStringA("skip");
+            //OutputDebugStringA("skip");
             continue;
         }
 
         WCHAR *locale = wfd.cFileName;
 
         _snwprintf(target, sizeof(target) / sizeof(target[0]) - 1, L"%S\\%s\\rm.h3m", path, locale);
-        OutputDebugStringW(L"target");
-        OutputDebugStringW(target);
+        //OutputDebugStringW(L"target");
+        //OutputDebugStringW(target);
         while (INVALID_FILE_ATTRIBUTES != GetFileAttributesW(target))
         {
             WCHAR *c = wcsrchr(target, '.');
             wsprintf(c, L"_.h3m");
-            OutputDebugStringW(L"newtarget:");
-            OutputDebugStringW(target);
+            //OutputDebugStringW(L"newtarget:");
+            //OutputDebugStringW(target);
         }
-        OutputDebugStringW(L"move:");
-        OutputDebugStringW(src_map_w);
-        OutputDebugStringW(target);
+        //OutputDebugStringW(L"move:");
+        //OutputDebugStringW(src_map_w);
+        //OutputDebugStringW(target);
         char oldpath[MAX_PATH] = { 0 };
         _snprintf(oldpath, sizeof(oldpath)-1, "%s\\%S", path, locale);
         traverse_deleteold(oldpath, "rm*h3m");

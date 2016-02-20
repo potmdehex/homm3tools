@@ -361,10 +361,10 @@ VOID FixRMGDialog(HWND hwnd)
         h = rc.bottom - rc.top;
 		ScreenToClient(hwnd, &pt);
 
-		OutputDebugStringW(text);
-        char s[256] = { 0 };
-        sprintf(s, "element :%d", element_count);
-        OutputDebugStringA(s);
+		//OutputDebugStringW(text);
+        //char s[256] = { 0 };
+        //sprintf(s, "element :%d", element_count);
+        //OutputDebugStringA(s);
 
 		if (pt.x == roe_x && pt.y > gen_y) // Detect default radio button for Water content and Monster strength
 		{
