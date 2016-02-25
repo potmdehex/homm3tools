@@ -251,20 +251,33 @@ static int _convert_oa_roe(struct H3MLIB_CTX *ctx_in,
         switch (oa_type) {
             // ABSOD objects to drop
         case META_OBJECT_PLACEHOLDER_HERO:      // TODO convert to random hero
+			continue;
         case META_OBJECT_ABANDONED_MINE_ABSOD:
+			continue;
         case META_OBJECT_ARTIFACT_AB:
+			continue;
         case META_OBJECT_ARTIFACT_SOD:
+			continue;
         case META_OBJECT_DWELLING_ABSOD:
+			continue;
         case META_OBJECT_GARRISON_ABSOD:
+			continue;
         case META_OBJECT_GENERIC_IMPASSABLE_TERRAIN_ABSOD:      // Not handled here
+			continue;
         case META_OBJECT_GENERIC_PASSABLE_TERRAIN_SOD:
+			continue;
         case META_OBJECT_GENERIC_VISITABLE_ABSOD:
+			continue;
         case META_OBJECT_RANDOM_DWELLING_ABSOD:
+			continue;
         case META_OBJECT_RANDOM_DWELLING_PRESET_LEVEL_ABSOD:
+			continue;
         case META_OBJECT_RANDOM_DWELLING_PRESET_ALIGNMENT_ABSOD:
+			continue;
         case META_OBJECT_QUEST_GUARD:   // Should be renamed with _ABSOD at end
-        case META_OBJECT_SEERS_HUT:     // Simply drop for now... Vastly different in RoE with main problem being the other quest types
-            continue;
+			continue;
+		case META_OBJECT_SEERS_HUT:
+			break;
         case META_OBJECT_WITCH_HUT:     // No skill customization for RoE Witch Hut
             body_size_delta = -4;
             break;
@@ -330,6 +343,9 @@ static int _convert_oa_roe(struct H3MLIB_CTX *ctx_in,
                 entry_out->body.object_number = 1;
             }
         }
+	/*	else if (META_OBJECT_SEERS_HUT == oa_type) {
+
+		}*/
 
         entry_conv = calloc(1, sizeof(*entry_conv));
         entry_conv->oa_index_in = i;
