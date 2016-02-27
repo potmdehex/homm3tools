@@ -1,6 +1,6 @@
 #ifndef __VERSION_H_DEF__
 #define __VERSION_H_DEF__
 
-#define VERSION "1.12"
+#define HDE_MOD_VERSION "1.21"
 
 #endif

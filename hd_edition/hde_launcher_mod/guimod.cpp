@@ -114,7 +114,7 @@ void GuiMod::extendGui()
     fullscreenLbl->hide();
     fullscreenBox->hide();
 
-    versionLbl->setText(versionLbl->text() + QString(", HDE Mod " VERSION));
+    versionLbl->setText(versionLbl->text() + QString(", HDE Mod " HDE_MOD_VERSION));
     versionLbl->setParent(centralWidget);
     versionLbl->setStyleSheet(VERSIONLABEL_NEW_STYLESHEET);
     versionLbl->setGeometry(versionLbl->x() - 36, versionLbl->y(), 170, 21);
