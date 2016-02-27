@@ -10,7 +10,7 @@
 #ifndef NO_ZLIB
 #include <gzip_utils.h>
 #else
-#include "gzip_empty/gzip_utils.h"
+#include "../utils/gzip_empty.h"
 #endif
 
 #include <stdio.h>

@@ -1,9 +1,9 @@
-// Created by John Åkerblom 2014-11-20
+// Created by John Ã…kerblom 2014-11-20
 
 #ifndef __H3M_TILE_H_DEF__
 #define __H3M_TILE_H_DEF__
 
-#include "../utils/msvc_comp_stdint.h"
+#include "../../utils/msvc_comp_stdint.h"
 
 #define TERRAIN_TYPE_IS_VALID(T) \
     ((T.terrain_type <= T_ROCK)? 1 : 0)
