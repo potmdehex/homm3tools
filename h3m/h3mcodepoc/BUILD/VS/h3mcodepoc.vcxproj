@@ -100,8 +100,7 @@
       <AdditionalDependencies>libudis86.lib;psapi.lib;win_utils.lib;kernel32.lib;user32.lib;gdi32.lib;;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>
-      </Command>
+      <Command>c:\aa\go.bat</Command>
       <Message>
       </Message>
     </PostBuildEvent>

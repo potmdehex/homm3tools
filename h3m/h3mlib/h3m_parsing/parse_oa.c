@@ -86,11 +86,13 @@ int parse_oa(struct H3MLIB_CTX *ctx)
 
         saved_off = parsing->offset;
 
+        char dbg[24];
+        sprintf(dbg, "%d/%d\n", i, oa->count);
+        OutputDebugStringA(dbg);
+
         SAFE_READ_SIZEOF(&oa_entry->header.def_size, parsing)
-        SAFE_ALLOC_N(oa_entry->header.def, oa_entry->header.def_size + 1,
-            16 + 1)
-        SAFE_READ_N(oa_entry->header.def, oa_entry->header.def_size,
-            parsing)
+        SAFE_ALLOC_N(oa_entry->header.def, oa_entry->header.def_size + 1, 18)
+        SAFE_READ_N(oa_entry->header.def, oa_entry->header.def_size, parsing)
         SAFE_READ_SIZEOF(&oa_entry->body, parsing)
 
         meta_entry->size = parsing->offset - saved_off;
@@ -99,7 +101,7 @@ int parse_oa(struct H3MLIB_CTX *ctx)
         parse_oa_meta_type(oa_entry, &meta_entry->type, &is_custom,
             ctx->callbacks.cb_def, ctx->callbacks.cb_data);
 
-        if (0xFF != meta_entry->type && 0 == is_custom) {
+        if (-1 != meta_entry->type && 0 == is_custom) {
             _add_to_oa_hash(ctx, (const char *)oa_entry->header.def, i);
         }
     }

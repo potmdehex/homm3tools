@@ -224,6 +224,7 @@ Global
 		{A422165B-050F-4A72-86CF-629526700C19}.Debug|x64.ActiveCfg = Debug|Win32
 		{A422165B-050F-4A72-86CF-629526700C19}.Release|Any CPU.ActiveCfg = Release|Win32
 		{A422165B-050F-4A72-86CF-629526700C19}.Release|Mixed Platforms.ActiveCfg = Release|Win32
+		{A422165B-050F-4A72-86CF-629526700C19}.Release|Mixed Platforms.Build.0 = Release|Win32
 		{A422165B-050F-4A72-86CF-629526700C19}.Release|Win32.ActiveCfg = Release|Win32
 		{A422165B-050F-4A72-86CF-629526700C19}.Release|Win32.Build.0 = Release|Win32
 		{A422165B-050F-4A72-86CF-629526700C19}.Release|x64.ActiveCfg = Release|Win32

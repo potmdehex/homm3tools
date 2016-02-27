@@ -18,11 +18,25 @@ int parse_ai_hero_settings(struct H3MLIB_CTX *ctx)
     //int orig_off = ctx->parsing.offset;
     //int ret = 0;
     size_t n = 0;
+    size_t count = 0;
     unsigned int i = 0;
     struct H3M_AI_HERO_SETTINGS *settings = NULL;
+    struct H3M_AI_HERO_SETTINGS *settings_base = NULL;
+    uint32_t fm = p->format;
+    
+    if (H3M_FORMAT_HOTA != fm) {
+        count = sizeof(p->ai.sod.hero_settings) / sizeof(*settings);
+        settings_base = p->ai.sod.hero_settings;
+    } else { // HotA
+        SAFE_READ_SIZEOF(&p->ai.hota.hero_settings_count, parsing);
+        n = sizeof (*settings) * p->ai.hota.hero_settings_count;
+        SAFE_ALLOC_N(p->ai.hota.hero_settings, n, 256 * sizeof (*settings))
+        count = p->ai.hota.hero_settings_count;
+        settings_base = p->ai.hota.hero_settings;
+    }
 
-    for (i = 0; i < sizeof(p->ai.sod.hero_settings) / sizeof(*settings); ++i) {
-        settings = &p->ai.sod.hero_settings[i];
+    for (i = 0; i < count; ++i) {
+        settings = &settings_base[i];
         SAFE_READ_SIZEOF(&settings->has_settings, parsing)
         if (0 == settings->has_settings) {
             continue;
@@ -54,7 +68,7 @@ int parse_ai_hero_settings(struct H3MLIB_CTX *ctx)
             }
         }
         SAFE_READ_SIZEOF(&settings->has_biography, parsing)
-            if (0 != settings->has_biography) {
+        if (0 != settings->has_biography) {
             SAFE_READ_SIZEOF(&settings->biography.desc_size, parsing)
             if (0 != settings->biography.desc_size) {
                 n = settings->biography.desc_size;

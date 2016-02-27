@@ -39,6 +39,7 @@
 #define PREFIX_SOD "[SoD] "
 #define PREFIX_AB "[AB] "
 #define PREFIX_WOG "[WoG] "
+#define PREFIX_HOTA "[HotA] "
 #define PREFIX_UNKNOWN ""
 #define SUFFIX_DESC " [h3minternals.net] converted to RoE with h3mlib by potmdehex"
 
@@ -980,6 +981,8 @@ const char *get_prefix(enum H3M_FORMAT fm)
         return PREFIX_AB;
     case H3M_FORMAT_WOG:
         return PREFIX_WOG;
+    case H3M_FORMAT_HOTA:
+        return PREFIX_HOTA;
     default:
         break;
     }
@@ -996,35 +999,36 @@ static int _convert_to_roe(struct H3MLIB_CTX *ctx_in,
     size_t n = 0;
     size_t map_size = ctx_in->h3m.bi.any.map_size;
     int has_two_levels = ctx_in->h3m.bi.any.has_two_levels;
-    char *new_str = NULL;
     const char *prefix = get_prefix(fm_src);
+    const char *name_src = NULL;
+    const char *desc_src = NULL;
 
     h3m_init_min(&ctx_tmp, H3M_FORMAT_ROE, 36);
 
     // Convert BI
-    memcpy(&ctx_tmp->h3m.bi, &ctx_in->h3m.bi, sizeof(ctx_tmp->h3m.bi.roe));
+    if (H3M_FORMAT_HOTA != fm_src) {
+        memcpy(&ctx_tmp->h3m.bi, &ctx_in->h3m.bi, sizeof(ctx_tmp->h3m.bi.roe));
+        name_src = ctx_in->h3m.bi.any.name;
+        desc_src = ctx_in->h3m.bi.any.desc;
+    } else { // HotA
+        // HotA has an extra uint32 for internal version before the second member (has_hero)
+        memcpy(&ctx_tmp->h3m.bi, &ctx_in->h3m.bi.hota.has_hero, sizeof(ctx_tmp->h3m.bi.roe));
+        name_src = ctx_in->h3m.bi.hota.name;
+        desc_src = ctx_in->h3m.bi.hota.desc;
+    }
 
     // Fix-up name and desc
     ctx_tmp->h3m.bi.any.name_size += strlen(prefix);
     ctx_tmp->h3m.bi.any.name = calloc(1, ctx_tmp->h3m.bi.any.name_size + 1);
-#ifdef _WIN32
+
     snprintf(ctx_tmp->h3m.bi.any.name, ctx_tmp->h3m.bi.any.name_size, "%s%s",
-        prefix, ctx_in->h3m.bi.any.name);
-#else
-    snprintf((char *)ctx_tmp->h3m.bi.any.name, ctx_tmp->h3m.bi.any.name_size,
-        "%s %s", (H3M_FORMAT_AB == fm_src) ? PREFIX_AB : PREFIX_SOD,
-        ctx_in->h3m.bi.any.name);
-#endif
+        prefix, name_src);
+
     ctx_tmp->h3m.bi.any.desc_size += sizeof(SUFFIX_DESC);
     ctx_tmp->h3m.bi.any.desc = calloc(1, ctx_tmp->h3m.bi.any.desc_size + 1);
-#ifdef _WIN32
+
     snprintf((char *)ctx_tmp->h3m.bi.any.desc, ctx_tmp->h3m.bi.any.desc_size,
-        "%s %s", ctx_in->h3m.bi.any.desc ? ctx_in->h3m.bi.any.desc : "",
-        SUFFIX_DESC);
-#else
-    snprintf((char *)ctx_tmp->h3m.bi.any.desc, ctx_tmp->h3m.bi.any.desc_size,
-        "%s %s", ctx_in->h3m.bi.any.desc, SUFFIX_DESC);
-#endif
+        "%s %s", desc_src ? desc_src : "", SUFFIX_DESC);
 
     // Heroes III HD Edition does not support maps with longer desc than 300
     if (ctx_tmp->h3m.bi.any.desc_size > 300) {

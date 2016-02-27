@@ -24,13 +24,21 @@ int parse_ai(struct H3MLIB_CTX *ctx)
     FS_ANY_CALL(parse_ai_lose_cond(ctx), fm)
     FS_ANY_CALL(parse_ai_teams(ctx), fm)
 
-    FS_ANY_READ_SIZEOF(p->ai, available_heroes, parsing, fm)
+    if (fm != H3M_FORMAT_HOTA) {
+        FS_ANY_READ_SIZEOF(p->ai, available_heroes, parsing, fm)
+    } else { // HotA
+        SAFE_READ_SIZEOF(&p->ai.hota.available_heroes_count, parsing)
+        n = (p->ai.hota.available_heroes_count + 7) / 8;
+        SAFE_ALLOC_N(p->ai.hota.available_heroes, n, 256)
+        SAFE_READ_N(p->ai.hota.available_heroes, n, parsing)
+    }
+
     FS_ABSOD_READ_SIZEOF(p->ai, empty, parsing, fm)
     // This variable previously thought to be empty is actually count for 
     // amount of placeholder heroes on map (only ones not power rating based).
     // TODO rename empty variable and actually parse/preserve the data
     if (fm > H3M_FORMAT_ROE) {
-    SAFE_CHECK_N(FS_ABSOD(p->ai, empty, fm), 255)
+        SAFE_CHECK_N(FS_ABSOD(p->ai, empty, fm), 255)
         parsing->offset += FS_ABSOD(p->ai, empty, fm);
     }
 
@@ -41,7 +49,16 @@ int parse_ai(struct H3MLIB_CTX *ctx)
     }
 
     FS_ANY_READ_SIZEOF(p->ai, reserved, parsing, fm)
-    FS_ABSOD_READ_SIZEOF(p->ai, available_artifacts, parsing, fm)
+    if (H3M_FORMAT_HOTA != fm) {
+        FS_ABSOD_READ_SIZEOF(p->ai, available_artifacts, parsing, fm)
+    } else { // HotA
+        SAFE_READ_SIZEOF(&p->ai.hota.allow_special_weeks, parsing) // HotA feature
+
+        SAFE_READ_SIZEOF(&p->ai.hota.available_artifacts_count, parsing);
+        n = (p->ai.hota.available_artifacts_count + 7) / 8;
+        SAFE_ALLOC_N(p->ai.hota.available_artifacts, n, 1024)
+        SAFE_READ_N(p->ai.hota.available_artifacts, n, parsing)
+    }
     FS_SOD_READ_SIZEOF(p->ai, available_spells, parsing, fm)
     FS_SOD_READ_SIZEOF(p->ai, available_skills, parsing, fm)
 

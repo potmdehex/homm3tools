@@ -5,6 +5,10 @@
 
 #include <windows.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 VOID hook_hotpatch_x86(void *old_proc, const void *new_proc, void **orig_proc);
 BOOL hook_unhotpatch_x86(void *old_proc);
 BOOL hook_trampoline_dis_x86(void **old_proc, const void *new_proc);
@@ -38,5 +42,9 @@ BYTE *hook_find_by_needle(HANDLE module, BYTE *needle, DWORD nsize);
 
 #define UNHOOK_PRESERVED(fn) \
     unhook_trampoline_dis_x86_preserved((void **)orig_##fn, preserved_##fn)
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

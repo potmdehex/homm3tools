@@ -49,6 +49,34 @@ static int _free_ai_sod(struct H3M *p)
     return 0;
 }
 
+static int _free_ai_hota(struct H3M *p)
+{
+    unsigned int i;
+
+    for (i = 0; i < p->ai.hota.custom_heroes_count; ++i) {
+        SAFE_FREE(p->ai.hota.custom_heroes[i].name);
+    }
+    SAFE_FREE(p->ai.hota.custom_heroes);
+
+    // HotA - dynamic count instead of 156 as in SoD
+    for (i = 0; i < p->ai.hota.hero_settings_count; ++i) {
+        if (0 == p->ai.hota.hero_settings[i].has_settings) {
+            continue;
+        }
+
+        SAFE_FREE(p->ai.hota.hero_settings[i].biography.desc);
+        SAFE_FREE(p->ai.hota.hero_settings[i].artifacts.backpack_entries);
+        SAFE_FREE(p->ai.hota.hero_settings[i].secondary_skills.entries);
+    }
+
+    // HotA exclusive dynamic arrays (they are constant size arrays in SoD)
+    SAFE_FREE(p->ai.hota.available_heroes);
+    SAFE_FREE(p->ai.hota.available_artifacts);
+    SAFE_FREE(p->ai.hota.hero_settings); 
+
+    return 0;
+}
+
 void free_dyn_pointers(UT_array * dyn_pointers, int free_members)
 {
     struct META_DYN_POINTER **dyn_pointer = NULL;
@@ -95,8 +123,13 @@ int h3mlib_cleanup(struct H3MLIB_CTX **ctx)
     unsigned int j = 0;
     const uint32_t fm = p->format;
 
-    SAFE_FREE(p->bi.any.name);
-    SAFE_FREE(p->bi.any.desc);
+    if (H3M_FORMAT_HOTA != fm) {
+        SAFE_FREE(p->bi.any.name);
+        SAFE_FREE(p->bi.any.desc);
+    } else { // HotA
+        SAFE_FREE(p->bi.hota.name);
+        SAFE_FREE(p->bi.hota.desc);
+    }
 
     if (NULL != p->players) {
         free_players(p->players);
@@ -125,9 +158,13 @@ int h3mlib_cleanup(struct H3MLIB_CTX **ctx)
         }
     }
 
-    FS_SOD_CALL(_free_ai_sod(p), fm)
-
-        SAFE_FREE(p->tiles);
+    if (H3M_FORMAT_HOTA != fm) {
+        FS_SOD_CALL(_free_ai_sod(p), fm)
+    } else { // HotA
+        _free_ai_hota(p);
+    }
+    
+    SAFE_FREE(p->tiles);
 
     if (NULL != p->oa.entries) {
         for (i = 0; i < p->oa.count; ++i) {

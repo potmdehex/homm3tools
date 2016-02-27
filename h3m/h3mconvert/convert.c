@@ -53,6 +53,9 @@ int convert_to_roe(const wchar_t *src_path, const wchar_t *filename, const wchar
     case H3M_FORMAT_WOG:
         version = L"WoG";
         break;
+    case H3M_FORMAT_HOTA:
+        version = L"HotA";
+        break;
     default:
         version = L"??";
     }

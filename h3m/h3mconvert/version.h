@@ -6,7 +6,7 @@
 #include <stdint.h>
 #include <windows.h>
 
-#define VERSION_W L"0.1"
+#define VERSION_W L"0.2"
 
 #endif
 

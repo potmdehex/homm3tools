@@ -43,9 +43,9 @@ struct H3M_AI_AB {
     uint8_t lose_cond_type;
     union H3M_AI_LOSE_COND lose_cond;   // DYNAMIC MEMBER
     uint8_t teams_count;
-    struct H3M_AI_TEAMS teams;  // DYNAMIC MEMBER
+    struct H3M_AI_TEAMS teams;          // DYNAMIC MEMBER
     uint8_t available_heroes[20];       // AB/SOD - size 20 available_heroes
-    uint32_t empty;             // AB/SOD feature
+    uint32_t empty;                     // AB/SOD feature
     // AB - no custom_hero_count here
     // AB - no custom_heroes array here
     uint8_t reserved[31];
@@ -63,11 +63,11 @@ struct H3M_AI_SOD {
     uint8_t lose_cond_type;
     union H3M_AI_LOSE_COND lose_cond;   // DYNAMIC MEMBER
     uint8_t teams_count;
-    struct H3M_AI_TEAMS teams;  // DYNAMIC MEMBER
+    struct H3M_AI_TEAMS teams;          // DYNAMIC MEMBER
     uint8_t available_heroes[20];       // AB/SOD - size 20 available_heroes
-    uint32_t empty;             // AB/SOD feature
+    uint32_t empty;                     // AB/SOD feature
     uint8_t custom_heroes_count;        // SOD feature
-    struct H3M_AI_CUSTOM_HERO_SOD *custom_heroes;       // DYNAMIC MEMBER
+    struct H3M_AI_CUSTOM_HERO_SOD *custom_heroes; // DYNAMIC MEMBER
     uint8_t reserved[31];
     uint8_t available_artifacts[18];    // SOD - size 18 available_artifacts
     uint8_t available_spells[9];        // SOD feature
@@ -78,11 +78,39 @@ struct H3M_AI_SOD {
     struct H3M_AI_HERO_SETTINGS hero_settings[156];     // DYNAMIC MEMBER, SOD feature
 };
 
+// NOT BINARY COMPATIBLE - CONTAINS DYNAMIC ELEMENTS
+struct H3M_AI_HOTA {
+    uint8_t win_cond_type;
+    union H3M_AI_WIN_COND win_cond;     // DYNAMIC MEMBER
+    uint8_t lose_cond_type;
+    union H3M_AI_LOSE_COND lose_cond;   // DYNAMIC MEMBER
+    uint8_t teams_count;
+    struct H3M_AI_TEAMS teams;          // DYNAMIC MEMBER
+
+    uint32_t available_heroes_count;    // HOTA feature
+    uint8_t *available_heroes;          // HOTA - <available_heroes_count> available_heroes
+    uint32_t empty;                     // AB/SOD feature
+    uint8_t custom_heroes_count;        // SOD feature
+    struct H3M_AI_CUSTOM_HERO_SOD *custom_heroes; // DYNAMIC MEMBER
+    uint8_t reserved[31];
+    uint32_t allow_special_weeks;        // HOTA feature
+    uint32_t available_artifacts_count; // HOTA feature
+    uint8_t *available_artifacts;       // HOTA <available_artifacts_count>
+    uint8_t available_spells[9];        // SOD feature
+    uint8_t available_skills[4];        // SOD feature
+    uint32_t rumors_count;
+    struct H3M_AI_RUMOR *rumors;        // DYNAMIC MEMBER
+
+    uint32_t hero_settings_count;       // HOTA feature 
+    struct H3M_AI_HERO_SETTINGS *hero_settings; // DYNAMIC MEMBER, SOD feature
+};
+
 union H3M_AI {
     struct H3M_AI_ROE roe;
     struct H3M_AI_ROE any;      // Only useful for getting a few sizes
     struct H3M_AI_AB ab;
     struct H3M_AI_SOD sod;
+    struct H3M_AI_HOTA hota;
 };
 
 #pragma pack(pop)

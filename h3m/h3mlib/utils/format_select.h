@@ -75,6 +75,8 @@
 #pragma warning(disable:4048)
 #endif
 
+// TODO support for HotA in all macros
+
 //
 // FS_*: Retrieve (rvalue of) AB member of format F
 //
@@ -105,14 +107,17 @@
 #define FS_ANY_VOIDCAST(A, B, FM) \
     ((H3M_FORMAT_ROE == FM) ? (void *)A.roe.B : \
     (H3M_FORMAT_AB == FM) ? (void *)A.ab.B : \
+    (H3M_FORMAT_HOTA == FM) ? (void *)A.hota.B : \
     (void *)A.sod.B)
 
 #define FS_ABSOD_VOIDCAST(A, B, FM) \
     ((H3M_FORMAT_AB == FM) ? (void *)A.ab.B : \
+    (H3M_FORMAT_HOTA == FM) ? (void *)A.hota.B : \
     (void *)A.sod.B)
 
 #define FS_SOD_VOIDCAST(A, B, FM) \
-    (void *)A.sod.B
+    (H3M_FORMAT_HOTA != FM) ? (void *)A.sod.B : \
+    (void *)A.hota.B
 
 //
 // FS_*_SIZEOF: Retrieve size of AB member of format F
@@ -120,14 +125,17 @@
 #define FS_ANY_SIZEOF(A, B, FM) \
     ((H3M_FORMAT_ROE == FM) ? sizeof(A.roe.B) : \
     (H3M_FORMAT_AB == FM) ? sizeof(A.ab.B) : \
+    (H3M_FORMAT_HOTA == FM) ? sizeof(A.hota.B) : \
     sizeof(A.sod.B))
 
 #define FS_ABSOD_SIZEOF(A, B, FM) \
     ((H3M_FORMAT_AB == FM) ? sizeof(A.ab.B) : \
+    (H3M_FORMAT_HOTA == FM) ? sizeof(A.hota.B) : \
     sizeof(A.sod.B))
 
 #define FS_SOD_SIZEOF(A, B, FM) \
-    sizeof(A.sod.B)
+    (H3M_FORMAT_HOTA != FM) ? sizeof(A.sod.B) : \
+    sizeof(A.hota.B)
 
 //
 // FS_*_ASSIGN: Assign value to AB member of format F

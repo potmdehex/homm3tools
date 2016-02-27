@@ -21,7 +21,7 @@
 
 #define MSG_BROWSE L"Select map(s) to convert to RoE format"
 #define MSG_CONVERTED L"Converted %d/%d maps..."
-#define MSG_COMPLETE L"Converted maps:\n\nRoE:\t\t%d\nAB:\t\t%d\nSoD:\t\t%d\nWoG:\t\t%d\n" \
+#define MSG_COMPLETE L"Converted maps:\n\nRoE:\t\t%d\nAB:\t\t%d\nSoD:\t\t%d\nWoG:\t\t%d\nHotA:\t\t%d\n" \
     L"Total:\t\t%d\n-------------\nFailed:\t\t%d\n" \
     L"-------------\nOpen destination folder?"
 #define TITLE_INITIAL L"Starting conversion..."
@@ -36,6 +36,7 @@ struct CONVERT_CB_DATA
     unsigned int converted_ab;
     unsigned int converted_sod;
     unsigned int converted_wog;
+    unsigned int converted_hota;
     unsigned int failed;
     unsigned int skipped;
 };
@@ -55,6 +56,9 @@ int _convert_cb(const wchar_t *filename, uint32_t version, uint32_t result, void
         break;
     case H3M_FORMAT_WOG:
         version_str = L"WoG";
+        break;
+    case H3M_FORMAT_HOTA:
+        version_str = L"HotA";
         break;
     default:
         break;
@@ -82,6 +86,9 @@ int _convert_cb(const wchar_t *filename, uint32_t version, uint32_t result, void
             break;
         case H3M_FORMAT_WOG:
             ++conv->converted_wog;
+            break;
+        case H3M_FORMAT_HOTA:
+            ++conv->converted_hota;
             break;
         default:
             break;
@@ -124,6 +131,7 @@ static VOID _ShowDetails(struct CONVERT_CB_DATA *conv, LPCWSTR lpDest)
         conv->converted_ab,
         conv->converted_sod,
         conv->converted_wog,
+        conv->converted_hota,
         conv->skipped + conv->converted_ab + conv->converted_sod + conv->converted_wog,
         conv->failed);
 
