@@ -19,7 +19,7 @@
 #endif
 
 #define DLL_NAME "maped_rmg.dll"
-#define COMMANDLINE "h3maped.exe"
+#define COMMANDLINE "h3hota_maped.exe"
 
 // Note: this function has a CRT dep because of strlen, but can
 // still be compiled with VS without CRT due to optimization
