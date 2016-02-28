@@ -11,10 +11,10 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\dllmain.c" />
+    <ClCompile Include="..\..\dllmain.cpp" />
     <ClCompile Include="..\..\globals.c" />
     <ClCompile Include="..\..\gui.c" />
-    <ClCompile Include="..\..\hooked.c" />
+    <ClCompile Include="..\..\hooked.cpp" />
     <ClCompile Include="..\..\patches.c" />
     <ClCompile Include="..\..\rmgdialog_fix.c" />
     <ClCompile Include="..\..\rmg_postfix.c" />
@@ -83,6 +83,9 @@
       <AdditionalLibraryDirectories>../../../../OUTPUT/$(Configuration)/;</AdditionalLibraryDirectories>
       <AdditionalDependencies>h3mtilespritegen_static.lib;gzip_utils.lib;h3mlib.lib;win_utils.lib;libudis86.lib;psapi.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <PostBuildEvent>
+      <Command>c:\maped_rmg_copy_hota.bat</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -108,9 +111,9 @@
       </EntryPointSymbol>
     </Link>
     <PostBuildEvent>
-      <Command>
-      </Command>
-      <Message>Handy for testing: c:\maped_rmg_copy.bat c:\h3maped_rmg.bat</Message>
+      <Command>c:\maped_rmg_copy_hota.bat</Command>
+      <Message>
+      </Message>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

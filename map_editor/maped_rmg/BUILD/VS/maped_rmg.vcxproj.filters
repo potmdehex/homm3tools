@@ -9,28 +9,28 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\dllmain.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\globals.c">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\gui.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\hooked.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\patches.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\rmg_postfix.c">
+    <ClCompile Include="..\..\traverse_funcs.c">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\rmgdialog_fix.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\traverse_funcs.c">
+    <ClCompile Include="..\..\rmg_postfix.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\hooked.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\dllmain.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
