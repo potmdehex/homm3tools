@@ -535,10 +535,6 @@ static int _inline_conv_seers_hut(uint32_t fm_src,
 {
     if ((enum H3M_FORMAT)fm_src > H3M_FORMAT_ROE)
     {
-        if (NULL == body->artifact_type || NULL == body->quest_type)
-        {
-            return 1;
-        }
         if (body->quest_type == Q_ARTIFACTS)
         {
             if (body->quest.objective->q_artifacts.count > 0)
@@ -551,6 +547,22 @@ static int _inline_conv_seers_hut(uint32_t fm_src,
                 }
                 body->artifact_type = artifact;
                 return 0;
+            }
+        }
+        if (body->reward_type == R_ARTIFACT)
+        {
+            enum H3M_ARTIFACT artifact = body->reward->r_artifact.absod;
+            if (artifact < H3M_ARTIFACT_CENTAUR_AXE || artifact > H3M_ARTIFACT_ORB_OF_INHIBITION)
+            {
+                return 1;
+            }
+        }
+        if (body->reward_type == R_CREATURES)
+        {
+            enum H3M_CREATURE creature = body->reward->r_creatures.absod.type;
+            if (creature > H3M_CREATURE_DIAMOND_GOLEM)
+            {
+                return 1;
             }
         }
     }
