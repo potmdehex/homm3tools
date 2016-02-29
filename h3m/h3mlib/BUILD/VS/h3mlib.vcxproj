@@ -82,6 +82,8 @@
     <ClInclude Include="..\..\h3m_constants\h3m_oa_class.h" />
     <ClInclude Include="..\..\h3m_constants\h3m_skill.h" />
     <ClInclude Include="..\..\h3m_constants\h3m_terrain.h" />
+    <ClInclude Include="..\..\h3m_constants\h3m_quest_objective.h" />
+    <ClInclude Include="..\..\h3m_constants\h3m_quest_reward.h" />
     <ClInclude Include="..\..\h3m_conversion\conv_tables_creatures.h" />
     <ClInclude Include="..\..\h3m_editing\default_od_body.h" />
     <ClInclude Include="..\..\h3m_editing\h3mlib_alg_od_text.h" />

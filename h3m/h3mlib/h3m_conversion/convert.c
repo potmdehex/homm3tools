@@ -263,8 +263,9 @@ static int _convert_oa_roe(struct H3MLIB_CTX *ctx_in,
         case META_OBJECT_RANDOM_DWELLING_PRESET_LEVEL_ABSOD:
         case META_OBJECT_RANDOM_DWELLING_PRESET_ALIGNMENT_ABSOD:
         case META_OBJECT_QUEST_GUARD:   // Should be renamed with _ABSOD at end
-        case META_OBJECT_SEERS_HUT:     // Simply drop for now... Vastly different in RoE with main problem being the other quest types
             continue;
+        case META_OBJECT_SEERS_HUT:
+            break;
         case META_OBJECT_WITCH_HUT:     // No skill customization for RoE Witch Hut
             body_size_delta = -4;
             break;
@@ -299,7 +300,6 @@ static int _convert_oa_roe(struct H3MLIB_CTX *ctx_in,
                 "%s", "AVWmrnd0.def");
         }
 #endif
-
         if (META_OBJECT_MONSTER_ABSOD == oa_type) {
             entry_out->body.object_number =
                 (uint32_t) creature_type_conv_table_roe[entry_out->body.
@@ -530,6 +530,45 @@ static int _inline_conv_town(uint32_t fm_src,
     return 0;
 }
 
+static int _inline_conv_seers_hut(uint32_t fm_src,
+    struct H3M_OD_BODY_DYNAMIC_SEERS_HUT *body)
+{
+    if ((enum H3M_FORMAT)fm_src > H3M_FORMAT_ROE)
+    {
+        if (body->quest_type == Q_ARTIFACTS)
+        {
+            if (body->quest.objective->q_artifacts.count > 0)
+            {
+                enum H3M_ARTIFACT artifact = body->quest.objective->q_artifacts.artifacts[0];
+                // If artifact is not avaialable for quest in RoE than hut stays empty
+                if (artifact < H3M_ARTIFACT_CENTAUR_AXE || artifact > H3M_ARTIFACT_ORB_OF_INHIBITION)
+                {
+                    return 1;
+                }
+                body->artifact_type = artifact;
+                return 0;
+            }
+        }
+        if (body->reward_type == R_ARTIFACT)
+        {
+            enum H3M_ARTIFACT artifact = body->reward->r_artifact.absod;
+            if (artifact < H3M_ARTIFACT_CENTAUR_AXE || artifact > H3M_ARTIFACT_ORB_OF_INHIBITION)
+            {
+                return 1;
+            }
+        }
+        if (body->reward_type == R_CREATURES)
+        {
+            enum H3M_CREATURE creature = body->reward->r_creatures.absod.type;
+            if (creature > H3M_CREATURE_DIAMOND_GOLEM)
+            {
+                return 1;
+            }
+        }
+    }
+    return 1;
+}
+
 static int _reset_meta_push_od(uint32_t fm_out, uint8_t *body,
     struct META_OD_ENTRY *meta)
 {
@@ -554,7 +593,14 @@ static int _od_body_conv(struct H3MLIB_CTX *ctx_in,
 
     meta_out->has_absod_id = 0;
 
+    int is_conversion_failed = 0;
     switch (meta_in->oa_type) {
+
+    case META_OBJECT_SEERS_HUT:
+        is_conversion_failed = _inline_conv_seers_hut(ctx_in->h3m.format,
+            (struct H3M_OD_BODY_DYNAMIC_SEERS_HUT *)entry_out->body);
+        _reset_meta_push_od(ctx_out->h3m.format, entry_out->body, meta_out);
+        return is_conversion_failed;
     case META_OBJECT_GARRISON:
         _inline_conv_army((union H3M_COMMON_ARMY *)&((union
                     H3M_OD_BODY_STATIC_GARRISON *)entry_out->body)->any.

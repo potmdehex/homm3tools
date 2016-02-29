@@ -11,6 +11,7 @@
 
 typedef uint32_t H3M_COMMON_ABSOD_ID;
 typedef uint32_t H3M_COMMON_EXPERIENCE;
+typedef uint32_t H3M_COMMON_SPELL_POINTS;
 typedef uint16_t H3M_COMMON_ARTIFACT_TYPE_ABSOD;
 typedef uint16_t H3M_COMMON_CREATURE_TYPE_ABSOD;
 typedef uint8_t H3M_COMMON_ARTIFACT_TYPE_ROE;
@@ -18,6 +19,8 @@ typedef uint8_t H3M_COMMON_CREATURE_TYPE_ROE;
 typedef uint8_t H3M_COMMON_HERO_TYPE;
 typedef uint8_t H3M_COMMON_PLAYER_FLAG;
 typedef uint8_t H3M_COMMON_SPELL_TYPE;
+typedef uint8_t H3M_COMMON_MORALE;
+typedef uint8_t H3M_COMMON_LUCK;
 
 union H3M_COMMON_ARTIFACT_TYPE {
     H3M_COMMON_ARTIFACT_TYPE_ROE roe;
@@ -65,6 +68,19 @@ union H3M_COMMON_ARMY {
 // BINARY COMPATIBLE
 struct H3M_COMMON_RESOURCES {
     uint32_t resource[7];       // TODO split into respective resource
+};
+
+
+// BINARY COMPATIBLE
+struct H3M_COMMON_RESOURCE {
+    uint8_t type;
+    uint32_t amount;
+};
+
+struct H3M_COMMON_PRIMARY_SKILL
+{
+    uint8_t type;
+    uint8_t amount;
 };
 
 // BINARY COMPATIBLE

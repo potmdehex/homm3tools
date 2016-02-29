@@ -2,18 +2,7 @@
 
 #include "parse_od.h"
 #include "parsing_common.h"
-
-#define R_NONE 0x00
-#define R_EXPERIENCE 0x01
-#define R_SPELL_POINTS 0x02
-#define R_MORALE 0x03
-#define R_LUCK 0x04
-#define R_RESOURCE 0x05
-#define R_PRIMARY_SKILL 0x06
-#define R_SECONDARY_SKILL 0x07
-#define R_ARTIFACT 0x08
-#define R_SPELL 0x09
-#define R_CREATURE 0x0A
+#include "../h3m_structures/object_details/h3m_od_body_ext_quest.h"
 
 #if 0
 struct REWARD_RESOURCE {
@@ -28,32 +17,36 @@ struct REWARD_PRIMARY_SKILL {
 
 size_t sizeof_reward(uint32_t fm, uint8_t reward_type)
 {
-    // TODO: change to be like _sizeof_win_cond in parse_ai_win_cond.c
-    // once there exists proper reward structs. format will probably be
-    // needed to decide sizes of some (creatures and artifacts)?
     switch (reward_type) {
     case R_NONE:
         return 0;
     case R_EXPERIENCE:
+        return sizeof(((union H3M_OD_BODY_EXT_REWARD *) NULL)->r_experience);
     case R_SPELL_POINTS:
-        return 4;
+        return sizeof(((union H3M_OD_BODY_EXT_REWARD *) NULL)->r_spell_points);
     case R_ARTIFACT:
-        return (fm == H3M_FORMAT_ROE) ? 1 : 2;
+        return (fm > H3M_FORMAT_ROE)
+            ? sizeof(((union H3M_OD_BODY_EXT_REWARD *) NULL)->r_artifact.absod)
+            : sizeof(((union H3M_OD_BODY_EXT_REWARD *) NULL)->r_artifact.roe);
     case R_LUCK:
+        return sizeof(((union H3M_OD_BODY_EXT_REWARD *) NULL)->r_luck);
     case R_MORALE:
+        return sizeof(((union H3M_OD_BODY_EXT_REWARD *) NULL)->r_morale);
     case R_SPELL:
-        return 1;
+        return sizeof(((union H3M_OD_BODY_EXT_REWARD *) NULL)->r_spell);
     case R_RESOURCE:
-        return 5;
+        return sizeof(((union H3M_OD_BODY_EXT_REWARD *) NULL)->r_resource);
     case R_PRIMARY_SKILL:
+        return sizeof(((union H3M_OD_BODY_EXT_REWARD *) NULL)->r_primary_skill);
     case R_SECONDARY_SKILL:
-        return 2;
-    case R_CREATURE:
-        return (H3M_FORMAT_ROE == fm) ? 3 : 4;
+        return sizeof(((union H3M_OD_BODY_EXT_REWARD *) NULL)->r_secondary_skill);
+    case R_CREATURES:
+        return (fm > H3M_FORMAT_ROE)
+            ? sizeof(((union H3M_OD_BODY_EXT_REWARD *) NULL)->r_creatures.absod)
+            : sizeof(((union H3M_OD_BODY_EXT_REWARD *) NULL)->r_creatures.roe);
     default:
         break;
     }
-
     return -1;
 }
 
@@ -77,7 +70,6 @@ int parse_od_seers_hut(struct H3MLIB_CTX *ctx,
     // tl;dr: For RoE quest type == artifact type of artifact quest
 
     SAFE_READ_SIZEOF(&body->quest_type, parsing)
-    // AB/SOD actually have several quest types, parse if quest_type is not 0
     if (fm >= H3M_FORMAT_AB && 0 != body->quest_type) {
         if (0 != parse_od_ext_quest(ctx, body->quest_type, &body->quest,
                 meta_od_entry)) {
@@ -87,7 +79,6 @@ int parse_od_seers_hut(struct H3MLIB_CTX *ctx,
 
     SAFE_READ_SIZEOF(&body->reward_type, parsing)
     if (0 != body->reward_type) {
-        // TODO have reward struct/union and actually parse rewards
         n = sizeof_reward(fm, body->reward_type);
         if (-1 == n || n > 5) {
             return 1;

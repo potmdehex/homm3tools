@@ -380,6 +380,12 @@
     <ClInclude Include="..\..\h3m_constants\h3m_artifact.h">
       <Filter>h3m_constants</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\h3m_constants\h3m_quest_reward.h">
+      <Filter>h3m_constants</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\h3m_constants\h3m_quest_objective.h">
+      <Filter>h3m_constants</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\README" />

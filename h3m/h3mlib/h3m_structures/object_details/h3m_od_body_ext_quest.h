@@ -25,17 +25,6 @@ struct H3M_OD_BODY_EXT_QUEST_CREATURES {
     struct H3M_COMMON_CREATURE_SLOT_ABSOD creatures[8]; // only <count entries> used
 };
 
-#define Q_NONE 0x00
-#define Q_EXPERIENCE 0x01
-#define Q_PRIMARY_SKILLS 0x02
-#define Q_DEFEAT_HERO 0x03
-#define Q_DEFEAT_MONSTER 0x04
-#define Q_ARTIFACTS 0x05
-#define Q_CREATURES 0x06
-#define Q_RESOURCES 0x07
-#define Q_BE_HERO 0x08
-#define Q_BE_PLAYER 0x09
-
 union H3M_OD_BODY_EXT_QUEST_OBJECTIVE {
     H3M_COMMON_EXPERIENCE q_any;
     H3M_COMMON_EXPERIENCE q_experience;
@@ -66,6 +55,27 @@ struct H3M_OD_BODY_EXT_QUEST_DEADLINE_AND_MESG {
 struct H3M_OD_BODY_EXT_QUEST {
     union H3M_OD_BODY_EXT_QUEST_OBJECTIVE *objective;
     struct H3M_OD_BODY_EXT_QUEST_DEADLINE_AND_MESG deadline_and_mesg;
+};
+
+union H3M_OD_BODY_EXT_REWARD {
+    H3M_COMMON_EXPERIENCE r_experience;
+    H3M_COMMON_SPELL_POINTS r_spell_points;
+    H3M_COMMON_MORALE r_morale;
+    H3M_COMMON_LUCK r_luck;
+    struct H3M_COMMON_RESOURCE r_resource;
+    struct H3M_COMMON_PRIMARY_SKILL r_primary_skill;
+    struct H3M_COMMON_SECONDARY_SKILL r_secondary_skill;
+    union
+    {
+        H3M_COMMON_ARTIFACT_TYPE_ROE roe;
+        H3M_COMMON_ARTIFACT_TYPE_ABSOD absod;
+    } r_artifact;
+    H3M_COMMON_SPELL_TYPE r_spell;
+    union 
+    {
+        struct H3M_COMMON_CREATURE_SLOT_ROE roe;
+        struct H3M_COMMON_CREATURE_SLOT_ABSOD absod;
+    } r_creatures;
 };
 
 #pragma pack(pop)
