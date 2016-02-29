@@ -58,24 +58,24 @@ struct H3M_OD_BODY_EXT_QUEST {
 };
 
 union H3M_OD_BODY_EXT_REWARD {
-	H3M_COMMON_EXPERIENCE r_experience;
-	H3M_COMMON_SPELL_POINTS r_spell_points;
-	H3M_COMMON_MORALE r_morale;
-	H3M_COMMON_LUCK r_luck;
-	struct H3M_COMMON_RESOURCE r_resource;
-	struct H3M_COMMON_PRIMARY_SKILL r_primary_skill;
-	struct H3M_COMMON_SECONDARY_SKILL r_secondary_skill;
-	union
-	{
-		H3M_COMMON_ARTIFACT_TYPE_ROE roe;
-		H3M_COMMON_ARTIFACT_TYPE_ABSOD absod;
-	} r_artifact;
-	H3M_COMMON_SPELL_TYPE r_spell;
-	union 
-	{
-		struct H3M_COMMON_CREATURE_SLOT_ROE roe;
-		struct H3M_COMMON_CREATURE_SLOT_ABSOD absod;
-	} r_creatures;
+    H3M_COMMON_EXPERIENCE r_experience;
+    H3M_COMMON_SPELL_POINTS r_spell_points;
+    H3M_COMMON_MORALE r_morale;
+    H3M_COMMON_LUCK r_luck;
+    struct H3M_COMMON_RESOURCE r_resource;
+    struct H3M_COMMON_PRIMARY_SKILL r_primary_skill;
+    struct H3M_COMMON_SECONDARY_SKILL r_secondary_skill;
+    union
+    {
+        H3M_COMMON_ARTIFACT_TYPE_ROE roe;
+        H3M_COMMON_ARTIFACT_TYPE_ABSOD absod;
+    } r_artifact;
+    H3M_COMMON_SPELL_TYPE r_spell;
+    union 
+    {
+        struct H3M_COMMON_CREATURE_SLOT_ROE roe;
+        struct H3M_COMMON_CREATURE_SLOT_ABSOD absod;
+    } r_creatures;
 };
 
 #pragma pack(pop)

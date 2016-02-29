@@ -73,14 +73,14 @@ struct H3M_COMMON_RESOURCES {
 
 // BINARY COMPATIBLE
 struct H3M_COMMON_RESOURCE {
-	uint8_t type;
-	uint32_t amount;
+    uint8_t type;
+    uint32_t amount;
 };
 
 struct H3M_COMMON_PRIMARY_SKILL
 {
-	uint8_t type;
-	uint8_t amount;
+    uint8_t type;
+    uint8_t amount;
 };
 
 // BINARY COMPATIBLE

@@ -96,7 +96,7 @@ struct H3M_OD_BODY_DYNAMIC_SEERS_HUT {
     };
     struct H3M_OD_BODY_EXT_QUEST quest; // AB/SOD feature, only if 0xFF != quest_type
     uint8_t reward_type;
-	union H3M_OD_BODY_EXT_REWARD *reward; // max size 5
+    union H3M_OD_BODY_EXT_REWARD *reward; // max size 5
     uint8_t unknown1[2];
 };
 

@@ -21,29 +21,29 @@ size_t sizeof_reward(uint32_t fm, uint8_t reward_type)
     case R_NONE:
         return 0;
     case R_EXPERIENCE:
-		return sizeof(((union H3M_OD_BODY_EXT_REWARD *) NULL)->r_experience);
+        return sizeof(((union H3M_OD_BODY_EXT_REWARD *) NULL)->r_experience);
     case R_SPELL_POINTS:
-		return sizeof(((union H3M_OD_BODY_EXT_REWARD *) NULL)->r_spell_points);
+        return sizeof(((union H3M_OD_BODY_EXT_REWARD *) NULL)->r_spell_points);
     case R_ARTIFACT:
-		return (fm > H3M_FORMAT_ROE)
-			? sizeof(((union H3M_OD_BODY_EXT_REWARD *) NULL)->r_artifact.absod)
-			: sizeof(((union H3M_OD_BODY_EXT_REWARD *) NULL)->r_artifact.roe);
+        return (fm > H3M_FORMAT_ROE)
+            ? sizeof(((union H3M_OD_BODY_EXT_REWARD *) NULL)->r_artifact.absod)
+            : sizeof(((union H3M_OD_BODY_EXT_REWARD *) NULL)->r_artifact.roe);
     case R_LUCK:
-		return sizeof(((union H3M_OD_BODY_EXT_REWARD *) NULL)->r_luck);
+        return sizeof(((union H3M_OD_BODY_EXT_REWARD *) NULL)->r_luck);
     case R_MORALE:
-		return sizeof(((union H3M_OD_BODY_EXT_REWARD *) NULL)->r_morale);
+        return sizeof(((union H3M_OD_BODY_EXT_REWARD *) NULL)->r_morale);
     case R_SPELL:
-		return sizeof(((union H3M_OD_BODY_EXT_REWARD *) NULL)->r_spell);
+        return sizeof(((union H3M_OD_BODY_EXT_REWARD *) NULL)->r_spell);
     case R_RESOURCE:
-		return sizeof(((union H3M_OD_BODY_EXT_REWARD *) NULL)->r_resource);
+        return sizeof(((union H3M_OD_BODY_EXT_REWARD *) NULL)->r_resource);
     case R_PRIMARY_SKILL:
-		return sizeof(((union H3M_OD_BODY_EXT_REWARD *) NULL)->r_primary_skill);
+        return sizeof(((union H3M_OD_BODY_EXT_REWARD *) NULL)->r_primary_skill);
     case R_SECONDARY_SKILL:
-		return sizeof(((union H3M_OD_BODY_EXT_REWARD *) NULL)->r_secondary_skill);
+        return sizeof(((union H3M_OD_BODY_EXT_REWARD *) NULL)->r_secondary_skill);
     case R_CREATURES:
-		return (fm > H3M_FORMAT_ROE)
-			? sizeof(((union H3M_OD_BODY_EXT_REWARD *) NULL)->r_creatures.absod)
-			: sizeof(((union H3M_OD_BODY_EXT_REWARD *) NULL)->r_creatures.roe);
+        return (fm > H3M_FORMAT_ROE)
+            ? sizeof(((union H3M_OD_BODY_EXT_REWARD *) NULL)->r_creatures.absod)
+            : sizeof(((union H3M_OD_BODY_EXT_REWARD *) NULL)->r_creatures.roe);
     default:
         break;
     }
