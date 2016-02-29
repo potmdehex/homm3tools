@@ -1,0 +1,15 @@
+#ifndef __H3M_QUEST_OBJECTIVE_H_DEF__
+#define __H3M_QUEST_OBJECTIVE_H_DEF__
+
+#define Q_NONE 0x00
+#define Q_EXPERIENCE 0x01
+#define Q_PRIMARY_SKILLS 0x02
+#define Q_DEFEAT_HERO 0x03
+#define Q_DEFEAT_MONSTER 0x04
+#define Q_ARTIFACTS 0x05
+#define Q_CREATURES 0x06
+#define Q_RESOURCES 0x07
+#define Q_BE_HERO 0x08
+#define Q_BE_PLAYER 0x09
+
+#endif

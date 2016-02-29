@@ -251,29 +251,17 @@ static int _convert_oa_roe(struct H3MLIB_CTX *ctx_in,
         switch (oa_type) {
             // ABSOD objects to drop
         case META_OBJECT_PLACEHOLDER_HERO:      // TODO convert to random hero
-			continue;
         case META_OBJECT_ABANDONED_MINE_ABSOD:
-			continue;
         case META_OBJECT_ARTIFACT_AB:
-			continue;
         case META_OBJECT_ARTIFACT_SOD:
-			continue;
         case META_OBJECT_DWELLING_ABSOD:
-			continue;
         case META_OBJECT_GARRISON_ABSOD:
-			continue;
         case META_OBJECT_GENERIC_IMPASSABLE_TERRAIN_ABSOD:      // Not handled here
-			continue;
         case META_OBJECT_GENERIC_PASSABLE_TERRAIN_SOD:
-			continue;
         case META_OBJECT_GENERIC_VISITABLE_ABSOD:
-			continue;
         case META_OBJECT_RANDOM_DWELLING_ABSOD:
-			continue;
         case META_OBJECT_RANDOM_DWELLING_PRESET_LEVEL_ABSOD:
-			continue;
         case META_OBJECT_RANDOM_DWELLING_PRESET_ALIGNMENT_ABSOD:
-			continue;
         case META_OBJECT_QUEST_GUARD:   // Should be renamed with _ABSOD at end
 			continue;
 		case META_OBJECT_SEERS_HUT:
@@ -598,7 +586,7 @@ static int _od_body_conv(struct H3MLIB_CTX *ctx_in,
 
 	case META_OBJECT_SEERS_HUT:
 		is_conversion_failed = _inline_conv_seers_hut(ctx_in->h3m.format,
-			(struct H3M_OD_BODY_DYNAMIC_EVENT *)entry_out->body);
+			(struct H3M_OD_BODY_DYNAMIC_SEERS_HUT *)entry_out->body);
 		_reset_meta_push_od(ctx_out->h3m.format, entry_out->body, meta_out);
 		return is_conversion_failed;
     case META_OBJECT_GARRISON:

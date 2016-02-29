@@ -272,8 +272,16 @@ static int _meta_push_od_seers_hut(uint32_t fm,
         (struct H3M_OD_BODY_DYNAMIC_QUEST_GUARD *)body, meta_od_entry);
 
     n = sizeof_reward(fm, body->reward_type);
-    META_OBJECT_PUSH_PTR(meta_od_entry->dyn_pointers, body, body->reward, n, 0)
-
+	// Convert AB/SoD 2-byte amounts to RoE 1-byte 
+	if (body->reward_type == R_CREATURES && fm == H3M_FORMAT_ROE)
+	{
+		body->reward->r_creatures.roe.quantity = (H3M_COMMON_CREATURE_TYPE_ROE)body->reward->r_creatures.absod.quantity;
+	}
+	if (body->reward_type == R_ARTIFACT && fm == H3M_FORMAT_ROE)
+	{
+		body->reward->r_artifact.roe = (H3M_COMMON_ARTIFACT_TYPE_ROE)body->reward->r_artifact.absod;
+	}
+	META_OBJECT_PUSH_PTR(meta_od_entry->dyn_pointers, body, body->reward, n, 0)
     return 0;
 }
 

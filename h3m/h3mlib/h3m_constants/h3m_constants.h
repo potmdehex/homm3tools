@@ -11,5 +11,7 @@
 #include "h3m_oa_class.h"
 #include "h3m_skill.h"
 #include "h3m_terrain.h"
+#include "h3m_quest_objective.h"
+#include "h3m_quest_reward.h"
 
 #endif
