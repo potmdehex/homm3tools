@@ -2,6 +2,7 @@ homm3tools contributors
 ============================================
 ##### Reverse engineering, programming
 * John Åkerblom (**[potmdehex](https://github.com/potmdehex)**)
+* **[Dergash](https://github.com/Dergash)**
 
 ##### Linux support
 * Christian Resell (**[PewZ](https://github.com/PewZ)**)
@@ -10,9 +11,6 @@ homm3tools contributors
 * Arvid Åkerblom
 * Axel Wik
 * Oskar Sundborg
-
-##### Documentation corrections
-* **[Dergash](https://github.com/Dergash)**
 
 ##### Bug reports, localization support and testing
 * 000
