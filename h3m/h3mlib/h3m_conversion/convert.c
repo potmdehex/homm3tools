@@ -318,16 +318,14 @@ static int _convert_oa_roe(struct H3MLIB_CTX *ctx_in,
             entry_out->body.object_class = 0x4D;
             entry_out->body.object_number = 0;
         }
-        // Conflux heroes hack, Conflux hero -> castle hero
-        else if (META_OBJECT_HERO == oa_type) {
-            if (0 == stricmp((char *)entry_out->header.def, "ah16_e.def")) {
+        // Conflux heroes hack, Conflux hero -> random hero
+        else if (META_OBJECT_HERO == oa_type) 
+        {
+            if ((enum H3M_HERO_CLASS)entry_out->body.object_number == H3M_HERO_PLANESWALKER || 
+                (enum H3M_HERO_CLASS)entry_out->body.object_number == H3M_HERO_ELEMENTALIST) {
                 snprintf((char *)entry_out->header.def, entry_out->header.def_size,
-                    "%s", "ah00_e.def");
-                entry_out->body.object_number = 0;
-            } else if (0 == stricmp((char *)entry_out->header.def, "ah17_e.def")) {
-                snprintf((char *)entry_out->header.def, entry_out->header.def_size,
-                    "%s", "ah01_e.def");
-                entry_out->body.object_number = 1;
+                    "%s", "ahrandom.def");
+                entry_out->body.object_class = 0x46;
             }
         }
 
