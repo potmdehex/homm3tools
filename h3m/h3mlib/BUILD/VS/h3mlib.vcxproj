@@ -79,6 +79,7 @@
     <ClInclude Include="..\..\h3m_constants\h3m_disposition.h" />
     <ClInclude Include="..\..\h3m_constants\h3m_format.h" />
     <ClInclude Include="..\..\h3m_constants\h3m_hero.h" />
+    <ClInclude Include="..\..\h3m_constants\h3m_hero_class.h" />
     <ClInclude Include="..\..\h3m_constants\h3m_oa_class.h" />
     <ClInclude Include="..\..\h3m_constants\h3m_skill.h" />
     <ClInclude Include="..\..\h3m_constants\h3m_terrain.h" />
