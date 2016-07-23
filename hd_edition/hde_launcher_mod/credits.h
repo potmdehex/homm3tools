@@ -8,7 +8,6 @@
         "Above The Clouds, " \
         "AL-KASAB, " \
         "Avroveks, " \
-        "bloedebleidd" \
         "Chirno, " \
         "Dahan, " \
         "damoaraimbo, " \
@@ -22,6 +21,7 @@
         "JakeMunsie, " \
         "Merkuri, " \
         "Mert, " \
+        "mutenroshi" \
         "NecroSando, " \
         "primeval1, " \
         "Reset., " \
