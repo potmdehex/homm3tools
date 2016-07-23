@@ -29,6 +29,7 @@ homm3tools contributors
 * JakeMunsie
 * Merkuri
 * Mert
+* mutenroshi
 * NecroSando
 * primeval1
 * Rai-Zen
