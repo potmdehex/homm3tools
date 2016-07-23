@@ -13,6 +13,7 @@
         "damoaraimbo, " \
         "Daninja, " \
         "DataPack, " \
+        "El Bardo_Garxot, " \
         "Evilnapkin, " \
         "Fastmancz, " \
         "Heisenberg, " \

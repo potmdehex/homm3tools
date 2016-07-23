@@ -1,0 +1,2 @@
+log records count: 0
+

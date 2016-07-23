@@ -14,4 +14,10 @@ def gen(settings):
 	map.xyz2_set_terrain(4, 8, 11, 8, 0, Snow)
 	map.xyz2_set_terrain(4, 9, 11, 9, 0, Snow)
 
+	map.xyz_add_object(6, 5, 0, "Pikeman")
+	map.xyz_add_object(10, 5, 0, "Abandoned Mine")
+
+	map.xyz_add_object(5, 0, 0, "Wolf Pen")
+
+
 	return map

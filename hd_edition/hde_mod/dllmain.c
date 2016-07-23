@@ -6,6 +6,7 @@
 #include "mod/hero_trade.h"
 #include "mod/revisit.h"
 #include "mod/rmg.h"
+#include "mod/sod.h"
 #include "mod/sound_nodelay.h"
 #include "mod/stack_split.h"
 #include "mod/xxl_maps.h"
@@ -54,6 +55,7 @@ static BOOL _init_features(void)
         (void **)values, NULL);
 
     common_init();
+    //sod_init();
 
     if (values[SETTING_CURSOR])
         cursor_always_init();

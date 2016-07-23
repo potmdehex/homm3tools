@@ -1,0 +1,66 @@
+[HOTA MAP EDITOR CRASH LOG]
+
+
+HotA Map EDitor version: 0.0 build 38
+
+Time
+{
+   Fri Jan 29 22:34:42 2016
+}
+
+Exception
+{
+   Module: 	h3hota_maped.exe
+   Adress:      0x004E0A2B
+   Code:        EXCEPTION_ACCESS_VIOLATION
+   Flags:       0x00000000
+   Information: read of address: 0x00000026
+}
+
+Call stack
+{
+                      ? called from before 0x0046B489
+             0x0046B32A called from        0x0046AE27
+             0x0046ADC6 called from        0x0046CCD2
+                      ? called from before 0x0050269D
+                      ? called from before 0x0050236E
+             0x0050234C called from        0x0046EDF9
+                      ? called from before 0x0050130B
+                      ? called from before 0x100377FB
+             0x100362B0 called from        0x02762D7D
+                      ? called from before 0x74C68E71
+             0x74C68E46 called from        0x74C6AE78
+             0x74C68F28 called from        0x74C6932E
+                      ? called from before 0x74C69529
+                      ? called from before 0x772607A6
+             0x74C6A478 called from        0x74C7C0AB
+             0x74C7C0A0 called from        0x0050687C
+                      ? called from before 0x0000000F
+}
+
+Command Line
+{
+   "D:\HOTA\h3hota_maped.exe" 
+}
+
+HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion
+{
+   ProductName:    Windows 8.1 Pro
+   CurrentVersion: 6.3
+   BuildLab:       9600.winblue_ltsb.151121-0600
+}
+
+GetVersionEx
+{
+   PlatformId  = 2
+   Version:      6.2
+   Build:        9200
+   CSDVersion  = 
+   ProductType = 1
+   SuiteMask   = 256
+}
+
+Some values
+{
+}
+

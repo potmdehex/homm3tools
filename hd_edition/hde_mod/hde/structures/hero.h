@@ -44,7 +44,10 @@ struct HDE_HERO
     uint8_t unknown4[64];
     uint32_t creature_types[7];
     uint32_t creature_quantities[7];
-    uint8_t unknown5[100];
+    uint8_t secondary_skill_levels[28]; // Byte 0 is Pathfinding, Byte 7 Wisdom etc... Values 1-3
+    uint8_t secondary_skill_slot[28];  //  Byte 0 is Pathfinding, Byte 7 Wisdom etc... Values 1-8, number of slot
+    uint32_t secondary_skill_count; // Number of skills learned
+    uint8_t unknown5[40];
     struct HDE_HERO_ARTIFACTS artifacts;
     uint8_t unknown6[140];
     uint8_t attack;

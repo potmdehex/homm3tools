@@ -40,6 +40,9 @@
     <ClCompile Include="..\..\mod\xxl_maps.c">
       <Filter>mod</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\mod\sod.c">
+      <Filter>mod</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\hde\structures\hero.h">
@@ -85,6 +88,9 @@
       <Filter>mod</Filter>
     </ClInclude>
     <ClInclude Include="..\..\mod\xxl_maps.h">
+      <Filter>mod</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\mod\sod.h">
       <Filter>mod</Filter>
     </ClInclude>
   </ItemGroup>

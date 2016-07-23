@@ -19,6 +19,7 @@
     <ClCompile Include="..\..\mod\hero_trade.c" />
     <ClCompile Include="..\..\mod\revisit.c" />
     <ClCompile Include="..\..\mod\rmg.c" />
+    <ClCompile Include="..\..\mod\sod.c" />
     <ClCompile Include="..\..\mod\sound_nodelay.c" />
     <ClCompile Include="..\..\mod\stack_split.c" />
     <ClCompile Include="..\..\mod\xxl_maps.c" />
@@ -35,6 +36,7 @@
     <ClInclude Include="..\..\mod\hero_trade.h" />
     <ClInclude Include="..\..\mod\revisit.h" />
     <ClInclude Include="..\..\mod\rmg.h" />
+    <ClInclude Include="..\..\mod\sod.h" />
     <ClInclude Include="..\..\mod\sound_nodelay.h" />
     <ClInclude Include="..\..\mod\stack_split.h" />
     <ClInclude Include="..\..\mod\unused.h" />
@@ -115,8 +117,7 @@
       <AdditionalDependencies>psapi.lib;libudis86.lib;win_utils.lib;kernel32.lib;user32.lib;gdi32.lib;;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>
-      </Command>
+      <Command>cd ../../../../OUTPUT/$(Configuration)/ &amp;&amp; hde_mod_installer.exe</Command>
       <Message>
       </Message>
     </PostBuildEvent>

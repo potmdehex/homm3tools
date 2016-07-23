@@ -231,7 +231,7 @@ void __declspec(naked) hooked_inputmgr_func(void)
     __asm RETN
 }
 
-void __declspec(naked) hooked_cast_spell(void)
+static void __declspec(naked) hooked_cast_spell(void)
 {
     // If called from outside of battle we should do nothing, we can crash because of invalid EBX
     // (simple 0 check on EBX does not cut it, instead of pointer it can have values like 768)
@@ -316,7 +316,7 @@ void combat_replay_init(void)
     HOOK_NEEDLE_FAIL_MSG(NULL, enter_battle);
     HOOK_NEEDLE_FAIL_MSG(NULL, enter_mgr);
     HOOK_NEEDLE_FAIL_MSG(NULL, inputmgr_func);
-    HOOK_NEEDLE_FAIL_MSG(NULL, cast_spell);
+    //HOOK_NEEDLE_FAIL_MSG(NULL, cast_spell);
     HOOK_NEEDLE_FAIL_MSG(NULL, show_artifact_dialog);
 
     // Extract var_quick_combat from its usage in the get_quick_combat routine, from here:

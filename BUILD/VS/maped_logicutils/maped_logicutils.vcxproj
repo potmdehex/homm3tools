@@ -10,30 +10,10 @@
       <Platform>Win32</Platform>
     </ProjectConfiguration>
   </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="..\..\dllmain.cpp" />
-    <ClCompile Include="..\..\globals.c" />
-    <ClCompile Include="..\..\gui.c" />
-    <ClCompile Include="..\..\hooked.cpp" />
-    <ClCompile Include="..\..\patches.c" />
-    <ClCompile Include="..\..\rmgdialog_fix.c" />
-    <ClCompile Include="..\..\rmg_postfix.c" />
-    <ClCompile Include="..\..\traverse_funcs.c" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="..\..\globals.h" />
-    <ClInclude Include="..\..\gui.h" />
-    <ClInclude Include="..\..\hooked.h" />
-    <ClInclude Include="..\..\nt_undoc.h" />
-    <ClInclude Include="..\..\patches.h" />
-    <ClInclude Include="..\..\rmgdialog_fix.h" />
-    <ClInclude Include="..\..\rmg_postfix.h" />
-    <ClInclude Include="..\..\traverse_funcs.h" />
-  </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{48BCA740-C2B4-4C1F-BD37-22B38B7E60F9}</ProjectGuid>
+    <ProjectGuid>{ECEC302E-54EB-42A1-9B1E-9C767B66FFFB}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>maped_rmg</RootNamespace>
+    <RootNamespace>maped_logicutils</RootNamespace>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -45,7 +25,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v120_xp</PlatformToolset>
+    <PlatformToolset>v120</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
@@ -61,11 +41,9 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>../../../../OUTPUT/$(Configuration)/</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>../../../../OUTPUT/$(Configuration)/</OutDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -73,19 +51,13 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;maped_rmg_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>../../../../h3m/h3mlib/;../../../../common/win_utils</AdditionalIncludeDirectories>
-      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;MAPED_LOGICUTILS_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <SDLCheck>true</SDLCheck>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>../../../../OUTPUT/$(Configuration)/;</AdditionalLibraryDirectories>
-      <AdditionalDependencies>h3mtilespritegen_static.lib;gzip_utils.lib;h3mlib.lib;win_utils.lib;libudis86.lib;psapi.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
-    <PostBuildEvent>
-      <Command>c:\maped_rmg_copy_hota.bat</Command>
-    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -95,27 +67,20 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;maped_rmg_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>../../../../h3m/h3mlib/;../../../../common/win_utils</AdditionalIncludeDirectories>
-      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <EnableFiberSafeOptimizations>false</EnableFiberSafeOptimizations>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;MAPED_LOGICUTILS_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <SDLCheck>true</SDLCheck>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalLibraryDirectories>../../../../OUTPUT/$(Configuration)/;../../../../3rdparty/libudis86/$(Configuration)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>msimg32.lib;win_utils.lib;gzip_utils.lib;h3mlib.lib;h3mtilespritegen_static.lib;libudis86.lib;psapi.lib;kernel32.lib;user32.lib;advapi32.lib;gdi32.lib;</AdditionalDependencies>
-      <EntryPointSymbol>
-      </EntryPointSymbol>
     </Link>
-    <PostBuildEvent>
-      <Command>c:\maped_rmg_copy_hota.bat</Command>
-      <Message>
-      </Message>
-    </PostBuildEvent>
   </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="dllmain.cpp" />
+    <ClCompile Include="rect.cpp" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

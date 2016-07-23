@@ -56,7 +56,10 @@ void GuiMod::createCheckOptions(QWidget *parent, const QFont &font, const QPalet
         "Never Hide Cursor|cursor",
         "No Sound Delay|sound",
         "XXL Maps Patch (removes minimap rendering)|xxl",
-        "RMG|rmg"};
+        "RMG|rmg",
+        "Alpha Test Weakness Cast|sod"
+    };
+
     bool defaults[] = {
         true,  // fullscreen, unused
         true,  // re-visit
@@ -65,7 +68,8 @@ void GuiMod::createCheckOptions(QWidget *parent, const QFont &font, const QPalet
         true,  // cursor
         false, // sound
         false, // xxl
-        false  // rmg
+        false,  // rmg
+        true // sod
     };
 
     bool checked = 0;

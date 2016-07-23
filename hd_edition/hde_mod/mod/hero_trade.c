@@ -32,12 +32,14 @@ struct HDE_SWAPMGR_ACTION
 #pragma pack(pop)
 
 // HoMM 3 HD 2.0.exe
+typedef void (__stdcall *swapmgr_display_t)(void); // Displays at least seconday skills
 typedef int  (__stdcall *swapmgr_update_t)(int a1);
 typedef void (__stdcall *swapmgr_backpack_action_t)(int a1, int a2, int a3); // Has MSVC thiscall convention, taking hero this pointer in ECX
 typedef void (__stdcall *swapmgr_backpack_select_t)(int a1); // Has MSVC thiscall convention, taking hero this pointer in ECX
 typedef void (__stdcall *swapmgr_artifact_stats_update_t)(void); // Actually takes 1 arg
 
 swapmgr_update_t orig_swapmgr_update = (swapmgr_update_t)NULL;
+swapmgr_display_t orig_swapmgr_display = (swapmgr_display_t)NULL;
 swapmgr_backpack_action_t orig_swapmgr_backpack_action = (swapmgr_backpack_action_t)NULL;
 swapmgr_backpack_select_t orig_swapmgr_backpack_select = (swapmgr_backpack_select_t)NULL;
 swapmgr_artifact_stats_update_t orig_swapmgr_artifact_stats_update = (swapmgr_artifact_stats_update_t)NULL;
@@ -453,6 +455,52 @@ skip:
 }
 #endif
 
+static int __declspec(noinline) _find_unused_slot(int taken_slots[8 + 1], int wanted_slot)
+{
+    for (int i = wanted_slot; i > 0; --i) {
+        if (taken_slots[i] == 0)
+            return i;
+    }
+
+    return -1;
+}
+
+void __declspec(naked) hooked_swapmgr_display(void)
+{
+    static struct HDE_HERO *hero;
+    static uint32_t unused_slot;
+    static int i;
+    static int taken_slots[8+1];
+    static int cur_slot;
+    
+    __asm MOV hero, ecx
+
+    __asm PUSHAD
+
+again:
+    cur_slot = 0;
+    memset(taken_slots, 0, sizeof(taken_slots));
+    // go through valid skills, put them in taken_slots
+    for (i = 0; i < sizeof(hero->secondary_skill_levels); ++i) {
+        if (hero->secondary_skill_levels[i] != 0 && hero->secondary_skill_slot[i] != 0)
+            taken_slots[hero->secondary_skill_slot[i]] = 1;
+    }
+
+    if (unused_slot <= hero->secondary_skill_count) {
+        // go through skills finding invalid skill, putting it in unused slot
+        for (i = 0; i < sizeof(hero->secondary_skill_levels); ++i) {
+            if (hero->secondary_skill_levels[i] != 0 && hero->secondary_skill_slot[i] == 0) {
+                hero->secondary_skill_slot[i] = _find_unused_slot(taken_slots, hero->secondary_skill_count);
+                goto again;
+            }
+        }
+    }
+
+    __asm POPAD
+
+    __asm JMP orig_swapmgr_display
+}
+
 void hero_trade_init(void)
 {
     ///////////////////////////////////////////////////////////////////////////////////////////////
@@ -481,18 +529,29 @@ void hero_trade_init(void)
     };
     int off_swapmgr_backpack_select = -0x09;
     ///////////////////////////////////////////////////////////////////////////////////////////////
-    // artifact_stats_update: 8B 94 C3 29 01 00 00 8D 34 C3
+    // swapmgr_artifact_stats_update: 8B 94 C3 29 01 00 00 8D 34 C3
     ///////////////////////////////////////////////////////////////////////////////////////////////
     unsigned char mem_swapmgr_artifact_stats_update[] = {
         0x8B, 0x94, 0xC3, 0x29, 0x01, 0x00, 0x00, // MOV EDX, DWORD PTR DS : [EAX * 8 + EBX + 129]
         0x8D, 0x34, 0xC3                          // LEA ESI, [EAX * 8 + EBX]
     };
     int off_swapmgr_artifact_stats_update = -0x0D;
+    ///////////////////////////////////////////////////////////////////////////////////////////////
+    // swapmgr_display: 8B 94 C3 29 01 00 00 8D 34 C3
+    ///////////////////////////////////////////////////////////////////////////////////////////////
+    unsigned char mem_swapmgr_display[] = {
+        0xBF, 0x01, 0x00, 0x00, 0x00,   // MOV EDI, 1
+        0x74, 0x11,                     // JE SHORT 00C028FD
+        0x80, 0x79, 0x10, 0x00,         // CMP BYTE PTR DS : [ECX + 10], 0
+        0x74, 0x0B,                     // JE SHORT 00C028FD
 
+    };
+    int off_swapmgr_display = -0x0A; // -0x25 // 0x25 is real offset but we hook inside function
     
     HOOK_NEEDLE_FAIL_MSG(NULL, swapmgr_update);
     HOOK_NEEDLE_FAIL_MSG(NULL, swapmgr_backpack_action);
     HOOK_NEEDLE_FAIL_MSG(NULL, swapmgr_backpack_select);
+    HOOK_NEEDLE_FAIL_MSG(NULL, swapmgr_display);
     //HOOK_NEEDLE_FAIL_MSG(NULL, swapmgr_artifact_stats_update);
 
     // var_artifact_dragging: This var is compared against -1 in backpack_action. It is the artifact currently being dragged.
