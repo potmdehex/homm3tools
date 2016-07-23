@@ -8,11 +8,13 @@
         "Above The Clouds, " \
         "AL-KASAB, " \
         "Avroveks, " \
+        "bloedebleidd" \
         "Chirno, " \
         "Dahan, " \
         "damoaraimbo, " \
         "Daninja, " \
         "DataPack, " \
+        "El Bardo_Garxot, " \
         "Evilnapkin, " \
         "Fastmancz, " \
         "Heisenberg, " \
