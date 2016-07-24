@@ -234,16 +234,16 @@ static VOID _GetLocalizedStrings(HWND hwnd,
     )
 {
     // Selectable town in Czech: "Volitelná města pro hráče"
-    // langs: English, French, Russian Complete, Russian SoD, Czech, Polish
+    // langs: English, French, Russian Complete, Russian SoD, Czech, Polish, Polish 2
     const wchar_t *arr_roe[] = { L"The &Restoration of Erathia", L"The &Restoration of Erathia", L"&Возрождение Эрафии", 
-        L"Возрождение Эрафии", L"Obnova Erathie - &RoE", L"&Odrodzenie Erathii" };
+        L"Возрождение Эрафии", L"Obnova Erathie - &RoE", L"&Odrodzenie Erathii", L"&Odrodzenie Erathii" };
     const wchar_t *arr_ab[] = { L"&Armageddon's Blade", L"&Armageddon's Blade", L"&Клинок Армагеддона", 
-        L"Клинок дрмагеддона", L"Meč Zkázy - &AB", L"&Armageddon's Blade" };
+        L"Клинок дрмагеддона", L"Meč Zkázy - &AB", L"&Armageddon's Blade", L"&Armageddon's Blade" };
     const wchar_t *arr_sod[] = { L"The &Shadow of Death", L"The &Shadow of Death", L"&Дыхание Смерти", 
-        L"Дыхание Смерти", L"Stín smrti - &SoD", L"The &Shadow of Death" };
+        L"Дыхание Смерти", L"Stín smrti - &SoD", L"The &Shadow of Death", L"The &Shadow of Death" };
 
     const wchar_t *arr_generate[] = { L"&Generate random map", L"&Générer carte aléatoire", L"&Генерировать случайную карту", 
-        L"Создать произвольную карту", L"&Generovaní náhodné mapy", L"&Generuj mapę losową" };
+        L"Создать произвольную карту", L"&Generovaní náhodné mapy", L"&Generuj mapę losową", L"&Generuj mapê losow¹" };
     //const wchar_t *arr_random[] = { L"Random", L"Aléatoire", L"Случайный", L"Произвольный", L"Náhodné" };
     //const wchar_t *arr_random2[] = { L"Random", L"Aléatoire", L"Случайные", L"Произвольный", L"Náhodná" };
 
