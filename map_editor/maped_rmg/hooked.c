@@ -44,8 +44,10 @@ NtClose_t				     orig_NtClose				= (NtClose_t)NULL;
 GetSaveFileNameA_t           orig_GetSaveFileNameA = (GetSaveFileNameA_t)NULL;
 MessageBoxA_t                orig_MessageBoxA    = (MessageBoxA_t)NULL;
 CreateDialogIndirectParamA_t orig_CreateDialogIndirectParamA = (CreateDialogIndirectParamA_t)NULL;
-orig_get_terrain_type_for_new_zone_t orig_get_terrain_type_for_new_zone = (orig_get_terrain_type_for_new_zone_t)0x0049B3C1;
-orig_early_gen_func_t orig_early_gen_func = (orig_early_gen_func_t)0x004A218C;
+orig_get_terrain_type_for_new_zone_t orig_get_terrain_type_for_new_zone 
+    = (orig_get_terrain_type_for_new_zone_t)NULL; // EN: 0x0049B3C1, PL: 0x00498D23 (obtained dynamically now)
+orig_early_gen_func_t orig_early_gen_func 
+    = (orig_early_gen_func_t)NULL; // EN: 0x004A218C, PL: 0x0049FAD6 (obtained dynamically now)
 
 static int f_player_count;
 static int f_player_current;
@@ -269,13 +271,31 @@ static BOOL _inline_hook_function(const char *dll_name,
 
 void hooked_init(void)
 {
+    ///////////////////////////////////////////////////////////////////////////////////////////////
+    // early_gen_func: 56 57 FF B3 E8 10 00 00
+    ///////////////////////////////////////////////////////////////////////////////////////////////
+    unsigned char mem_early_gen_func[] = {
+        0x56, 
+        0x57, 
+        0xFF, 0xB3, 0xE8, 0x10, 0x00, 0x00
+    };
+    int off_early_gen_func = -0x9;
+    ///////////////////////////////////////////////////////////////////////////////////////////////
+    // get_terrain_type_for_new_zone: 8B F1 33 C0 80 7C 06 41 00
+    ///////////////////////////////////////////////////////////////////////////////////////////////
+    unsigned char mem_get_terrain_type_for_new_zone[] = {
+       0x8B, 0xF1, 0x33, 0xC0, 0x80, 0x7C, 0x06, 0x41, 0x00
+    };
+    int off_get_terrain_type_for_new_zone = -0x4;
+    ///////////////////////////////////////////////////////////////////////////////////////////////
+    
     _inline_hook_function("user32.dll", "MessageBoxA", hooked_MessageBoxA, (void**)&orig_MessageBoxA);
     _inline_hook_function("user32.dll", "CreateDialogIndirectParamA", hooked_CreateDialogIndirectParamA, (void**)&orig_CreateDialogIndirectParamA);
     _inline_hook_function("comdlg32.dll", "GetSaveFileNameA", hooked_GetSaveFileNameA, (void**)&orig_GetSaveFileNameA);
     _inline_hook_function("ntdll.dll", "NtClose", hooked_NtClose, (void**)&orig_NtClose);
 
-    hook_trampoline_dis_x86((void **)&orig_get_terrain_type_for_new_zone, hooked_get_terrain_type_for_new_zone);
-    hook_trampoline_dis_x86((void **)&orig_early_gen_func, hooked_early_gen_func);
+    HOOK_NEEDLE_FAIL_MSG(NULL, early_gen_func);
+    HOOK_NEEDLE_FAIL_MSG(NULL, get_terrain_type_for_new_zone);
 
     // todo hook  - get_terrain_type_for_zone
 }
