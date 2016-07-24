@@ -6,7 +6,7 @@
 
 // Displayed strings
 #define MSGTITLE L"HDE Mod Installer"
-#define PREINSTALLMSG L"Do you wish to install HDE Mod to the fllowing path? (pressing No will allow you to browse for another path):\n\""
+#define PREINSTALLMSG L"Do you wish to install HDE Mod to the following path? (pressing No will allow you to browse for another path):\n\""
 #define POSTINSTALLMSG L"HDE Mod installation complete."
 #define BROWSEMSG L"Please choose HD Edition directory (containing HOMM3 2.0.exe)."
 
