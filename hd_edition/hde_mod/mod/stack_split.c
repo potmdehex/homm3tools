@@ -186,6 +186,7 @@ int delete_stack(int selected_slot, uint32_t *types, uint32_t *quantities)
 // Important that this is stdcall since it is called from inline asm
 int __stdcall logic_select_stack(struct HDE_HERO *hero, unsigned int selected_slot, int repeat)
 {
+    const unsigned int MAX_SLOT = 7;
     static int skip_count;
     // Basic bounds check for pointer
     if ((uint32_t)hero < 1000 || (uint32_t)hero > 0x7FFFFFFF)
@@ -195,7 +196,7 @@ int __stdcall logic_select_stack(struct HDE_HERO *hero, unsigned int selected_sl
 
     // The second argument, selected_slot, can actually be pointer to second hero if clicking on a slot of other hero. 
     // In that case we should do nothing here. Would be cleaner to put proper name and type for 2nd arg but this works.
-    if (selected_slot > 7)
+    if (selected_slot > MAX_SLOT) 
     {
         // Other hero was clicked while stack was selected, let game handle it normally
         return 1;
