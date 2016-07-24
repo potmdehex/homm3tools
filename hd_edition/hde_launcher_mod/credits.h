@@ -31,6 +31,7 @@
         "Solipso, " \
         "Urz, " \
         "Vampire_Rush" \
+        "Vangarath" \
         " and " \
         "wikidfps"
 

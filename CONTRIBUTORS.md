@@ -22,6 +22,7 @@ homm3tools contributors
 * Dahan
 * Daninja
 * DataPack
+* El Bardo_Garxot
 * Evilnapkin
 * Fastmancz 
 * Heisenberg
@@ -40,6 +41,7 @@ homm3tools contributors
 * Solipso
 * Urz 
 * Vampire_Rush
+* Vangarath
 * wikidfps
 
 ### References
