@@ -30,8 +30,8 @@
         "simonizer, " \
         "Solipso, " \
         "Urz, " \
-        "Vampire_Rush" \
-        "Vangarath" \
+        "Vampire_Rush, " \
+        "Vangarath " \
         " and " \
         "wikidfps"
 
