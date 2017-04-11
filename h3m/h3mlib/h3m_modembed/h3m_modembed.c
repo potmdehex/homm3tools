@@ -160,9 +160,9 @@ static const uint8_t SHELLCODE_OA_JMP_TO_DLL_LOAD[] = {
         0x60,                                       // PUSHAD
         0x66, 0xBF, 0x6C, 0x02,                     // MOV DI, 26C
         0x8B, 0x04, 0x3C,                           // MOV EAX, DWORD PTR SS:[EDI+ESP]
-        0x3C, 0x4C,                                 // CMP AL, 4C
-        0x75, 0x06,                                 // JNE SHORT <+7> ; jumps to c1
-        0x83, 0xC7, 0x20,                           // ADD EDI,20
+        0x3C, 0x4C,                                 // CMP AL, 4C       ; compare HD Mod HD+ vs non-HD+
+        0x75, 0x06,                                 // JNE SHORT <+7>   ; jumps to c1 for non-HD+
+        0x83, 0xC7, 0x20,                           // ADD EDI,20       ; for HD+
         0x8B, 0x04, 0x3C,                           // MOV EAX,DWORD PTR SS:[EDI+ESP]
 /*c1:*/ 0x50,                                       // PUSH EAX
         0xFF, 0x15, 0x04, 0xA2, 0x63, 0x00,         // CALL DWORD PTR DS:[<&KeRNeL32.SetCurrentDirectoryA>]
