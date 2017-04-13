@@ -50,7 +50,7 @@ static const struct offsets_t * const TARGET_OFFSETS[] = {
     (struct offsets_t *)"\x87\xFF\x4E\x00\xD4\x97\x44\x00\x30\x64\x6A\x00",
     // Heroes3 HD.exe 56614D31CC6F077C2D511E6AF5619280
     // Extra unused offset for anticrash_gadget1 in mss32.dll 6.1d: 0x2112DBC6
-    (struct offsets_t *)"\x0F\x0C\x58\x00\x48\x6A\x45\x00\x30\x68\x6A\x00", 
+    (struct offsets_t *)"\x0F\x0C\x58\x00\x48\x6A\x45\x00\x30\x68\x6A\x00",
     // h3demo.exe 522B6F45F534058D02A561838559B1F4
     (struct offsets_t *)"\xB1\xEA\x43\x00\x0F\x0C\x58\x00\x00\xCE\x5C\x00"
 };
@@ -363,18 +363,26 @@ static const uint8_t TARGET_FIX_H3COMPLETE[] = {
 
 static const uint8_t TARGET_FIX_HDMOD[] = {
     // Assumptions: 
-    //      EAX: Address of this buffer
     //      EDI: Address of VirtualProtect()
     //      ESI: Valid adress for dwOldProtect
-    // Patch away function 00504910 here to prevent HD Mod crash 
-    0xBB, 0x10, 0x49, 0x50, 0x00,                   // MOV EBX, 504910
+    0xBB, 0x6C, 0x49, 0x50, 0x00,                   // MOV EBX, 0x50496c
     0x56,                                           // PUSH ESI
     0x6A, 0x40,                                     // PUSH 40
     0x6A, 0x01,                                     // PUSH 1
     0x53,                                           // PUSH EBX
     0xFF, 0xD7,                                     // CALL EDI ; Call VirtualProtect()
-    0xC6, 0x03, 0xC3,                               // MOV BYTE PTR DS : [EBX], 0C3 ; patch crashy function to RETN
-    0xC3                                            // RETN
+
+    // Set initial object counter to 1, so that the loop exits 1 iteration earlier and skips our bugged object
+    0xC7, 0x84, 0xE4, 0x94, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, // MOV DWORD PTR SS : [ESP + 94], 1
+
+    // Remove instruction that sets initial object counter value to 0
+    0xC7, 0x05, 0x6C, 0x49, 0x50, 0x00, 0x90, 0x90, 0x90, 0x8B,      // MOV DWORD PTR DS : [50496C], 8B909090
+
+    // Restore some instructions that anticrash_gadget1 trashes
+    0xC7, 0x05, 0x4C, 0x6A, 0x45, 0x00, 0x89, 0x56, 0x68, 0x8B,      // MOV DWORD PTR DS : [456A4C], 8B685689
+    0xC7, 0x05, 0x5A, 0x6A, 0x45, 0x00, 0x90, 0x90, 0x90, 0x90,      // MOV DWORD PTR DS : [456A5A], 90909090
+
+    0xC3                                                              // RETN
 };
 
 static const uint8_t * const TARGET_FIXES[] = {
