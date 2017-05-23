@@ -78,8 +78,7 @@ int parse_oa(struct H3MLIB_CTX *ctx)
     oa->entries = calloc(oa->count, sizeof(*(oa->entries)));
     meta->oa_entries = calloc(oa->count, sizeof(*(meta->oa_entries)));
     meta->oa_entries_count = oa->count;
-    // The count is a 32-bit value, but somewhere above 32k objects doesn't seem legit
-    SAFE_CHECK_N(oa->count, 32768)
+
     for (i = 0; i < oa->count; ++i) {
         oa_entry = &oa->entries[i];
         meta_entry = &meta->oa_entries[i];
