@@ -156,8 +156,7 @@ int parse_od(struct H3MLIB_CTX *ctx)
 
     SAFE_READ_SIZEOF(&od->count, parsing)
     meta->od_entries_count = od->count;
-    // The count is a 32-bit value, but somewhere above 32k objects doesn't seem legit
-    SAFE_CHECK_N(od->count, 32768)
+
     if (0 != od->count) {
         od->entries = calloc(od->count, sizeof(*(od->entries)));
         meta->od_entries = calloc(od->count, sizeof(*(meta->od_entries)));
