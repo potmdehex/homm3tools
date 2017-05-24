@@ -63,4 +63,5 @@ Temporary Items
 *.res
 *.a
 *.o
+*.so
 *.h3c
