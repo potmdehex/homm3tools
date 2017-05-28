@@ -1263,5 +1263,11 @@ object_names_hash(const uchar *key)
 			f2 = 0;
 	}
 
-	return g[f0] + g[f1] + g[f2];
+	int result = g[f0] + g[f1] + g[f2];
+	if (result == 1318) // Stronghold workaround
+		return 1319;
+	if (result == 102042) // Fortress workaround
+		return 1318;
+
+	return result;
 }
