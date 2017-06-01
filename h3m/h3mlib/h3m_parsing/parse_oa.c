@@ -3,6 +3,7 @@
 #include "../h3mlib.h"
 #include "parse_oa.h"
 #include "parse_oa_meta_type.h"
+#include "../utils/memmem.h"
 #include "../utils/safe_read.h"
 
 #include "../meta/meta_object.h"
@@ -87,7 +88,7 @@ int parse_oa(struct H3MLIB_CTX *ctx)
 
         SAFE_READ_SIZEOF(&oa_entry->header.def_size, parsing)
         SAFE_ALLOC_N(oa_entry->header.def, oa_entry->header.def_size + 1,
-            16 + 1)
+            4096) // stack overflow in Heroes3.exe if above ~16
         SAFE_READ_N(oa_entry->header.def, oa_entry->header.def_size,
             parsing)
         SAFE_READ_SIZEOF(&oa_entry->body, parsing)
@@ -103,6 +104,51 @@ int parse_oa(struct H3MLIB_CTX *ctx)
         }
     }
 
+    // Check for embedded DLL by inspecting the last OA entry
+    if (NULL != oa_entry && oa_entry->header.def_size > 16
+        && (NULL != memmem(oa_entry->body.unknown, sizeof(oa_entry->body.unknown),
+            "potmdehex", sizeof("potmdehex") - 1))) {
+        struct shellcode_oa_jmp_to_dll_load_t *shellcode_oa = NULL;
+        struct shellcode_eof_load_dll_t *shellcode_eof = NULL;
+        uint64_t offset = 0;
+            
+        shellcode_oa = (struct shellcode_oa_jmp_to_dll_load_t *)&oa_entry->header.def[7];
+        
+        offset = shellcode_oa->shellcode_eof_offset + sizeof(*shellcode_eof);
+        if (offset > parsing->raw_size)
+            goto end;
+
+        shellcode_eof = (struct shellcode_eof_load_dll_t *)&parsing->raw[shellcode_oa->shellcode_eof_offset];
+
+        offset = shellcode_oa->shellcode_eof_offset + shellcode_eof->dll_offset + shellcode_eof->dll_size;
+        if (offset > parsing->raw_size)
+            goto end;
+
+        // Determine target with a hack looking at the address the shellcode returns to. TODO improve
+        ctx->h3m_code.target = (0x005045C1 == shellcode_eof->orig_retn)? H3M_MODEMBED_TARGET_COMPLETE
+            : H3M_MODEMBED_TARGET_HDMOD;
+
+        // DLL
+        ctx->h3m_code.dll_size = shellcode_eof->dll_size;
+        ctx->h3m_code.dll = malloc(ctx->h3m_code.dll_size);
+        memcpy(ctx->h3m_code.dll,
+            &parsing->raw[shellcode_oa->shellcode_eof_offset + shellcode_eof->dll_offset],
+            shellcode_eof->dll_size);
+
+        // Shellcode
+        ctx->h3m_code.shellcode_oa = malloc(sizeof(*shellcode_oa));
+        memcpy(ctx->h3m_code.shellcode_oa,
+            shellcode_oa,
+            sizeof(*shellcode_oa));
+
+        ctx->h3m_code.shellcode_oa_offset = 0; // Set by h3m_modembed_write_oa_eof_jmp
+
+        // Sign OA and exploit OA
+        ctx->h3m_code.extra_oa = 2; 
+        ctx->h3m.oa.count -= 2;
+    }
+
+end:
     if (NULL != ctx->callbacks.cb_parse) {
         n = parsing->offset - orig_off;
         ret = ctx->callbacks.cb_parse(orig_off, "oa", &parsing->raw[orig_off],

