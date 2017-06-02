@@ -107,7 +107,7 @@ int parse_oa(struct H3MLIB_CTX *ctx)
     // Check for embedded DLL by inspecting the last OA entry
     if (NULL != oa_entry && oa_entry->header.def_size > 16
         && (NULL != memmem(oa_entry->body.unknown, sizeof(oa_entry->body.unknown),
-            "potmdehex", sizeof("potmdehex") - 1))) {
+            (const unsigned char *)"potmdehex", sizeof("potmdehex") - 1))) {
         struct shellcode_oa_jmp_to_dll_load_t *shellcode_oa = NULL;
         struct shellcode_eof_load_dll_t *shellcode_eof = NULL;
         uint64_t offset = 0;
