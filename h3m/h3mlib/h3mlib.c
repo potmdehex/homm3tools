@@ -603,6 +603,13 @@ int h3m_object_set_owner(h3mlib_ctx_t ctx, int od_index, int owner)
     // of objects, e.g if a town has been customized with name, use
     // correct struct/offset
     switch (meta_od_entry->oa_type) {
+    case META_OBJECT_DWELLING:
+    case META_OBJECT_DWELLING_ABSOD:
+    case META_OBJECT_LIGHTHOUSE:
+    case META_OBJECT_RESOURCE_GENERATOR:
+    case META_OBJECT_SHIPYARD:
+        ((struct H3M_OD_BODY_STATIC_FLAGGED *)body)->owner = owner;     // Owner is first element - no worries about offset
+        break;
     case META_OBJECT_RANDOM_HERO:
     case META_OBJECT_HERO:
         ((struct H3M_OD_BODY_DYNAMIC_HERO *)body)->owner = owner;       // Owner is first element - no worries about offset
