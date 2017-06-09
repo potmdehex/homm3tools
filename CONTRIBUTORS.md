@@ -3,6 +3,7 @@ homm3tools contributors
 ##### Reverse engineering, programming
 * John Åkerblom (**[potmdehex](https://github.com/potmdehex)**)
 * Constantine Dergachev (**[Dergash](https://github.com/Dergash)**)
+* Radosław Miernik (**[radekmie](https://github.com/radekmie)**)
 
 ##### Linux support
 * Christian Resell (**[PewZ](https://github.com/PewZ)**)
