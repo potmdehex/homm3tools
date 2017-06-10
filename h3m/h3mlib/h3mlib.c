@@ -124,23 +124,26 @@ int h3m_generate_tiles(const h3mlib_ctx_t ctx, int size, int z,
         p->bi.any.map_size = size;
         // Could dynamically check for underground, or have it passed somehow
         // as argument here. For now just alloc space for underground too
-        p->tiles = calloc(1, 2 * size * size * sizeof(struct H3M_TILE));
+        p->tiles = calloc(1, (p->bi.any.has_two_levels ? 2 : 1) * size * size *
+            sizeof(struct H3M_TILE));
     }
 
+    unsigned char *tiles = (unsigned char *)p->tiles;
+
     if (0 != z) {
-        p->tiles +=
+        tiles +=
             p->bi.any.map_size * p->bi.any.map_size * sizeof(struct H3M_TILE);
     }
 
     return gen_tile_sprites(terrain_types, road_types, river_types,
-        p->bi.any.map_size, (unsigned char *)p->tiles);
+        p->bi.any.map_size, tiles);
 }
 
 int h3m_terrain_fill(const h3mlib_ctx_t ctx, enum H3M_TERRAIN terrain)
 {
     int ret = 0;
-    uint8_t t[H3M_MAX_SIZE * H3M_MAX_SIZE];
-    uint8_t r[H3M_MAX_SIZE * H3M_MAX_SIZE];
+    uint8_t t[2 * H3M_MAX_SIZE * H3M_MAX_SIZE];
+    uint8_t r[2 * H3M_MAX_SIZE * H3M_MAX_SIZE];
 
     memset(t, terrain, sizeof(t));
     memset(r, 0, sizeof(r));
@@ -153,7 +156,7 @@ int h3m_terrain_fill(const h3mlib_ctx_t ctx, enum H3M_TERRAIN terrain)
 
     if (0 != ctx->h3m.bi.any.has_two_levels) {
         ret =
-            h3m_generate_tiles(ctx, ctx->h3m.bi.any.map_size, 0, (uint8_t *)t,
+            h3m_generate_tiles(ctx, ctx->h3m.bi.any.map_size, 1, (uint8_t *)t,
             (uint8_t *)r, (uint8_t *)r);
     }
 
@@ -234,7 +237,7 @@ int h3m_init_min(h3mlib_ctx_t *ctx, uint32_t format, int size)
     if (c->h3m.bi.any.map_size != size) {
         free(c->h3m.tiles);
         c->h3m.bi.any.map_size = size;
-        c->h3m.tiles = calloc(1, sizeof(struct H3M_TILE) * size * size);
+        c->h3m.tiles = calloc(1, sizeof(struct H3M_TILE) * size * size * 2);
     }
 
     *ctx = c;
@@ -810,6 +813,10 @@ int h3m_terrain_get_all(const h3mlib_ctx_t ctx, int z, uint8_t *terrain_types,
 {
     unsigned int count = ctx->h3m.bi.any.map_size * ctx->h3m.bi.any.map_size;
     unsigned int i = 0;
+
+    if (0 != z) {
+        count *= 2;
+    }
 
     if (n < count) {
         return 1;
