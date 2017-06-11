@@ -119,20 +119,24 @@ int h3m_generate_tiles(const h3mlib_ctx_t ctx, int size, int z,
     uint8_t *terrain_types, uint8_t *road_types, uint8_t *river_types)
 {
     struct H3M *p = &((struct H3MLIB_CTX *)ctx)->h3m;
+    unsigned char *tiles = NULL;
 
     if (p->bi.any.map_size != size) {
         p->bi.any.map_size = size;
-        // Could dynamically check for underground, or have it passed somehow
-        // as argument here. For now just alloc space for underground too
+        
+        if (NULL != p->tiles) {
+           free(p->tiles);
+        }
+        
         p->tiles = calloc(1, (p->bi.any.has_two_levels ? 2 : 1) * size * size *
             sizeof(struct H3M_TILE));
     }
 
-    unsigned char *tiles = (unsigned char *)p->tiles;
+    tiles = (unsigned char *)p->tiles;
 
     if (0 != z) {
-        tiles +=
-            p->bi.any.map_size * p->bi.any.map_size * sizeof(struct H3M_TILE);
+        // Point to underground tiles
+        tiles += p->bi.any.map_size * p->bi.any.map_size * sizeof(struct H3M_TILE);
     }
 
     return gen_tile_sprites(terrain_types, road_types, river_types,
@@ -814,15 +818,17 @@ int h3m_terrain_get_all(const h3mlib_ctx_t ctx, int z, uint8_t *terrain_types,
     unsigned int count = ctx->h3m.bi.any.map_size * ctx->h3m.bi.any.map_size;
     unsigned int i = 0;
 
-    if (0 != z) {
-        count *= 2;
-    }
-
     if (n < count) {
         return 1;
     }
 
-    for (i = 0; i < count; ++i) {
+    if (0 != z) {
+        // Point to underground tiles
+        i = count;
+        count *= 2;
+    }
+
+    for (; i < count; ++i) {
         terrain_types[i] = ctx->h3m.tiles[i].terrain_type;
     }
 
