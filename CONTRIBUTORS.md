@@ -1,11 +1,11 @@
 homm3tools contributors
 ============================================
-##### Reverse engineering, programming
+##### Reverse Engineering, Programming
 * John Åkerblom (**[potmdehex](https://github.com/potmdehex)**)
 * Constantine Dergachev (**[Dergash](https://github.com/Dergash)**)
 * Radosław Miernik (**[radekmie](https://github.com/radekmie)**)
 
-##### Linux support
+##### Linux Support
 * Christian Resell (**[PewZ](https://github.com/PewZ)**)
 
 ##### Editor-made .h3m map patches for use during conversion
@@ -13,7 +13,7 @@ homm3tools contributors
 * Axel Wik
 * Oskar Sundborg
 
-##### Bug reports, localization support and testing
+##### Bug Reports, Localization Support, Testing and Other Support
 * 000
 * Above The Clouds
 * AL-KASAB 
@@ -23,6 +23,7 @@ homm3tools contributors
 * Dahan
 * Daninja
 * DataPack
+* dedushkaizzla
 * El Bardo_Garxot
 * Evilnapkin
 * Fastmancz 
