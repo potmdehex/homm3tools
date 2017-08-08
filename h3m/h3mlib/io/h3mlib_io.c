@@ -156,8 +156,8 @@ static int _write_hero_settings(const struct H3M *p, FILE * f)
         fwrite(&settings->has_biography, sizeof(uint8_t), 1, f);
         if (0 != settings->has_biography) {
             fwrite(&settings->biography.desc_size, sizeof(uint32_t), 1, f);
-            fwrite(settings->biography.desc, settings->biography.desc_size, 1,
-                f);
+            if (NULL != settings->biography.desc)
+                fwrite(settings->biography.desc, settings->biography.desc_size, 1, f);
         }
 
         fwrite(&settings->gender, sizeof(uint8_t), 1, f);
@@ -192,9 +192,9 @@ static int _write_dynamic_od(uint8_t *body,
         for (dyn_pointer =
             (struct META_DYN_POINTER **)utarray_front(dyn_pointers);
             dyn_pointer != NULL;
-            dyn_pointer =
-            (struct META_DYN_POINTER **)utarray_next(dyn_pointers,
+            dyn_pointer = (struct META_DYN_POINTER **)utarray_next(dyn_pointers,
                 dyn_pointer)) {
+
             // Write data up to this pointer/skip
             n = (*dyn_pointer)->member_offset - cur_offset;
             fwrite(body + cur_offset, n, 1, f);
@@ -206,9 +206,9 @@ static int _write_dynamic_od(uint8_t *body,
                 cur_offset += (*dyn_pointer)->skip;
                 continue;
             }
+
             // Write the contents of this/these pointer(s), if not NULL
-            if (NULL != (*dyn_pointer)->p_array)        // Array of pointers
-            {
+            if (NULL != (*dyn_pointer)->p_array) {       // Array of pointers
                 for (entry = (struct META_DYN_ARRAY_ENTRY **)
                     utarray_front((*dyn_pointer)->p_array); entry != NULL;
                     entry =
@@ -217,10 +217,10 @@ static int _write_dynamic_od(uint8_t *body,
                     _write_dynamic_od((*entry)->body, (*entry)->body_size,
                         (*entry)->dyn_pointers, f);
                 }
-            } else if (NULL != (*dyn_pointer)->p)       // Single pointer
-            {
+            } else if (NULL != (*dyn_pointer)->p) {      // Single pointer
                 fwrite((*dyn_pointer)->p, (*dyn_pointer)->dyn_size, 1, f);
             }
+
             // Skip past pointer
             cur_offset += sizeof(void *);
 
@@ -230,6 +230,7 @@ static int _write_dynamic_od(uint8_t *body,
             }
         }
     }
+
     // Write the rest of the body after the last pointer
     if (cur_offset < body_size) {
         fwrite(body + cur_offset, body_size - cur_offset, 1, f);
@@ -244,7 +245,9 @@ void _write_events(const struct H3MLIB_CTX *ctx, FILE * f)
     const uint32_t fm = ctx->h3m.format;
     size_t body_size = (fm < H3M_FORMAT_SOD) ?
         sizeof(struct H3M_EVENT_BODY_ROEAB) : sizeof(struct H3M_EVENT_BODY_SOD);
+
     fwrite(&ctx->h3m.event.count, sizeof(ctx->h3m.event.count), 1, f);
+
     for (unsigned int i = 0; i < ctx->h3m.event.count; ++i) {
         entry = &ctx->h3m.event.entries[i];
 
@@ -286,6 +289,7 @@ static int _h3mlib_io_write_f(struct H3MLIB_CTX *ctx, FILE * f)
     if (H3M_FORMAT_ROE != p->format) {
         fwrite(&p->bi.absod.mastery_cap, sizeof(p->bi.absod.mastery_cap), 1, f);
     }
+
     // Write players
     for (i = 0; i < H3M_MAX_PLAYERS; ++i) {
         fwrite(p->players[i], meta->player_sizes[i], 1, f);
@@ -322,6 +326,7 @@ static int _h3mlib_io_write_f(struct H3MLIB_CTX *ctx, FILE * f)
     FS_ANY_CALL(_write_rumors(p, f), fm)
     // hero settings dispatch here
     FS_SOD_CALL(_write_hero_settings(p, f), fm)
+
     // Write tiles
     n = (sizeof(struct H3M_TILE) * p->bi.any.map_size * p->bi.any.map_size
     * ((p->bi.any.has_two_levels) ? 2 : 1));

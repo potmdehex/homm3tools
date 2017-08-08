@@ -59,14 +59,11 @@
 
 #define SAFE_READ_COMMON_STRING(STRUCT, MAX, PAR) \
     { \
-        size_t size = 0; \
+        uint32_t size = 0; \
         SAFE_READ_SIZEOF(&size, PAR) \
-        if (0 != size) \
-        { \
-            SAFE_ALLOC_N(STRUCT, sizeof(STRUCT->size) + size + 1, MAX + 1) \
-            STRUCT->size = size; \
-            SAFE_READ_N(STRUCT->data, STRUCT->size, PAR) \
-        } \
+        SAFE_ALLOC_N(STRUCT, sizeof(STRUCT->size) + size + 1, MAX + 1) \
+        STRUCT->size = size; \
+        SAFE_READ_N(STRUCT->data, STRUCT->size, PAR) \
     }
 
 #endif

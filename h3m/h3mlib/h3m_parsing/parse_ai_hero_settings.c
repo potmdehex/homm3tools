@@ -54,7 +54,7 @@ int parse_ai_hero_settings(struct H3MLIB_CTX *ctx)
             }
         }
         SAFE_READ_SIZEOF(&settings->has_biography, parsing)
-            if (0 != settings->has_biography) {
+        if (0 != settings->has_biography) {
             SAFE_READ_SIZEOF(&settings->biography.desc_size, parsing)
             if (0 != settings->biography.desc_size) {
                 n = settings->biography.desc_size;
