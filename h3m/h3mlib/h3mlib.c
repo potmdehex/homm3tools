@@ -1,4 +1,4 @@
-// Created by John Åkerblom 2014-11-18 
+// Created by John Åkerblom 2014-11-18
 
 #include "h3mlib.h"
 
@@ -42,7 +42,7 @@ static int _name_to_def_index(const char *name)
     char name_fixed[64] = { 0 };
     int index = 0;
 
-    // Use string with 0 at end if no last char is a letter and not 
+    // Use string with 0 at end if no last char is a letter and not
     // a number
     if (0 != isalpha((int)name[strlen(name) - 1])) {
         strncpy(name_fixed, name, sizeof(name_fixed) - 1);
@@ -123,11 +123,11 @@ int h3m_generate_tiles(const h3mlib_ctx_t ctx, int size, int z,
 
     if (p->bi.any.map_size != size) {
         p->bi.any.map_size = size;
-        
+
         if (NULL != p->tiles) {
            free(p->tiles);
         }
-        
+
         p->tiles = calloc(1, (p->bi.any.has_two_levels ? 2 : 1) * size * size *
             sizeof(struct H3M_TILE));
     }
@@ -146,23 +146,27 @@ int h3m_generate_tiles(const h3mlib_ctx_t ctx, int size, int z,
 int h3m_terrain_fill(const h3mlib_ctx_t ctx, enum H3M_TERRAIN terrain)
 {
     int ret = 0;
-    uint8_t t[2 * H3M_MAX_SIZE * H3M_MAX_SIZE];
-    uint8_t r[2 * H3M_MAX_SIZE * H3M_MAX_SIZE];
+    int size = ctx->h3m.bi.any.map_size;
+    int bits = (ctx->h3m.bi.any.has_two_levels ? 2 : 1) * size * size;
 
-    memset(t, terrain, sizeof(t));
-    memset(r, 0, sizeof(r));
+    uint8_t *r = calloc(bits, sizeof(uint8_t));
+    uint8_t *t = malloc(bits);
 
-    if (0 != (ret =
-            h3m_generate_tiles(ctx, ctx->h3m.bi.any.map_size, 0, (uint8_t *)t,
-                (uint8_t *)r, (uint8_t *)r))) {
+    memset(t, terrain, bits);
+
+    if (0 != (ret = h3m_generate_tiles(ctx, size, 0, t, r, r))) {
+        free(r);
+        free(t);
+
         return ret;
     }
 
     if (0 != ctx->h3m.bi.any.has_two_levels) {
-        ret =
-            h3m_generate_tiles(ctx, ctx->h3m.bi.any.map_size, 1, (uint8_t *)t,
-            (uint8_t *)r, (uint8_t *)r);
+        ret = h3m_generate_tiles(ctx, size, 1, t, r, r);
     }
+
+    free(r);
+    free(t);
 
     return ret;
 }
@@ -171,21 +175,26 @@ int h3m_terrain_set(const h3mlib_ctx_t ctx, int x, int y, int z,
     enum H3M_TERRAIN terrain)
 {
     int ret = 0;
-    uint8_t t[H3M_MAX_SIZE * H3M_MAX_SIZE];
-    uint8_t r[H3M_MAX_SIZE * H3M_MAX_SIZE];
+    int size = ctx->h3m.bi.any.map_size;
 
-    memset(r, 0, sizeof(r));
+    uint8_t *r = calloc(size * size, sizeof(uint8_t));
+    uint8_t *t = malloc(size * size);
 
-    // Method here is meant for arrays so is not good for this, but currently no easy way to 
+    // Method here is meant for arrays so is not good for this, but currently no easy way to
     // generate a single tile sprite is implemented.
 
-    h3m_terrain_get_all(ctx, z, t, sizeof(t));
-    t[H3M_2D_TO_1D(ctx->h3m.bi.any.map_size, x, y, z)] = terrain;
+    h3m_terrain_get_all(ctx, z, t, size * size * sizeof(uint8_t));
+    t[H3M_2D_TO_1D(size, x, y, z)] = terrain;
 
-    if (0 != (ret =
-            h3m_generate_tiles(ctx, ctx->h3m.bi.any.map_size, z, t, r, r))) {
+    if (0 != (ret = h3m_generate_tiles(ctx, size, z, t, r, r))) {
+        free(r);
+        free(t);
+
         return ret;
     }
+
+    free(r);
+    free(t);
 
     return 0;
 }
@@ -193,15 +202,17 @@ int h3m_terrain_set(const h3mlib_ctx_t ctx, int x, int y, int z,
 int h3m_terrain_set_all(const h3mlib_ctx_t ctx, int z, uint8_t *terrain_types)
 {
     int ret = 0;
-    uint8_t r[H3M_MAX_SIZE * H3M_MAX_SIZE];
+    int size = ctx->h3m.bi.any.map_size;
 
-    memset(r, 0, sizeof(r));
+    uint8_t *r = calloc(size * size, sizeof(uint8_t));
 
-    if (0 != (ret =
-            h3m_generate_tiles(ctx, ctx->h3m.bi.any.map_size, z, terrain_types,
-                r, r))) {
+    if (0 != (ret = h3m_generate_tiles(ctx, size, z, terrain_types, r, r))) {
+        free(r);
+
         return ret;
     }
+
+    free(r);
 
     return 0;
 }
@@ -572,13 +583,13 @@ int h3m_add_od(h3mlib_ctx_t ctx, int oa_index, int x, int y, int z,
     meta_od_entry->oa_type = oa_type;
     meta_od_entry->dyn_pointers = NULL;
 
-    // Only towns, heroes and monsters have the absod id 
+    // Only towns, heroes and monsters have the absod id
     // (used for win cond/defeat x quests)
-    if (META_OBJECT_TOWN == oa_type || META_OBJECT_MONSTER == oa_type 
+    if (META_OBJECT_TOWN == oa_type || META_OBJECT_MONSTER == oa_type
             || META_OBJECT_HERO == oa_type) {
         // TODO throughout h3mlib absod id support needs to be improved,
         // so e.g several objects with their own ids can be added
-        meta_od_entry->has_absod_id = 1; 
+        meta_od_entry->has_absod_id = 1;
         od_entry->absod_id = 0x13333337;
     } else {
         meta_od_entry->has_absod_id = 0;
