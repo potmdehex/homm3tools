@@ -122,7 +122,7 @@ enum H3M_HERO {
     H3M_HERO_GEON,           /* 0x5C */
     H3M_HERO_DEEMER,         /* 0x5D */
     H3M_HERO_SEPHINROTH,     /* 0x5E */
-    H3M_HERO_DARKSTORN,      /* 0x5F */
+    H3M_HERO_DARKSTORM,      /* 0x5F */
     
 
     /* Barbarian (Stronghold) */
@@ -179,7 +179,7 @@ enum H3M_HERO {
     H3M_HERO_LUNA,           /* 0x88 */
     H3M_HERO_BRISSA,         /* 0x89 */
     H3M_HERO_CIELE,          /* 0x8A */
-    H3M_HERO_CONFLUX,        /* 0x8B */
+    H3M_HERO_LABETHA,        /* 0x8B */
     H3M_HERO_INTEUS,         /* 0x8C */
     H3M_HERO_AENAIN,         /* 0x8D */
     H3M_HERO_GELARE,         /* 0x8E */
