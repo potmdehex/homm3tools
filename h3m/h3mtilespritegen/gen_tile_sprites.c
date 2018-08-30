@@ -4,17 +4,16 @@
 #include "gen_tile_sprites.h"
 #include "terrain/analyze_terrain.h"
 #include "terrain/dispatch_terrain.h"
-#include "road/dispatch_road.h"
-#include "river/dispatch_river.h"
 #include "h3m_tile.h"
 #include "analyze_road_or_river.h"
+#include "dispatch_road_or_river.h"
 
 #if defined _WIN32 && NO_CRT
         #include "win/advapi_rand.h"
 #else
         #include <stdlib.h>
-        #define advapi_rand_init(a) 
-        #define advapi_rand_exit() 
+        #define advapi_rand_init(a)
+        #define advapi_rand_exit()
 #endif
 
 #include <stdio.h> /* debug printf */
@@ -46,8 +45,8 @@ int gen_tile_sprites(unsigned char *terrain_types,
         unsigned char road_mirr = 0;
         unsigned char river_mirr = 0;
         int fail;
-        struct H3M_TILE *h3m_tile = NULL; 
-        struct H3M_TILE *n_tile = NULL; 
+        struct H3M_TILE *h3m_tile = NULL;
+        struct H3M_TILE *n_tile = NULL;
 
 retry:
         fail = 0;
@@ -58,12 +57,12 @@ retry:
                 road_mirr = 0;
                 river_mirr = 0;
 
-                analyze_terrain(terrain_types, size, x, y, &terrain_type, 
+                analyze_terrain(terrain_types, size, x, y, &terrain_type,
                         &adj_same, &adj_sand);
                 switch(terrain_type)
                 {
                 case T_DIRT:
-                        fail = dispatch_terrain_dirt(adj_sand, &terrain_sprite, 
+                        fail = dispatch_terrain_dirt(adj_sand, &terrain_sprite,
                                                         &terrain_mirr);
                         break;
                 case T_ROCK:
@@ -74,28 +73,28 @@ retry:
                         /* Sand cannot fail since it is independent */
                         goto past_fail_check;
                 case T_WATER:
-                        fail = dispatch_terrain_water(adj_same, &terrain_sprite, 
+                        fail = dispatch_terrain_water(adj_same, &terrain_sprite,
                                                         &terrain_mirr);
                         break;
                 default:
-                        fail = dispatch_terrain_generic(adj_same, adj_sand, 
-                                                        &terrain_sprite, 
+                        fail = dispatch_terrain_generic(adj_same, adj_sand,
+                                                        &terrain_sprite,
                                                         &terrain_mirr);
                         break;
                 }
 
                 /**
-                 * If terrain determination failed, set this tile to dirt 
-                 * and re-consider the entire map as this can have a 
+                 * If terrain determination failed, set this tile to dirt
+                 * and re-consider the entire map as this can have a
                  * chain-reaction on other tiles. If we already failed on
                  * it previously, set it to sand instead. We can never fail
-                 * on sand. 
+                 * on sand.
                 **/
                 if (fail)
                 {
                         /*printf("fail@%d,%d\n", x, y);*/
                         idx = (size * y) + x;
-                        terrain_types[idx] = (idx == prev_fail_idx)? 
+                        terrain_types[idx] = (idx == prev_fail_idx)?
                              T_SAND : T_DIRT;
                         prev_fail_idx = idx;
                         advapi_rand_exit();
@@ -110,7 +109,7 @@ past_fail_check:
                         goto past_road;
                 }
 
-                fail = dispatch_road(adj_road, &road_sprite, &road_mirr, 
+                fail = dispatch_road(adj_road, &road_sprite, &road_mirr,
                                         n_tile->road_type, n_tile->road_sprite);
                 if (fail)
                 {
@@ -125,7 +124,7 @@ past_road:
                 {
                         goto past_river;
                 }
-                fail = dispatch_river(adj_river, &river_sprite, &river_mirr, 
+                fail = dispatch_river(adj_river, &river_sprite, &river_mirr,
                                         n_tile->river_type, n_tile->river_sprite);
                 if (fail)
                 {
@@ -135,12 +134,12 @@ past_road:
                         goto retry;
                 }
 past_river:
-                h3m_tile = 
+                h3m_tile =
                     (struct H3M_TILE *)(h3m_data + i * sizeof(*h3m_tile));
                 h3m_tile->terrain_type = terrain_type;
                 h3m_tile->terrain_sprite = terrain_sprite;
                 h3m_tile->road_type = road_type;
-                h3m_tile->road_sprite = road_sprite; 
+                h3m_tile->road_sprite = road_sprite;
                 h3m_tile->river_type = river_type;
                 h3m_tile->river_sprite = river_sprite;
                 h3m_tile->mirroring = terrain_mirr | road_mirr | river_mirr;
