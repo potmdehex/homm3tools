@@ -1067,7 +1067,7 @@ int h3m_desc_set(h3mlib_ctx_t ctx, const char *desc)
     size_t n = strlen(desc);
     ctx->h3m.bi.any.desc = (NULL == ctx->h3m.bi.any.desc) ?
         malloc(n + 1) : realloc(ctx->h3m.bi.any.desc, n + 1);
-    strncpy((char *)ctx->h3m.bi.any.desc, desc, n);
+    strncpy((char *)ctx->h3m.bi.any.desc, desc, n + 1);
     ctx->h3m.bi.any.desc_size = n;
 
     return 0;
