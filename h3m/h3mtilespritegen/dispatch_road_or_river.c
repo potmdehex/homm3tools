@@ -123,7 +123,6 @@ int dispatch_##TYPE(unsigned char adjacent,                                     
         POOL_CASE(N | W | NE, NESW_DIAGONAL_MIRR(M_HORI, M_VERT), pool_diagonals)      \
         POOL_CASE(N | W | SW, NESW_DIAGONAL_MIRR(M_HORI, M_VERT), pool_diagonals)      \
         POOL_CASE(N | NE | SW, NESW_DIAGONAL_MIRR(M_HORI, M_VERT), pool_diagonals)     \
-        POOL_CASE(W | NE | SW, NESW_DIAGONAL_MIRR(M_HORI, M_VERT), pool_diagonals)     \
                                                                                        \
         POOL_CASE(E | S | NE | SW, NESW_DIAGONAL_MIRR(M_HORI, M_VERT), pool_diagonals) \
         POOL_CASE(E | S | NE, NESW_DIAGONAL_MIRR(M_HORI, M_VERT), pool_diagonals)      \
@@ -169,9 +168,13 @@ int dispatch_##TYPE(unsigned char adjacent,                                     
         SINGLE_CASE(E, 0, SP_HORI_END)                                                 \
         SINGLE_CASE(NE | E | SE, 0, SP_HORI_END)                                       \
         SINGLE_CASE(NE | E, 0, SP_HORI_END)                                            \
+        SINGLE_CASE(NW | E, 0, SP_HORI_END)                                            \
         SINGLE_CASE(E | SE, 0, SP_HORI_END)                                            \
         SINGLE_CASE(W, M_HORI, SP_HORI_END)                                            \
         SINGLE_CASE(NW | W | SW, M_HORI, SP_HORI_END)                                  \
+        SINGLE_CASE(W | NE, M_HORI, SP_HORI_END)                                       \
+        SINGLE_CASE(W | NE | SW, M_HORI, SP_HORI_END)                                  \
+        SINGLE_CASE(NW | W | SW | NE, M_HORI, SP_HORI_END)                             \
         SINGLE_CASE(NW | W, M_HORI, SP_HORI_END)                                       \
         SINGLE_CASE(W | SW, M_HORI, SP_HORI_END)                                       \
         POOL_CASE(E | W, 0, pool_hori)                                                 \
@@ -204,6 +207,10 @@ int dispatch_##TYPE(unsigned char adjacent,                                     
         SINGLE_CASE(NW | N | NE, M_VERT, SP_VERT_END)                                  \
         SINGLE_CASE(NW | N, M_VERT, SP_VERT_END)                                       \
         SINGLE_CASE(N | NE, M_VERT, SP_VERT_END)                                       \
+        SINGLE_CASE(SE | N, M_VERT, SP_VERT_END)                                       \
+        SINGLE_CASE(SW | N, M_VERT, SP_VERT_END)                                       \
+        SINGLE_CASE(SE | N | NE | NW, M_VERT, SP_VERT_END)                             \
+        SINGLE_CASE(SW | N | NE | NW, M_VERT, SP_VERT_END)                             \
         POOL_CASE(S | N, 0, pool_vert)                                                 \
                                                                                        \
         /* Oh boy here we go, vertical continued */                                    \
