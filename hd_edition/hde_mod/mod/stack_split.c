@@ -1,4 +1,4 @@
-// Created by John Åkerblom 2015-04-20, from hooked.c from 2015-01-29
+// Created by John ï¿½kerblom 2015-04-20, from hooked.c from 2015-01-29
 
 #include "stack_split.h"
 #include "common.h"
@@ -21,6 +21,8 @@ swap_move_stack_t orig_swap_move_stack = (swap_move_stack_t)NULL;
 
 static BOOL f_disable_move_stack;
 static BOOL f_town_do_special_move;
+
+const unsigned int MAX_SLOT_COUNT = 7;
 
 void __stdcall hooked_move_stack(int src_slot, uint32_t *dest_creature_types, int dest_slot)
 {
@@ -55,28 +57,31 @@ void __stdcall hooked_move_stack(int src_slot, uint32_t *dest_creature_types, in
     orig_move_stack(src_slot, dest_creature_types, dest_slot);
 }
 
-int split_stack(int selected_slot, uint32_t *types, uint32_t *quantities, int repeat)
+int split_stack(int selected_slot, uint32_t *types, uint32_t *quantities, int repeat, int max_split_count)
 {
     uint32_t type = types[selected_slot];
+    unsigned int split_count = 0;
 
-    for (int j = 0; j <= repeat+1; ++j)
+    for (int j = 0; j <= repeat + 1; ++j)
     {
         int free_slot_idx = -1;
 
-        for (int i = 0; i < 7; ++i)
+        for (unsigned int i = 0; i < MAX_SLOT_COUNT; ++i)
         {
             // If stack is not the selected stack and has 0 quantity / no type,
             // mark this slot as free slot to split into
-            if (i != selected_slot
-                && (0 == quantities[i] || 0xFFFFFFFF == types[i]))
+            if (i != selected_slot && (0 == quantities[i] || 0xFFFFFFFF == types[i]))
             {
                 free_slot_idx = i;
+                break;
             }
         }
 
-        // If there is no free slot or quantity of selected slot is below 2,
+        // If there is no free slot OR quantity of selected slot is below 2 OR split_count matches limit,
         // return
-        if (-1 == free_slot_idx || quantities[selected_slot] < 2)
+        if (-1 == free_slot_idx ||
+            quantities[selected_slot] < 2 ||
+            split_count == max_split_count)
         {
             return 0;
         }
@@ -84,62 +89,38 @@ int split_stack(int selected_slot, uint32_t *types, uint32_t *quantities, int re
         types[free_slot_idx] = type;
         quantities[free_slot_idx] = 1;
         quantities[selected_slot] -= 1;
+
+        split_count++;
     }
 
     return 0;
 }
 
-int divide_stack(int selected_slot, uint32_t *types, uint32_t *quantities, int *free_slots)
+int divide_stack(int selected_slot, uint32_t *types, uint32_t *quantities)
 {
-    int stacks = 0;
-    int per_stack = 0;
-    int extra = 0;
-    int creatures = 0;
-    int free_index = -1;
+    uint32_t type = types[selected_slot];
+    int free_slot_idx = -1;
 
-    *free_slots = 0;
-
-    // Count number of stacks and creatures matching selected slot
-    for (int i = 0; i < 7; ++i)
+    for (unsigned int i = 0; i < MAX_SLOT_COUNT; ++i)
     {
-        if (-1 == types[i] || 0 == quantities[i])
+        // If stack is not the selected stack and has 0 quantity / no type,
+        // mark this slot as free slot to divide into
+        if (i != selected_slot && (0 == quantities[i] || 0xFFFFFFFF == types[i]))
         {
-            if (-1 == free_index)
-            {
-                free_index = i;
-            }
-            ++(*free_slots);
-        }
-        else if (types[i] == types[selected_slot])
-        {
-            ++stacks;
-            creatures += quantities[i];
+            free_slot_idx = i;
+            break;
         }
     }
 
-    // Create new stack if there is a free slot
-    if (-1 != free_index)
+    if (free_slot_idx != -1 && quantities[selected_slot] > 1)
     {
-        types[free_index] = types[selected_slot];
-        ++stacks;
-        --(*free_slots);
-    }
+        int total_creatures = quantities[selected_slot];
+        int first_stack = total_creatures / 2;
+        int second_stack = total_creatures - first_stack;
 
-    per_stack = creatures / stacks;
-    extra = creatures % stacks;
-
-    // Divide the stacks as evenly as possible
-    for (int i = 0; i < 7; ++i)
-    {
-        if (types[i] == types[selected_slot])
-        {
-            quantities[i] = per_stack;
-
-            if (0 < extra--)
-            {
-                ++quantities[i];
-            }
-        }
+        types[free_slot_idx] = type;
+        quantities[selected_slot] = second_stack;
+        quantities[free_slot_idx] = first_stack;
     }
 
     return 0;
@@ -183,10 +164,24 @@ int delete_stack(int selected_slot, uint32_t *types, uint32_t *quantities)
 }
 #endif
 
+boolean is_control_pressed()
+{
+    return (GetAsyncKeyState(VK_CONTROL) & 0x8000) != 0;
+}
+
+boolean is_shift_pressed()
+{
+    return (GetAsyncKeyState(VK_SHIFT) & 0x8000) != 0;
+}
+
+boolean is_alt_pressed()
+{
+    return (GetAsyncKeyState(VK_MENU) & 0x8000) != 0;
+}
+
 // Important that this is stdcall since it is called from inline asm
 int __stdcall logic_select_stack(struct HDE_HERO *hero, unsigned int selected_slot, int repeat)
 {
-    const unsigned int MAX_SLOT = 7;
     static int skip_count;
     // Basic bounds check for pointer
     if ((uint32_t)hero < 1000 || (uint32_t)hero > 0x7FFFFFFF)
@@ -194,24 +189,28 @@ int __stdcall logic_select_stack(struct HDE_HERO *hero, unsigned int selected_sl
         return 1;
     }
 
-    // The second argument, selected_slot, can actually be pointer to second hero if clicking on a slot of other hero. 
+    // The second argument, selected_slot, can actually be pointer to second hero if clicking on a slot of other hero.
     // In that case we should do nothing here. Would be cleaner to put proper name and type for 2nd arg but this works.
-    if (selected_slot > MAX_SLOT) 
+    if (selected_slot > MAX_SLOT_COUNT)
     {
         // Other hero was clicked while stack was selected, let game handle it normally
         return 1;
     }
-     
+
     // & 0x8000 -> being pressed, & 1 -> pressed since last GetAsyncKeyState call
-    if ((GetAsyncKeyState(VK_CONTROL)) & 0x8000)
+    if (is_control_pressed())
     {
-        return split_stack(selected_slot, hero->creature_types, hero->creature_quantities, repeat);
+        if (is_shift_pressed())
+        {
+            return split_stack(selected_slot, hero->creature_types, hero->creature_quantities, repeat, MAX_SLOT_COUNT);
+        }
+        return split_stack(selected_slot, hero->creature_types, hero->creature_quantities, repeat, 1);
     }
-    else if (GetAsyncKeyState(VK_SHIFT) & 1 && GetAsyncKeyState(VK_SHIFT) & 0x8000)
+    else if (is_shift_pressed())
     {
-        return divide_stack(selected_slot, hero->creature_types, hero->creature_quantities, &skip_count);
+        return divide_stack(selected_slot, hero->creature_types, hero->creature_quantities);
     }
-    else if (GetAsyncKeyState(VK_MENU) & 0x8000) // ALT check, there is no VK_ALT
+    else if (is_alt_pressed())
     {
         return join_stack(selected_slot, hero->creature_types, hero->creature_quantities);
     }
@@ -237,7 +236,7 @@ void __declspec(naked) hooked_hero_select_stack(void)
     __asm CMP EAX, 0
     __asm JNE skip_selection_prevention
 
-    // Selection prevention: Prevent stack from being selected by 
+    // Selection prevention: Prevent stack from being selected by
     // setting retn address to that of stack move action
     __asm POPAD
     __asm POPAD
@@ -246,7 +245,7 @@ void __declspec(naked) hooked_hero_select_stack(void)
     __asm PUSHAD
     __asm PUSHAD
 
-skip_selection_prevention:
+    skip_selection_prevention:
     __asm POPAD // restore for this call
     orig_hero_select_stack();
     __asm POPAD // restore for next call
@@ -256,7 +255,7 @@ skip_selection_prevention:
 void __declspec(naked) hooked_town_select_stack(void)
 {
     // Arg 1 (ESP+4) is the type of action. 0 means select action which and
-    // -1 means last stack move action, the only two actions we are interested in. 
+    // -1 means last stack move action, the only two actions we are interested in.
     // For anything except 0 & -1 jmp straight to original function.
     __asm MOV EAX, [ESP+4]
     __asm CMP EAX, 0
@@ -264,13 +263,13 @@ void __declspec(naked) hooked_town_select_stack(void)
     __asm CMP EAX, 0xFFFFFFFF
     __asm JE last_move_hook
     __asm JMP orig_town_select_stack
-last_move_hook:
+    last_move_hook:
     f_town_do_special_move = TRUE;
     __asm MOV DWORD PTR [ESP+4], 3 // Set action to move action
     __asm JMP orig_town_select_stack
-select_hook:
+    select_hook:
     //__asm MOV ESI, ECX
-    __asm PUSHAD
+        __asm PUSHAD
 
     // Get pointer to creatures part of hero struct. Previously EDI was used instead of ECX
     // here, but while that works for towns, it does not work for garrisons
@@ -288,34 +287,34 @@ select_hook:
     __asm CALL logic_select_stack
 
     // If return not 0, no hotkey was pressed, then skip selection prevention
-    __asm CMP EAX, 0 
+    __asm CMP EAX, 0
     __asm JNE skip_selection_prevention
 
-    // Selection prevention: Prevent stack from being selected by 
-    // setting move action and fixing some pointers to not crash with 
+    // Selection prevention: Prevent stack from being selected by
+    // setting move action and fixing some pointers to not crash with
     // that change
     __asm POPAD
     __asm MOV [ESP+4], 3 // Set action to stack move action
     __asm PUSHAD
 
-    // Fix pointers to not crash. These are dereferenced when pushing 
+    // Fix pointers to not crash. These are dereferenced when pushing
     // arguments to the stack move function
     __asm MOV EAX, [ECX+0x124] // Get hero army pointer
     __asm MOV [ECX+0x12C], EAX // Need hero army pointer here to not crash
     __asm MOV [ECX+0x134], EAX // Need hero army pointer here to not crash
-    
+
     // Prevent move function from actually doing anything. Then only function
     // updating screen will do something and everyone will be happy.
     f_disable_move_stack = TRUE;
 #if 0
     __asm POPAD
     __asm MOV ECX, retn_town_select_stack // usual return for stack move causes creature to not be selected
-    __asm MOV [ESP], ECX 
+    __asm MOV [ESP], ECX
     //__asm RETN 0x0C // the function this hook replaces actually is stdcall taking 3 args
     __asm PUSHAD
 #endif
-    
-skip_selection_prevention:
+
+    skip_selection_prevention:
     __asm POPAD
     __asm JMP orig_town_select_stack
     //__asm RETN // dont need to cleanup stack here as original function did that
@@ -339,7 +338,7 @@ void __declspec(naked) hooked_swap_select_stack(void)
     __asm MOV EAX, 0 // 0 in eax when returning prevents selection
     __asm RETN 4 // the function this hook replaces actually is stdcall taking 1 arg
 
-skip_selection_prevention:
+    skip_selection_prevention:
     __asm POPAD
     __asm JMP orig_swap_select_stack
 }
@@ -369,9 +368,9 @@ void __declspec(naked) hooked_swap_move_stack(void)
 
     // Special move leaving 1 creature has been done, return without calling orig func
     __asm POPAD
-    __asm RETN 
+    __asm RETN
 
-orig:
+    orig:
     __asm POPAD
     __asm JMP orig_swap_move_stack
 }
@@ -388,7 +387,7 @@ void stack_split_init(void)
     ///////////////////////////////////////////////////////////////////////////////////////////////
     // town_select_stack: 83 F8 09 0F 87 EE 03 00 00
     ///////////////////////////////////////////////////////////////////////////////////////////////
-    unsigned char mem_town_select_stack[] = { 
+    unsigned char mem_town_select_stack[] = {
         0x83, 0xF8, 0x09,                     // CMP EAX, 9
         0x0F, 0x87, 0xEE, 0x03, 0x00, 0x00 }; // JA <+0x3F4>
     int off_town_select_stack = -0x0F;
