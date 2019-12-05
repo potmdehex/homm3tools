@@ -46,7 +46,7 @@ void GuiMod::createCheckOptions(QWidget *parent, const QFont &font, const QPalet
     const int checkX = 0x169;
     const int initialY = 0x35;
     const int incY = 24;
-    const char *options[] = { 
+    const char *options[] = {
         "Fullscreen|fullscreen",
         "Re-visitable Objects (re-visit with spacebar)|revisitable",
         "Extra Hotkeys "
@@ -79,7 +79,7 @@ void GuiMod::createCheckOptions(QWidget *parent, const QFont &font, const QPalet
         checkbox->setObjectName(QString(options[i]).split('|')[1] + QString("|check"));
 
         checked = defaults[i];
-        settings_get_int(SETTINGS_PATH, 
+        settings_get_int(SETTINGS_PATH,
             (QString("enable_") + QString(options[i]).split('|')[1]).toStdString().c_str(), (int *)&checked);
         checkbox->setChecked(checked);
 
@@ -155,13 +155,13 @@ void GuiMod::extendGui()
     browseBtn->show();
     browseBtn->setFont(fullscreenLbl->font());
     connect(browseBtn, SIGNAL(clicked()), this, SLOT(browseBtnClicked()));
-    
+
     QLabel *newFullscreenLbl = qobject_cast<QLabel *>(qtuFindChildWidget(m_main, "fullscreen|label"));
     newFullscreenLbl->setText(fullscreenLbl->text());
-    
+
     QCheckBox *newFullscreenBox = qobject_cast<QCheckBox *>(qtuFindChildWidget(m_main, "fullscreen|check"));
     newFullscreenBox->setChecked(fullscreenBox->isChecked());
-    
+
     // Connect new checkbox to the slot in the original executable
     connect(newFullscreenBox, SIGNAL(toggled(bool)), m_main, SLOT(fullscreenBoxToggled(bool)));
 
@@ -196,7 +196,7 @@ void GuiMod::playBtnClicked()
     settings_set_ascii(SETTINGS_PATH, "orig_maped_path", m_rmgEdit->text().toStdString().c_str());
     _applyCheckBoxSettings(m_main);
 
-    // Have the play function in the launcher executable get called, 
+    // Have the play function in the launcher executable get called,
     // launching HOMM3 2.0.exe
     QTimer::singleShot(0, m_main, "1playBtnClicked()");
 }
@@ -286,27 +286,31 @@ void GuiMod::hotkeysLinkActivated(const QString &link)
 
     QMessageBox *msg = new QMessageBox();
     msg->setIcon(QMessageBox::Question);
-    msg->setText("Quick Combat Battle Result Screen:\n"
+    msg->setText(
+        "Quick Combat Battle Result Screen:\n"
         "ESC: Re-play this battle without Quick Combat\n\n"
         "Hero Trade Screen:\n"
         "Q: Swap creatures and artifacts\n"
         "1: Move all creatures and artifacts to hero 1 (left)\n"
         "2: Move all creatures and artifacts to hero 2 (right)\n"
         "\nTown/Hero/Hero Trade Screen:\n"
-        "Ctrl+click: split clicked creature stack into as many stacks of 1 as possible\n"
+        "Ctrl+click: split 1 creature into free stack\n"
+        "Ctrl+Shift+click: split clicked creature stack into as many stacks of 1 as possible\n"
         "Shift+click: split clicked creature stack evenly\n"
-        "Alt+click: join all creatures of this type into this stack\n\n"
+        "Alt+click: join all creatures of this type into this stack\n"
+        "Delete+click: dismiss selected stack\n\n"
         "Moving last stack from hero to hero / town to hero: all creatures except 1 are moved (without mod nothing "
-        "happens when trying to move last stack)");
+        "happens when trying to move last stack)"
+    );
     msg->show();
 }
 
 GuiMod::GuiMod()
 {
-    
+
 }
 
 GuiMod::~GuiMod()
 {
-    
+
 }
