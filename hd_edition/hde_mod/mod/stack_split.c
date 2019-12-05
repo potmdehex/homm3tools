@@ -168,6 +168,17 @@ int delete_stack(int selected_slot, uint32_t *types, uint32_t *quantities)
     return 1;
 }
 
+// just 4 fun
+int increment_stack(int selected_slot, uint32_t *quantities)
+{
+    if (quantities[selected_slot] > 0)
+    {
+        quantities[selected_slot]++;
+    }
+
+    return 0;
+}
+
 boolean is_control_pressed()
 {
     return (GetAsyncKeyState(VK_CONTROL) & 0x8000) != 0;
@@ -186,6 +197,11 @@ boolean is_alt_pressed()
 boolean is_delete_pressed()
 {
     return (GetAsyncKeyState(VK_DELETE) & 0x8000) != 0;
+}
+
+boolean is_f1_pressed()
+{
+    return (GetAsyncKeyState(VK_F1) & 0x8000) != 0;
 }
 
 // Important that this is stdcall since it is called from inline asm
@@ -225,6 +241,10 @@ int __stdcall logic_select_stack(struct HDE_HERO *hero, unsigned int selected_sl
     else if (is_delete_pressed())
     {
         return delete_stack(selected_slot, hero->creature_types, hero->creature_quantities);
+    }
+    else if (is_f1_pressed())
+    {
+        return increment_stack(selected_slot, hero->creature_quantities);
     }
 
     return 1;
