@@ -119,8 +119,8 @@ int divide_stack(int selected_slot, uint32_t *types, uint32_t *quantities)
         int second_stack = total_creatures - first_stack;
 
         types[free_slot_idx] = type;
-        quantities[selected_slot] = second_stack;
-        quantities[free_slot_idx] = first_stack;
+        quantities[selected_slot] = first_stack;
+        quantities[free_slot_idx] = second_stack;
     }
 
     return 0;
@@ -145,24 +145,28 @@ int join_stack(int selected_slot, uint32_t *types, uint32_t *quantities)
     return 0;
 }
 
-#if 0
 int delete_stack(int selected_slot, uint32_t *types, uint32_t *quantities)
 {
-    int other_stack = -1;
-    // Check if there is at least one other stack
-    for (int i = 0; i < 7; ++i)
-    {
+    boolean is_last_stack = TRUE;
 
+    for (unsigned int i = 0; i < MAX_SLOT_COUNT; ++i)
+    {
+        if (i != selected_slot && quantities[i] > 0)
+        {
+            is_last_stack = FALSE;
+            break;
+        }
     }
 
-    if (-1 == other_stack)
+    if (!is_last_stack)
     {
-        return 1;
+        types[selected_slot] = 0xFFFFFFFF;
+        quantities[selected_slot] = 0;
+        return 0;
     }
 
-    return 0;
+    return 1;
 }
-#endif
 
 boolean is_control_pressed()
 {
@@ -179,10 +183,14 @@ boolean is_alt_pressed()
     return (GetAsyncKeyState(VK_MENU) & 0x8000) != 0;
 }
 
+boolean is_delete_pressed()
+{
+    return (GetAsyncKeyState(VK_DELETE) & 0x8000) != 0;
+}
+
 // Important that this is stdcall since it is called from inline asm
 int __stdcall logic_select_stack(struct HDE_HERO *hero, unsigned int selected_slot, int repeat)
 {
-    static int skip_count;
     // Basic bounds check for pointer
     if ((uint32_t)hero < 1000 || (uint32_t)hero > 0x7FFFFFFF)
     {
@@ -214,6 +222,10 @@ int __stdcall logic_select_stack(struct HDE_HERO *hero, unsigned int selected_sl
     {
         return join_stack(selected_slot, hero->creature_types, hero->creature_quantities);
     }
+    else if (is_delete_pressed())
+    {
+        return delete_stack(selected_slot, hero->creature_types, hero->creature_quantities);
+    }
 
     return 1;
 }
@@ -224,10 +236,9 @@ void *retn_hero_select_stack = NULL;
 void __declspec(naked) hooked_hero_select_stack(void)
 {
     __asm PUSHAD // preserve for next call (this function is called twice for each select)
-    __asm PUSHAD // preserve for this call
 
     // Call select stack logic function which will do hotkey actions
-    __asm PUSH 0 // repeat count
+    __asm PUSH 6 // repeat count
     __asm PUSH EDX // slot idx
     __asm PUSH EAX // hero struct
     __asm CALL logic_select_stack
@@ -239,16 +250,13 @@ void __declspec(naked) hooked_hero_select_stack(void)
     // Selection prevention: Prevent stack from being selected by
     // setting retn address to that of stack move action
     __asm POPAD
-    __asm POPAD
     __asm MOV ECX, retn_hero_select_stack // usual return for stack move causes creature to not be selected
     __asm MOV [ESP], ECX
-    __asm PUSHAD
     __asm PUSHAD
 
     skip_selection_prevention:
     __asm POPAD // restore for this call
     orig_hero_select_stack();
-    __asm POPAD // restore for next call
     __asm RETN
 }
 
@@ -269,7 +277,7 @@ void __declspec(naked) hooked_town_select_stack(void)
     __asm JMP orig_town_select_stack
     select_hook:
     //__asm MOV ESI, ECX
-        __asm PUSHAD
+    __asm PUSHAD
 
     // Get pointer to creatures part of hero struct. Previously EDI was used instead of ECX
     // here, but while that works for towns, it does not work for garrisons
