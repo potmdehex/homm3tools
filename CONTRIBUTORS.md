@@ -4,6 +4,7 @@ homm3tools contributors
 * John Åkerblom (**[potmdehex](https://github.com/potmdehex)**)
 * Constantine Dergachev (**[Dergash](https://github.com/Dergash)**)
 * Radosław Miernik (**[radekmie](https://github.com/radekmie)**)
+* Dmitry Stril (**[dmitrystril](https://github.com/dmitrystril)**)
 
 ##### Linux Support
 * Christian Resell (**[PewZ](https://github.com/PewZ)**)
