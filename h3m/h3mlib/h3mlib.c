@@ -1106,7 +1106,7 @@ int h3m_get_filename_from_gm1(const char *filename_gm1, char *filename_h3m,
         return 1;
     }
 
-    if (NULL == (loc = memmem(buf, (size_t)buf_size, (uint8_t *)".h3m", sizeof(".h3m") - 1))) {
+    if (NULL == (loc = __memmem(buf, (size_t)buf_size, (uint8_t *)".h3m", sizeof(".h3m") - 1))) {
         gu_free(buf);
         return 2;
     }

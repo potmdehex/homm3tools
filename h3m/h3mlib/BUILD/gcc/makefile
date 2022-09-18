@@ -37,14 +37,14 @@ $(DYNAMIC): $(OBJ)
 	$(CC) $(OBJ) $(LFLAGS) -o $@
 	
 $(STATIC): $(OBJ)
-	$(AR) rcs $@ $(OBJ) -o $@
+	$(AR) rcs $@ $(OBJ) $@
 
 obj/%.o: ../../%.c | obj
 	$(CC) $< -c $(CFLAGS) -o $@
 
 obj/%.o: ../../h3m_code/%.c | obj
 	$(CC) $< -c $(CFLAGS) -o $@
-    
+
 obj/%.o: ../../h3m_conversion/%.c | obj
 	$(CC) $< -c $(CFLAGS) -o $@
 	
@@ -74,7 +74,7 @@ obj/%.o: ../../h3m_parsing/%.c | obj
 
 obj/%.o: ../../meta/%.c | obj
 	$(CC) $< -c $(CFLAGS) -o $@
-    
+
 obj/%.o: ../../gzip_empty/%.c | obj
 	$(CC) $< -c $(CFLAGS) -o $@
 	

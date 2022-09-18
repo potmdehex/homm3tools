@@ -3,7 +3,7 @@
 
 #include <stdlib.h>
 
-unsigned char *memmem(unsigned char *haystack, size_t hlen,
+unsigned char *__memmem(unsigned char *haystack, size_t hlen,
     const unsigned char *needle, size_t nlen);
 
 #endif

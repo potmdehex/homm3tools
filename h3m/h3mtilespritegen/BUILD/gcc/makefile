@@ -27,7 +27,7 @@ $(DYNAMIC): $(OBJ)
 	$(CC) $(OBJ) $(LFLAGS) -o $@
 	
 $(STATIC): $(OBJ)
-	$(AR) rcs $@ $(OBJ) -o $@
+	$(AR) rcs $@ $(OBJ) $@
 
 obj/%.o: ../../terrain/%.c | obj
 	$(CC) $< -c $(CFLAGS) -o $@

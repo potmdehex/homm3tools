@@ -1,6 +1,6 @@
 // Created by John Åkerblom 2014-11-18
 
-#ifndef __H3MLIB_CRX_CLEANUP_H_DEF__
+#ifndef __H3MLIB_CTX_CLEANUP_H_DEF__
 #define __H3MLIB_CTX_CLEANUP_H_DEF__
 
 #include "h3mlib_ctx.h"
