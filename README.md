@@ -22,9 +22,6 @@ Do not hesitate to contact me if you have questions, suggestions or feature requ
 
 ##### [List of homm3tools contributors](https://github.com/potmdehex/homm3tools/blob/master/CONTRIBUTORS.md)
 
-### Donations
-If you like homm3tools and wish to donate towards its development, you can do so with [Paypal](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=FH4RSQKJTMWJS). Any donations are greatly appreciated.
-
 ### Disclaimer
 This software is not in any way official and is not endorsed by anyone.
 
